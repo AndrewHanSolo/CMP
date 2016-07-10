@@ -1,0 +1,29 @@
+high priority
+
+test if getHistograms can do polytonically distributed bins
+clean up plot preprocessing and postprocessing. constructfig
+remove redundancy - getWeightedAvgCorr vs getBinData
+analysis should no longer compute all original fields
+make selectFrames iterable on any plot
+axesLimits should be set after TrackFile analysis in constructor function
+axesLimits should be set to max value of property
+
+don't forget about comparePlots
+
+low priority
+
+add the field functions as seen in the Cell Particle Tracking doc - angular histogram
+dictionaries for Experiment settings and trackfile coordinates
+test settingsLabel
+TFF line 56
+
+
+
+
+features to add
+
+tests
+plot path of all cells moving from one origin
+compare plots - side by side plotting of various experiment plots
+
+
