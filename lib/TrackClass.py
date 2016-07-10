@@ -422,7 +422,7 @@ class TrackFile():
 	#get bins for propertyNameToScan, and for each of those bins,
 	#get histogram of propertyNameToFocus
 	#e.g. for multiple xStartPos bins, get histogram values of directionality for each bin
-	def histogramScan(self, propertyNameToFocus, propertyNameToScan, settings = TCG.PlotDefaults):
+	def histogramScan(self, propertyNameToScan, propertyNameToFocus, settings = TCG.PlotDefaults):
 		allHistogramValues = {}
 		allHistogramBincenters = {}
 		allHistogramLabels = {}

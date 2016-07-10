@@ -13,6 +13,7 @@ import os
 from copy import deepcopy
 import TrackClassGlobals as TCG
 from FullAnalysis_Job import *
+from general import setAllDictVals
 
 
 
@@ -32,9 +33,13 @@ if 1:
 	ps['bins'] = 15
 	ps['title'] = 'old'
 
+	#Analysis functions
+	funcs = TCG.AnalysisDefaults
+	setAllDictVals(funcs, 1)
+
 	#Analysis
 	TCG.SAVE_DIRECTORY = '/home/andrewhan/Desktop/analysis/nanofibers/'
-	fullAnalysis('data/fibers', filters = oldFilters, ps = ps)
+	fullAnalysis('data/fibers', filters = oldFilters, ps = ps, funcs = funcs)
 
 
 

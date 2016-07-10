@@ -29,6 +29,11 @@ def constructFig(self, title):
 	fig.suptitle(title + getSettingsLabel(self), fontsize = 8)
 	return fig
 
+#sets AnalysisDefaults to all 0 or all 1
+def setAllDictVals(self, value):
+	for key in self:
+		self[key] = value
+
 
 #returns true if value is between min and max, inclusive
 def withinRange(value, minVal, maxVal):

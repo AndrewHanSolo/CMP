@@ -27,14 +27,13 @@ label on colorbar
 -----------------------------------------
 TO DO
 
+TrackClassGlobals should be structured in classes
 metadata summary function
 move wordDoc to readme
 gui
 tests
 plot path of all cells moving from one origin
 compare plots - side by side plotting of various experiment plots
-
-test
 
 
 

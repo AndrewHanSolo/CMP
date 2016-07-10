@@ -10,16 +10,17 @@ import csv
 import xlsxwriter
 from scipy import stats
 import TrackClassGlobals as TCG
+from enum import Enum
 
 
 
-def fullAnalysis(DATA_SAVE_NAME, PATH = 0, filters = TCG.DefaultFilters, ps = TCG.PlotDefaults):
-	
-	print(DATA_SAVE_NAME)
+def fullAnalysis(DATA_SAVE_NAME, PATH = 0, filters = TCG.DefaultFilters, ps = TCG.PlotDefaults, funcs = TCG.AnalysisDefaults):
 
-	#save data if folder path to load from is specified
+	#save data from folder path if given
 	if PATH:
 		data = importAndSave(PATH, DATA_SAVE_NAME)
+
+	vprint('Starting Analysis of %s...' %(DATA_SAVE_NAME))
 
 	####################################
 	#LOAD DATA
@@ -34,41 +35,52 @@ def fullAnalysis(DATA_SAVE_NAME, PATH = 0, filters = TCG.DefaultFilters, ps = TC
 		keyProperty4 = 'migrationPersistence'
 		properties = [keyProperty1, keyProperty2, keyProperty3, keyProperty4]
 
-		#data.writeData(ps)
-		'''data.histogramTemporalAnalysis(ps)
-		data.spatialTemporalAnalysis(ps)
-		data.plotWeightedAverageCorrSummary(ps)
-		data.comparisonAnalysis(ps)'''
-
-		P.close()
+		if funcs['writeData']:
+			data.writeData(ps)
+		if funcs['histogramTemporalAnalysis']:
+			data.histogramTemporalAnalysis(ps)
+		if funcs['spatioTemporalAnalysis']:
+			data.spatialTemporalAnalysis(ps)
+		if funcs['plotWeightedAverageCorrSummary']:
+			data.plotWeightedAverageCorrSummary(ps)
+		if funcs['comparisonAnalysis']:
+			data.comparisonAnalysis(ps)
 
 		for experiment, v in sorted(data.experiments.items()):
 
+			if funcs['heatMaps']:
+				v.heatmapVisualization('xStartPos', 'yStartPos', 'avgMov', ps)
+				v.heatmapVisualization('xStartPos', 'yStartPos', 'directionality', ps)	
+				v.heatmapVisualization('avgMov', 'velocity', 'directionality', ps)	
+				v.heatmapVisualization('xStartPos', 'avgMov', 'directionality', ps)
+				v.heatmapVisualization('age', 'avgMov', 'directionality', ps)	
 
-			#v.heatmapVisualization('xStartPos', 'avgMov', 'migrationPersistence', ps)
-			#v.heatmapVisualization('xStartPos', 'yStartPos', keyProperty3, ps)	
-			#v.heatmapVisualization(keyProperty1, keyProperty2, keyProperty3, ps)	
-			#v.heatmapVisualization('xStartPos', keyProperty3, 'xStartPos', ps)	
+			if funcs['plotScatter']:
+				v.plotScatter(keyProperty1, keyProperty3)
+				v.plotScatter('age', keyProperty2)
+				v.plotScatter('age', keyProperty3)
+				v.plotScatter('xStartPos', keyProperty2)
+				v.plotScatter(keyProperty2, keyProperty3)
 
-			#v.plotScatter(keyProperty1, keyProperty3)
-			#v.plotWeightedAverageCorr('age', keyProperty2)
-			v.plotScatter('age', keyProperty2)
-			#v.plotScatter('age', keyProperty3)
-			#v.plotScatter('xStartPos', keyProperty2)
-			#v.plotScatter(keyProperty2, keyProperty3)
-			#v.plotWeightedAverageCorr('yStartPos', keyProperty2)
+			if funcs['weightedAverageCorr']:
+				v.plotWeightedAverageCorr('xStartPos', 'avgMov', ps)
+				v.plotWeightedAverageCorr('xStartPos', 'velocity', ps)
+				v.plotWeightedAverageCorr('xStartPos', 'directionality', ps)
 
-			#v.plotBinDataSummary(keyProperty3, ps)
-			#v.plotBinDataSummary(keyProperty2, ps)
-			#v.plotWeightedAverageCorr('xStartPos', keyProperty3, ps)
+			if funcs['binDataSummary']:
+				v.plotBinDataSummary('xStartPos', ps)
+				v.plotBinDataSummary('avgMov', ps)
+				v.plotBinDataSummary('directionality', ps);
 
-			#v.plotBinDataSummary('xStartPos', ps);
-			#v.histogramScan(keyProperty3, 'xStartPos', ps)
-			#v.histogramScan(keyProperty3, 'concentration', ps)
-			#v.histogramScan(keyProperty2, 'xStartPos', ps)
+			if funcs['histogramScan']:
+				v.histogramScan('xStartPos', 'avgMov', ps)
+				v.histogramScan('xStartPos', 'directionality', ps)
+				v.histogramScan('avgMov', 'directionality', ps)
 
 			
-			#v.plotCurve('xStartPos', 'avgMov', ps)
+
+
+
 
 			'''print(experiment)
 			for i in range(0,4):
