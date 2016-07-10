@@ -2,7 +2,8 @@ from TrackMeasurementFunctions import *
 
 VERBOSE = True
 DEBUG = False
-SAVE_DIRECTORY = 'C:/Users/Andrew Han/Desktop/tmpanalysis/'
+SAVE_DIRECTORY = '/home/andrewhan/Desktop'
+#MIGRATION_DIRECTORY = 'C:/Users/Andrew Han/Desktop/CMP/migrationData' //not being used right now
 SPEED_CONVERSION_FACTOR = 6
 FIELD_VECTOR_SPECIAL = [1, 0]
 GLOBAL_FIELD_VECTOR = [-1, 0]
@@ -150,8 +151,8 @@ PlotDefaults = {
 		'movie': True,
 
 		#temporal analysis settings
-		'startFrame': 30,
-		'endFrame': 70,
+		'startFrame': 0,
+		'endFrame': 30,
 		'frameInterval': 10, #TODO: MAKE THIS FRAMBINS. RIGHT NOW THIS SPECIFIES EXACT FRAMES IN EACH BIN
 		'startConcentration': 0,
 		'endConcentration': 10,
@@ -185,9 +186,9 @@ PlotDefaults = {
 AnimationDefaults = {
 		
 		#temporal analysis settings
-		'startFrame': 30,
-		'endFrame': 40,
-		'frameInterval': 5, #TODO: MAKE THIS FRAMBINS. RIGHT NOW THIS SPECIFIES EXACT FRAMES IN EACH BIN
+		'startFrame': 0,
+		'endFrame': 0,
+		'frameInterval': 0, #TODO: MAKE THIS FRAMBINS. RIGHT NOW THIS SPECIFIES EXACT FRAMES IN EACH BIN
 
 
 

@@ -19,6 +19,7 @@ from scipy.stats import gaussian_kde
 from matplotlib.ticker import FuncFormatter
 import xlsxwriter
 import _pickle as pickle
+import sys
 
 
 ####################################
@@ -864,15 +865,15 @@ class TrackFile():
 
 		P.subplot(2,3,4)
 		P.title("wAvgs,stdErr of each dir bin")
-		ax4 = self.plotBinData(propertyName, 'migrationPersistence', bins = bins, settings = setInst)
+		ax4 = self.plotBinData(propertyName, 'migrationPersistence', settings = setInst)
 		P.ylim([-1, 1])
 
 		P.subplot(2,3,5)
-		ax5 = self.plotBinData(propertyName, 'avgMov', bins = bins, settings = setInst)	
+		ax5 = self.plotBinData(propertyName, 'avgMov', settings = setInst)	
 		P.ylim([0, 40])
 
 		P.subplot(2,3,6)
-		ax6 = self.plotBinData(propertyName, 'velocity', bins = bins, settings = setInst)	
+		ax6 = self.plotBinData(propertyName, 'velocity', settings = setInst)	
 		P.ylim([0, 40])
 
 		self.getNumbers(propertyName, settings = setInst)
