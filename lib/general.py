@@ -21,7 +21,13 @@ def importAndSave(folderPath, saveName):
 	return data
 
 
-#constructs new figure with window and figure titles
+# constructs new figure with window and figure titles
+#
+# @param      self   The object
+# @param      title  The title
+#
+# @return     { description_of_the_return_value }
+#		
 def constructFig(self, title):
 	P.clf()
 	fig = P.gcf()
@@ -29,7 +35,13 @@ def constructFig(self, title):
 	fig.suptitle(title + getSettingsLabel(self), fontsize = 8)
 	return fig
 
-#sets AnalysisDefaults to all 0 or all 1
+# sets AnalysisDefaults to all 0 or all 1
+#
+# @param      self   The object
+# @param      value  The value
+#
+# @return     { description_of_the_return_value }
+#
 def setAllDictVals(self, value):
 	for key in self:
 		self[key] = value

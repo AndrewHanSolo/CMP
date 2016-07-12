@@ -97,7 +97,8 @@ class TrackFolder():
 				mergedTracks.append(track)
 
 		#transfers attributes from TrackFolder to newly merged TrackFile (transfer of metadata)
-		mergedTrackFile =  TC.TrackFile(mergedTracks, self.folderName, path = self.path, filters = self.filters, combined = True)
+		print("merging....")
+		mergedTrackFile =  TC.TrackFile(mergedTracks, self.folderName, path = self.path, filters = self.filters, master = True)
 		for key, val in self.expParams.items():
 			setattr(mergedTrackFile, key, val)
 		return mergedTrackFile
@@ -106,7 +107,9 @@ class TrackFolder():
 	#update TrackFile track coordinates based on corresponding entries in
 	#coordinates.txt if it exists in the experiment data folder
 	def updateTrackFilePositions(self):
+		print("updating coords...")
 		coordFilePath = self.path + '/coordinates.txt'
+		print(coordFilePath)
 		if os.path.isfile(coordFilePath):
 			with open(coordFilePath) as f:
 				reader = csv.reader(f, delimiter='\t')

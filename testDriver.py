@@ -17,8 +17,9 @@ from general import setAllDictVals
 
 
 
+
 '''Custom Nanofiber Analysis'''
-if 1:
+if 0:
 
 	#Filter settings
 	oldFilters = TCG.DefaultFilters.copy()
@@ -35,11 +36,11 @@ if 1:
 
 	#Analysis functions
 	funcs = TCG.AnalysisDefaults
-	setAllDictVals(funcs, 1)
+	#setAllDictVals(funcs, 0)
 
 	#Analysis
-	TCG.SAVE_DIRECTORY = '/home/andrewhan/Desktop/analysis/nanofibers/'
-	fullAnalysis('data/fibers', filters = oldFilters, ps = ps, funcs = funcs)
+	TCG.SAVE_DIRECTORY = '/home/andrewhan/Desktop/analysis/nanofibers/select fibers'
+	fullAnalysis('data/fibers', '/home/andrewhan/Desktop/track files/select fibers', filters = oldFilters, ps = ps, funcs = funcs)
 
 
 
@@ -59,6 +60,10 @@ if 1:
 	ps['bins'] = 10
 	ps['title'] = 'old'
 
+	#Analysis functions
+	funcs = TCG.AnalysisDefaults
+	#setAllDictVals(funcs, 0)
+
 	#Analysis
 	TCG.SAVE_DIRECTORY = '/home/andrewhan/Desktop/analysis/nfs/'
-	fullAnalysis('data/gradient', filters = oldFilters, ps = ps)
+	fullAnalysis('data/gradient', '/home/andrewhan/Desktop/track files/Nov experiments data/', filters = oldFilters, ps = ps, funcs = funcs)

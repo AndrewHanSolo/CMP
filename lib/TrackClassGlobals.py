@@ -1,5 +1,4 @@
 from TrackMeasurementFunctions import *
-from enum import Enum
 
 VERBOSE = True
 DEBUG = False
@@ -52,12 +51,12 @@ Default_Exp_Params = {
 
 AnalysisDefaults = {
 
-	'writeData'                      : 1,
+	'writeData'                      : 0,
 	'histogramTemporalAnalysis'      : 0,
 	'spatioTemporalAnalysis'         : 0,
 	'plotWeightedAverageCorrSummary' : 0,
 	'comparisonAnalysis'             : 0,
-	'heatMaps'                       : 0,
+	'heatMaps'                       : 1,
 	'plotScatter'                    : 0,
 	'weightedAverageCorr'            : 0,
 	'binDataSummary'                 : 0,

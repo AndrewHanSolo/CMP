@@ -10,6 +10,8 @@ make selectFrames iterable on any plot
 axesLimits should be set after TrackFile analysis in constructor function
 axesLimits should be set to max value of property
 don't forget about comparePlots
+Plots need to be scaled
+plotBinDataSummary plots not all appearing - probably a binnum issue
 
 
 
@@ -21,19 +23,25 @@ dictionaries for Experiment settings and trackfile coordinates
 test settingsLabel
 TFF line 56
 label on colorbar
+don't hardcode settings
 
 
 
 -----------------------------------------
 TO DO
 
-TrackClassGlobals should be structured in classes
+
+use structs instead of dicts and have dict linking strings to structs for user
+TrackClassGlobals should be structured in 
+plotScatter and heatMapVisualization should be merged together, have one master 4d scatterplot func
 metadata summary function
 move wordDoc to readme
 gui
 tests
 plot path of all cells moving from one origin
 compare plots - side by side plotting of various experiment plots
+
+search for REMOVE and TODO keywords
 
 
 

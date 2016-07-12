@@ -22,12 +22,22 @@ import _pickle as pickle
 import sys
 
 
-####################################
-####################################
-#individual track object
-#fields are corresponding x, y, z, t arrays
+
+
+##
+## @brief      { Holds raw position and frame data for 1 cell-track }
+##
 class Track():
 
+	##
+	## @brief      { Constructor }
+	##
+	## @param      self  The object
+	## @param      x     { 1xN array of x pos, where index corresonds to frame# }
+	## @param      y     { 1xN array of y pos, where index corresonds to frame# }
+	## @param      z     { 1xN array of z pos, where index corresonds to frame# }
+	## @param      t     { 1xN array of t pos, where index corresonds to frame# }
+	##
 	def __init__(self, x, y, z, t):
 		self.x = x
 		self.y = y
@@ -35,28 +45,61 @@ class Track():
 		self.t = t
 
 
-####################################
-####################################
-#Holds all Track objects from a single file
-#Holds metadata for experiment (after all TrackFiles of one experiment are merged)
+##
+## @brief      { Holds all Tracks contained in a single TrackMate xml output file }
+##
 class TrackFile():
 
-	def __init__(self, tracks, fileName, fields = TCG.DEFAULT_TRACK_FIELDS, path = 0, filters = TCG.DefaultFilters, combined = False):
+	##
+	## @brief      { Constructor }
+	##
+	## @param      self      The object
+	## @param      tracks    1xN array of Track objects
+	## @param      fileName  name of the xml file
+	## @param      fields    the Track measurements to be included in
+	##                       computation/analysis
+	## @param      filters   a filter settings object (Default has no active
+	##                       filters)
+	## @param      path      the full path to the xml file's parent directory
+	## @param      master    Bool to flag a merged Trackfile, representing a
+	##                       full experiment containing all tracks. When this is
+	##                       set to true, the experiment x and y dimensions are
+	##                       found, and initial analysis is performed to prep
+	##                       for filtering.
+	##
+	def __init__(self, tracks, fileName, 
+				 fields = TCG.DEFAULT_TRACK_FIELDS, 
+				 filters = TCG.DefaultFilters, 
+				 path = 0, 
+				 master = False):
+
 		self.tracks = tracks
 		self.fileName = fileName
+		self.filters = filters
+		self.path = path
+		self.gradient = 0
+		self.d = {} #Dictionary of Track measurement lists, 
+		            #where indices across lists correlate to 
+		            #the same Track
+		self.maxX = 0,
+		self.maxY = 0
+		self.master = master
+		
 		#to be done on TrackFile that has merged tracks
-		if combined:
+		if self.master:
+			print("hit")
 			self.maxX, self.maxY = getTrackFileDimensions(self)
-			self.gradient = 0
-			self.path = path
-			self.filters = filters
-			self.d = {}
 			self.analysis(fields)
 		return
    
 
-	#updates self.tracks array so that it only contains tracks that meet the parameter conditions
-	#automatically reanalyzes
+	# Filters tracks and reanalyzes
+	#
+	# @param      self     The object
+	# @param      filters  The filters
+	# 
+	# @exception  <exception_object> { Error occured while filtering }
+	#
 	def selectData(self, filters = TCG.DefaultFilters):
 		#for filterInstance in filters:
 		updateFilterSettings(self, filters)
@@ -65,28 +108,32 @@ class TrackFile():
 			TFF.selectArea(self, filters)
 			TFF.selectDictBins(self, filters)
 		except:
-			vprint('Exception hit in track filtering.') #Should never get hit.
+			vprint('Exception hit in track filtering.')
 			traceback.print_exc(file = sys.stdout)
+		return
 
 
-	#sets new analysis propertyName dictionary for all tracks in trackFile
+	# Recomputes track measurement dict d
+	#
+	# @param      self    The object
+	# @param      fields  The fields
+	#
 	def analysis(self, fields = TCG.DEFAULT_TRACK_FIELDS):
 
+		##REMOVE
 		if self.fileName == 'b GDNF 10':
 			TCG.FIELD_VECTOR_INSTANCE = TCG.FIELD_VECTOR_SPECIAL
-			#print('hit')
+			print('hit')
 		else: 
 			TCG.FIELD_VECTOR_INSTANCE = TCG.GLOBAL_FIELD_VECTOR
+		########
 
-		#combines fields to store in
 		for field, fieldFunction in fields.items():
 			fieldBuffer = []
 			for track in self.tracks:
-				if field == 'concentration':
-					fieldBuffer.append(fieldFunction(track, self.maxX, self.gradient))
-				else:
-					fieldBuffer.append(fieldFunction(track))
+				fieldBuffer.append(fieldFunction(track, maxX = self.maxX, gradient = self.gradient))
 			self.d[field] = fieldBuffer
+		return
 
 
 	#returns weightedAverage, standard deviation, standard error of propertyName values
