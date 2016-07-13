@@ -25,6 +25,8 @@ TFF line 56
 label on colorbar
 don't hardcode settings
 
+weightedAverage should return Nan if error and not 0
+
 
 
 -----------------------------------------

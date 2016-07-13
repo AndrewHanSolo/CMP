@@ -32,19 +32,23 @@ def fullAnalysis(DATA_SAVE_NAME, PATH = 0, filters = TCG.DefaultFilters, ps = TC
 		keyProperty1 = 'avgMov'
 		keyProperty2 = 'velocity'
 		keyProperty3 = 'directionality'
-		keyProperty4 = 'migrationPersistence'
+		keyProperty4 = 'mp'
 		properties = [keyProperty1, keyProperty2, keyProperty3, keyProperty4]
 
 		if funcs['writeData']:
 			data.writeData(ps)
+
 		if funcs['histogramTemporalAnalysis']:
 			data.histogramTemporalAnalysis(ps)
+
 		if funcs['spatioTemporalAnalysis']:
 			data.spatialTemporalAnalysis(ps)
+
 		if funcs['plotWeightedAverageCorrSummary']:
 			data.plotWeightedAverageCorrSummary(ps)
+
 		if funcs['comparisonAnalysis']:
-			data.comparisonAnalysis(ps)
+			data.comparisonAnalysis(ps)	
 
 		for experiment, v in sorted(data.experiments.items()):
 
@@ -77,28 +81,6 @@ def fullAnalysis(DATA_SAVE_NAME, PATH = 0, filters = TCG.DefaultFilters, ps = TC
 				v.histogramScan('xStartPos', 'directionality', ps)
 				v.histogramScan('avgMov', 'directionality', ps)
 
-			
-
-
-
-
-			'''print(experiment)
-			for i in range(0,4):
-				item = properties[i]
-				x, y, z = v.getWeightedAverage(item)
-				data = "%d\t%f\t%f\t%f" % (len(v.tracks), x, y, z)
-				print(item+'\t'+data)
-
-				#print(np.mean(v.d[item]))'''
-
-			'''#print(experiment)
-			
-			#print(data)
-			#print('velocity ', v.getWeightedAverage('velocity'))
-			#print('avgMov ', v.getWeightedAverage('avgMov'))
-			#print('directionality ', v.getWeightedAverage('directionality'))
-
-			P.close()'''
 
 
 

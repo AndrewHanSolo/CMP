@@ -10,14 +10,14 @@ GLOBAL_FIELD_VECTOR = [-1, 0]
 FIELD_VECTOR_INSTANCE = [-1, 0]
 
 
-DEFAULT_TRACK_FIELDS = { 
+'''Default_Track_Measurements = { 
 
 	'absVelocity'          : getAbsVelocity,
 	'age'                  : getAge,
 	'avgMov'               : getAverageMovement,
 	'concentration'        : getConcentration,
 	'directionality'       : getDirectionality,
-	'migrationPersistence' : getMigrationPersistence,
+	'mp' : getmp,
 	'velocity'             : getVelocity,
 	'xMigrationSpeed'      : getxMigrationSpeed,
 	'yMigrationSpeed'      : getyMigrationSpeed,
@@ -29,7 +29,7 @@ DEFAULT_TRACK_FIELDS = {
 	'firstFrame'           : getFirstFrame,
 	'lastFrame'            : getLastFrame
 
-}
+}'''
 
 DEAULT_TRACK_FILE_FIELDS = {
 	
@@ -73,7 +73,7 @@ axesLabels = {
 	'avgMov'               : 'avgMov: microns/hour',
 	'concentration'        : 'concentration: ug',
 	'directionality'       : 'directionality',
-	'migrationPersistence' : 'migration persistence',
+	'mp' : 'migration persistence',
 	'velocity'             : 'velocity: microns/hour',
 	'xMigrationSpeed'      : 'xMigrationSpeed: microns/hour',
 	'yMigrationSpeed'      : 'yMigrationSpeed: microns/hour',
@@ -95,7 +95,7 @@ axesLimits = {
 	'directionality'       : (-1, 1),
 	'avgMov'               : (0, 10),
 	'age'                  : (0, 100),
-	'migrationPersistence' : (0, 1),
+	'mp' : (0, 1),
 	'velocity'             : (0, 20)
 
 }
@@ -104,7 +104,7 @@ axesLimits = {
 ColorMapPropertyDict = {
 	#diverging colormap
 	'directionality'       : 'jet',
-	'migrationPersistence' : 'jet',
+	'mp' : 'jet',
 
 	#sequential colormap
 	'velocity'             : 'YlOrRd',
@@ -130,7 +130,7 @@ DefaultFilters = {
 	'avgMov'               : maxRange,
 	'concentration'        : maxRange,
 	'directionality'       : maxRange,
-	'migrationPersistence' : maxRange,
+	'mp' : maxRange,
 	'velocity'             : maxRange,
 	'xMigrationSpeed'      : maxRange,
 	'yMigrationSpeed'      : maxRange,
@@ -160,6 +160,7 @@ PlotDefaults = {
 	'legendLoc'                : 1,
 	'newFig'                   : True,
 	'stdErrorBars'             : True,
+	"average"				   : "weighted",
 
 	#movie settings
 	'movie'                    : True,
@@ -173,7 +174,7 @@ PlotDefaults = {
 	'concentrationInterval'    : 2,
 	'xStartPosBins'            : 20,
 	'directionalityBins'       : 10,
-	'migrationPersistenceBins' : 10,
+	'mpBins' : 10,
 	'velocityBins'             : 10,
 	'avgMovBins'               : 10,
 	'concentrationBins'        : 10,
@@ -205,5 +206,81 @@ AnimationDefaults = {
 	'frameInterval' : 0, #TODO: MAKE THIS FRAMBINS. RIGHT NOW THIS SPECIFIES EXACT FRAMES IN EACH BIN
 
 
+
+}
+
+
+
+
+
+##
+## @brief      { Class that holds measurement calculation function, and analysis/plot settings }
+##
+## @return     { description_of_the_return_value }
+##
+class TrackMeasurement():
+
+	##
+	## @brief      { constructor}
+	##
+	## @param      self         The measurement
+	## @param      name         measurement name
+	## @param      function     measurement function
+	## @param      axisLabel    The axis label
+	## @param      axisLimits   The axis limits
+	## @param      colorMap     The color map
+	## @param      description  The description
+	##
+	def __init__(self, 
+		         name,
+		         function,
+		         axisLabel,
+		         axisLimits,
+		         colorMap,
+		         description):		
+
+		self.name = name
+		self.function = function
+		self.axisLabel = axisLabel
+		self.axisLimits = axisLimits
+		self.function == axesLimits
+		self.colorMap = colorMap
+
+
+
+
+
+avgMov          = TrackMeasurement("avgMov", getAvgMov, "um/hour", maxRange, "jet", "average distance travelled per frame")
+velocity        = TrackMeasurement("velocity", getVelocity, "um/hour", maxRange, "jet", "average migration distance per frame")
+concentration   = TrackMeasurement("concentration", getConcentration, "ug", maxRange, "jet", "local chemical concentration at starting pos")
+directionality  = TrackMeasurement("directionality", getDirectionality, "%", maxRange, "jet", "ratio of movement in direction of increasing gradient")
+getMP           = TrackMeasurement("mp", getMP, "um/%", maxRange, "jet", "ratio of movement in one direction")
+getXStartPos    = TrackMeasurement("xStartPos", getxStartPos, "microns", maxRange, "jet", "x starting position")
+getYStartPos    = TrackMeasurement("yStartPos", getyStartPos, "microns", maxRange, "jet", "y starting position")
+firstFrame      = TrackMeasurement("firstFrame", getFirstFrame, "microns", maxRange, "jet", "first frame of track")
+lastFrame       = TrackMeasurement("lastFrame", getLastFrame, "microns", maxRange, "jet", "last frame of track")
+xMigrationSpeed = TrackMeasurement("xMigrationSpeed", getxMigrationSpeed, "microns", maxRange, "jet", "xMigrationSpeed")
+yMigrationSpeed = TrackMeasurement("yMigrationSpeed", getyMigrationSpeed, "microns", maxRange, "jet", "yMigrationSpeed")
+numFrames       = TrackMeasurement("numFrames", getNumFrames, "# frames", maxRange, "jet", "range of tracks over which track exists")
+age             = TrackMeasurement("age", getAge, "microns", maxRange, "jet", "number of frames in which track exists")
+
+
+
+
+Default_Track_Measurements = {
+
+"avgMov"          : avgMov         ,
+"velocity"        : velocity       ,
+"concentration"   : concentration  ,
+"directionality"  : directionality ,
+"mp"              : getMP          ,
+"xStartPos"       : getXStartPos   ,
+"yStartPos"       : getYStartPos   ,
+"firstFrame"      : firstFrame     ,
+"lastFrame"       : lastFrame      ,
+"xMigrationSpeed" : xMigrationSpeed,
+"yMigrationSpeed" : yMigrationSpeed,
+"numFrames"       : numFrames      ,
+"age"             : age
 
 }

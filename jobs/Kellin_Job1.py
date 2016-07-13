@@ -36,7 +36,7 @@ with open(DATA_SAVE_NAME, 'rb') as input:
 	ps['bins'] = 10
 	ps['directionalityBins'] = [-1, -0.6, -0.3, -0.1, 0.1, 0.3, 0.6, 1]
 	ps['xStartPosBins'] = 6
-	ps['migrationPersistenceBins'] = np.linspace(0, 1, 6)
+	ps['mpBins'] = np.linspace(0, 1, 6)
 	#ps['norm'] = True
 
 	data.selectData(filters)

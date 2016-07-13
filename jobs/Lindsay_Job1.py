@@ -43,7 +43,7 @@ with open(DATA_SAVE_NAME, 'rb') as input:
 	gps['bins'] = 10
 	gps['directionalityBins'] = [-1, -0.6, -0.3, -0.1, 0.1, 0.3, 0.6, 1]
 	gps['xStartPosBins'] = 10
-	gps['migrationPersistenceBins'] = np.linspace(0, 1, 10)
+	gps['mpBins'] = np.linspace(0, 1, 10)
 	#gps['norm'] = True
 
 	data.selectData(filters)

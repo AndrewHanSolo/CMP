@@ -36,7 +36,7 @@ if 0:
 
 	#Analysis functions
 	funcs = TCG.AnalysisDefaults
-	#setAllDictVals(funcs, 0)
+	setAllDictVals(funcs, 1)
 
 	#Analysis
 	TCG.SAVE_DIRECTORY = '/home/andrewhan/Desktop/analysis/nanofibers/select fibers'
@@ -62,7 +62,7 @@ if 1:
 
 	#Analysis functions
 	funcs = TCG.AnalysisDefaults
-	#setAllDictVals(funcs, 0)
+	#setAllDictVals(funcs, 1)
 
 	#Analysis
 	TCG.SAVE_DIRECTORY = '/home/andrewhan/Desktop/analysis/nfs/'

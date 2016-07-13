@@ -6,7 +6,7 @@ import numpy as np
 #DEFAULT TRACK FIELD CALCULATION FUNCTIONS
 
 #the mean of absolute travel distance between frames. right now only does x and y dims
-def getAverageMovement(track, **kwargs):
+def getAvgMov(track, **kwargs):
 	avgMov = []
 	diff = []
 	frameDistanceBetweenFrames = []
@@ -89,7 +89,7 @@ def getFirstFrame(track, **kwargs):
 def getLastFrame(track, **kwargs):
 	return track.t[-1]
 
-def getMigrationPersistence(track, **kwargs):
+def getMP(track, **kwargs):
 	travel = []
 	xDiffs = gen.getDifferenceArray(track.x)
 	yDiffs = gen.getDifferenceArray(track.y)

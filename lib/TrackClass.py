@@ -68,7 +68,7 @@ class TrackFile():
 	##                       for filtering.
 	##
 	def __init__(self, tracks, fileName, 
-				 fields = TCG.DEFAULT_TRACK_FIELDS, 
+				 fields = TCG.Default_Track_Measurements, 
 				 filters = TCG.DefaultFilters, 
 				 path = 0, 
 				 master = False):
@@ -118,7 +118,7 @@ class TrackFile():
 	# @param      self    The object
 	# @param      fields  The fields
 	#
-	def analysis(self, fields = TCG.DEFAULT_TRACK_FIELDS):
+	def analysis(self, fields = TCG.Default_Track_Measurements):
 
 		##REMOVE
 		if self.fileName == 'b GDNF 10':
@@ -128,32 +128,47 @@ class TrackFile():
 			TCG.FIELD_VECTOR_INSTANCE = TCG.GLOBAL_FIELD_VECTOR
 		########
 
-		for field, fieldFunction in fields.items():
+		for key, measurementClass in fields.items():
 			fieldBuffer = []
 			for track in self.tracks:
-				fieldBuffer.append(fieldFunction(track, maxX = self.maxX, gradient = self.gradient))
-			self.d[field] = fieldBuffer
+				fieldBuffer.append(measurementClass.function(track, maxX = self.maxX, gradient = self.gradient))
+			self.d[key] = fieldBuffer
 		return
 
 
-	#returns weightedAverage, standard deviation, standard error of propertyName values
-	#stdErr is unweighted. no proper way to do wAvg of this
+	# returns weightedAverage and standard deviation 
+	# or number average and standard error of a measurement in Trackfile
+	# TODO: Maybe nAvg should also have stdDev
+	# TODO: handle errors, don't return 0. will have to do for now
+	#
+	# @param      self          TrackFile
+	# @param      propertyName  measurementName
+	# @param      settings      The settings
+	#
+	# @return     either wAvg and stdErr or nAvg and stdDev
+	#
 	def getWeightedAverage(self, propertyName, settings = TCG.PlotDefaults):
 		try:
-			weightedAvg = np.average(self.d[propertyName], weights = self.d[settings['weight']])
-			stdDev = sqrt(np.average((self.d[propertyName] - weightedAvg)**2, weights = self.d[settings['weight']]))
-			stdErr = stats.sem(self.d[propertyName])
+			if settings["average"] == "weighted":
+				weightedAvg = np.average(self.d[propertyName], weights = self.d[settings['weight']])
+				stdDev = sqrt(np.average((self.d[propertyName] - weightedAvg)**2, weights = self.d[settings['weight']]))
+				return weightedAvg, stdDev, stdErr
+			if settings["average"] == "number":
+				avg = np.average(self.d[propertyName])
+				stdErr = stats.sem(self.d[propertyName])
+				return avg, 0, stdErr
 		except:
-			weightedAvg = 0
-			stdDev = 0
-			stdErr = 0
-			pass
+			return 0, 0, 0
 
-		return weightedAvg, stdDev, stdErr
-
-	#print out all track property values
+	# prints all track measurement data to excel file
+	# TODO: Add sheet and write metadata for experiment
+	#
+	# @param      self      The object
+	# @param      settings  The settings
+	#
 	def writeData(self, settings = TCG.PlotDefaults):
-		workbook = xlsxwriter.Workbook(TCG.SAVE_DIRECTORY + self.fileName + ' property data ' + settings['title'] + '.xlsx',  {'nan_inf_to_errors': True})
+		workbookName = "%s%s measurement data %s.xlsx" % (TCG.SAVE_DIRECTORY, self.fileName, settings['title'])
+		workbook = xlsxwriter.Workbook(workbookName, {'nan_inf_to_errors': True})
 		worksheet = workbook.add_worksheet()
 		colindex = 0
 		rowindex = 0
@@ -162,12 +177,13 @@ class TrackFile():
 		for trackCount in range(len(self.tracks)):
 			rowindex += 1
 			worksheet.write(rowindex, colindex, trackCount)
-		#list each propertyName value
+		#list each propertyName value by col
 		for propertyName, na in sorted(self.d.items()):
 			colindex += 1
 			rowindex = 0
 			worksheet.write(rowindex, colindex, propertyName)
 			propertyValues = self.d[propertyName]
+			#write all values of propertyNames to rows
 			for value in propertyValues:
 				rowindex += 1
 				worksheet.write(rowindex, colindex, value)
@@ -912,7 +928,7 @@ class TrackFile():
 
 		P.subplot(2,3,4)
 		P.title("wAvgs,stdErr of each dir bin")
-		ax4 = self.plotBinData(propertyName, 'migrationPersistence', settings = setInst)
+		ax4 = self.plotBinData(propertyName, 'mp', settings = setInst)
 		P.ylim([-1, 1])
 
 		P.subplot(2,3,5)
@@ -941,7 +957,7 @@ class TrackFile():
 		setInst['newFig'] = False
 
 		P.subplot(1,3,1)
-		ax1 = P.hist(self.d['migrationPersistence'], bins = settings['migrationPersistenceBins'])
+		ax1 = P.hist(self.d['mp'], bins = settings['mpBins'])
 
 		P.subplot(1,3,2)
 		ax2 = P.hist(self.d['avgMov'], bins = settings['avgMovBins'])
