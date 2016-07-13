@@ -140,6 +140,7 @@ class TrackFile():
 	# or number average and standard error of a measurement in Trackfile
 	# TODO: Maybe nAvg should also have stdDev
 	# TODO: handle errors, don't return 0. will have to do for now
+	# TODO: rename to getAverage()
 	#
 	# @param      self          TrackFile
 	# @param      propertyName  measurementName
@@ -152,12 +153,14 @@ class TrackFile():
 			if settings["average"] == "weighted":
 				weightedAvg = np.average(self.d[propertyName], weights = self.d[settings['weight']])
 				stdDev = sqrt(np.average((self.d[propertyName] - weightedAvg)**2, weights = self.d[settings['weight']]))
+				stdErr = stdErr = stats.sem(self.d[propertyName])
 				return weightedAvg, stdDev, stdErr
 			if settings["average"] == "number":
 				avg = np.average(self.d[propertyName])
 				stdErr = stats.sem(self.d[propertyName])
 				return avg, 0, stdErr
 		except:
+			print("exception hit in getweightedAverage")
 			return 0, 0, 0
 
 	# prints all track measurement data to excel file
@@ -192,8 +195,23 @@ class TrackFile():
 		return
 
 
-	#bins values based on binnedPropertyName, and calculates wAvg, stdDev, stdErr, #tracks, %tracks in bin, binCenters
-	#of dataPropertyName. Does same thing as getWeightedAvgCorr, except non-monotonically increasing bins can be used
+	# Bins dataPropertyName values by binnedPropertyName
+	# calculates avg, stdDev, stdErr for n bins and returns size N lists
+	# 
+	# Does same thing as getWieightedAverageCorr, but non-monotonically increasing bins can
+	# be used with this one.
+	# 
+	# TODO: switch getWieghtedAverageCorr to getBinData
+	# 		should be able to choose scanning mode. e.g. by monotonic or by percentiles
+	# 		Right now only supports nonmonotonic/scalar bins defined in settings
+	#
+	# @param      self                The object
+	# @param      binnedPropertyName  The binned property name
+	# @param      dataPropertyName    The data property name
+	# @param      settings            The settings
+	#
+	# @return     averages, stdDevs, stdErrs, trackCounts, countPercents (bin# to experiment#), bincenters
+	#
 	def getBinData(self, binnedPropertyName, dataPropertyName, settings = TCG.PlotDefaults):
 		wAvgs = []
 		stdDevs = []
@@ -202,13 +220,13 @@ class TrackFile():
 		countPercents = []
 		binCenters = []
 
-		#convert bin
+		#format bin setting to iterator (hacky)
 		binValSettingsArray = binnedPropertyName + 'Bins'; 
 		binArray = settings[binValSettingsArray]
 		if type(binArray) == int:
 			minValueProperty = 0
 			maxValueProperty = max(self.d[binnedPropertyName])
-			binArray = np.linspace(minValueProperty, maxValueProperty, 1+binArray)
+			binArray = np.linspace(minValueProperty, maxValueProperty, binArray+1)
 
 		#iterate across bins, select data, get dataPropertyName wavgs, stdDevs, stderrs and 
 		#add to array
@@ -220,7 +238,7 @@ class TrackFile():
 
 			copy = deepcopy(self)
 			copy.selectData(filters)
-			wAvg, stdDev, stdErr = copy.getWeightedAverage(dataPropertyName)
+			wAvg, stdDev, stdErr = copy.getWeightedAverage(dataPropertyName, settings = settings)
 
 			wAvgs.append(wAvg)
 			stdDevs.append(stdDev)
@@ -236,7 +254,16 @@ class TrackFile():
 		return wAvgs, stdDevs, stdErrs, trackCounts, countPercents, binCenters
 
 
-	#plots getBinData. Error bars are stdError right now 
+	# Plots getBinData. Error bars are stdError right now.
+	# 
+	# TODO: choose stdDev or stdErr, based on getAverage settings
+	# TODO: plot a high-order polynomial smooth-fit curve
+	#
+	# @param      self                The object
+	# @param      binnedPropertyName  The binned property name
+	# @param      dataPropertyName    The data property name
+	# @param      settings            The settings
+	#
 	def plotBinData(self, binnedPropertyName, dataPropertyName, settings = TCG.PlotDefaults):
 		#plot info
 		plotTitle = "%s, wAvgs of %s binned by %s %s" % (self.fileName, dataPropertyName, binnedPropertyName, settings['title'])
@@ -245,20 +272,29 @@ class TrackFile():
 		P.xlabel(axesLabels[binnedPropertyName])
 		P.ylabel(axesLabels[dataPropertyName])
 
-		wAvgs, stdDevs, stdErrs, trackCounts, countPercents, binCenters = self.getBinData(binnedPropertyName, dataPropertyName)
-		#P.errorbar(binCenters, wAvgs, yerr = stdErrs)
-		density = gaussian_kde(wAvgs)
-		print(binCenters)
-		xs = binCenters#np.linspace(binCenters[0], binCenters[-1], len(binCenters))
-		density.covariance_factor = lambda : .25
-		density._compute_covariance()
-		P.plot(xs,density(xs))
+		wAvgs, stdDevs, stdErrs, trackCounts, countPercents, binCenters = self.getBinData(binnedPropertyName, dataPropertyName, settings = settings)
+		print(wAvgs, stdErrs)
+		P.errorbar(binCenters, wAvgs, yerr = stdErrs)
+		#density = gaussian_kde(wAvgs)
+		#xs = binCenters
+		#density.covariance_factor = lambda : .25
+		#density._compute_covariance()
+		#P.plot(xs,density(xs))
 
 		if settings['show']: P.show()
 		if settings['save']: savePlot(fig, plotTitle)
 
 
-	#returns y, bincenters values that compose histogram
+	# Gets histogram values
+	# 
+	# TODO: confirm density plot options
+	#
+	# @param      self          The object
+	# @param      propertyName  The property name
+	# @param      settings      The settings
+	#
+	# @return     y values and corresponding bincenters
+	#
 	def getHistogram(self, propertyName, settings = TCG.PlotDefaults):
 		values = self.d[propertyName]
 		data = np.array(values)
@@ -267,7 +303,14 @@ class TrackFile():
 		return y, bincenters
 
 
-	#plots histogram of propertyName values
+	# Plots a histogram, using getHistogram
+	#
+	# @param      self          The object
+	# @param      propertyName  The property name
+	# @param      settings      The settings
+	#
+	# @return     The Pylab plot
+	#
 	def plotHistogram(self, propertyName, settings = TCG.PlotDefaults):
 		#plot info
 		plotTitle = self.fileName + ', ' + propertyName + ', histogram' + ' ' + settings['title']

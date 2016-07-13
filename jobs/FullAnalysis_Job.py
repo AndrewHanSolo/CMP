@@ -11,6 +11,7 @@ import xlsxwriter
 from scipy import stats
 import TrackClassGlobals as TCG
 from enum import Enum
+from matplotlib import *
 
 
 

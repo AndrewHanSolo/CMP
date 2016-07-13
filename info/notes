@@ -45,6 +45,8 @@ compare plots - side by side plotting of various experiment plots
 
 search for REMOVE and TODO keywords
 
+getWeightedAverageCorr can be removed. plotBins is good
+
 
 
 

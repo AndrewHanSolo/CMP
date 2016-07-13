@@ -12,22 +12,22 @@ FIELD_VECTOR_INSTANCE = [-1, 0]
 
 '''Default_Track_Measurements = { 
 
-	'absVelocity'          : getAbsVelocity,
-	'age'                  : getAge,
-	'avgMov'               : getAverageMovement,
-	'concentration'        : getConcentration,
-	'directionality'       : getDirectionality,
-	'mp' : getmp,
-	'velocity'             : getVelocity,
-	'xMigrationSpeed'      : getxMigrationSpeed,
-	'yMigrationSpeed'      : getyMigrationSpeed,
-	'xStartPos'            : getxStartPos,
-	'xEndPos'              : getxEndPos,
-	'yStartPos'            : getyStartPos,
-	'yEndPos'              : getyEndPos,
-	'numFrames'            : getNumFrames,
-	'firstFrame'           : getFirstFrame,
-	'lastFrame'            : getLastFrame
+	'absVelocity'     : getAbsVelocity,
+	'age'             : getAge,
+	'avgMov'          : getAverageMovement,
+	'concentration'   : getConcentration,
+	'directionality'  : getDirectionality,
+	'mp'              : getmp,
+	'velocity'        : getVelocity,
+	'xMigrationSpeed' : getxMigrationSpeed,
+	'yMigrationSpeed' : getyMigrationSpeed,
+	'xStartPos'       : getxStartPos,
+	'xEndPos'         : getxEndPos,
+	'yStartPos'       : getyStartPos,
+	'yEndPos'         : getyEndPos,
+	'numFrames'       : getNumFrames,
+	'firstFrame'      : getFirstFrame,
+	'lastFrame'       : getLastFrame
 
 }'''
 
@@ -56,10 +56,10 @@ AnalysisDefaults = {
 	'spatioTemporalAnalysis'         : 0,
 	'plotWeightedAverageCorrSummary' : 0,
 	'comparisonAnalysis'             : 0,
-	'heatMaps'                       : 1,
+	'heatMaps'                       : 0,
 	'plotScatter'                    : 0,
-	'weightedAverageCorr'            : 0,
-	'binDataSummary'                 : 0,
+	'weightedAverageCorr'            : 1,
+	'binDataSummary'                 : 1,
 	'histogramScan'                  : 0
 
 }
@@ -68,35 +68,35 @@ AnalysisDefaults = {
 
 axesLabels = {
 
-	'absVelocity'          : 'absVelocity: microns/hour',
-	'age'                  : 'age: frames',
-	'avgMov'               : 'avgMov: microns/hour',
-	'concentration'        : 'concentration: ug',
-	'directionality'       : 'directionality',
-	'mp' : 'migration persistence',
-	'velocity'             : 'velocity: microns/hour',
-	'xMigrationSpeed'      : 'xMigrationSpeed: microns/hour',
-	'yMigrationSpeed'      : 'yMigrationSpeed: microns/hour',
-	'xStartPos'            : 'xStartPos: microns',
-	'xEndPos'              : 'xEndPos: microns',
-	'yStartPos'            : 'yStartPos: microns',
-	'yEndPos'              : 'yEndPos: microns',
-	'numFrames'            : 'numFrames: frames',
-	'firstFrame'           : 'firstFrame: frame',
-	'lastFrame'            : 'lastFrame: frame'
+	'absVelocity'     : 'absVelocity: microns/hour',
+	'age'             : 'age: frames',
+	'avgMov'          : 'avgMov: microns/hour',
+	'concentration'   : 'concentration: ug',
+	'directionality'  : 'directionality',
+	'mp'              : 'migration persistence',
+	'velocity'        : 'velocity: microns/hour',
+	'xMigrationSpeed' : 'xMigrationSpeed: microns/hour',
+	'yMigrationSpeed' : 'yMigrationSpeed: microns/hour',
+	'xStartPos'       : 'xStartPos: microns',
+	'xEndPos'         : 'xEndPos: microns',
+	'yStartPos'       : 'yStartPos: microns',
+	'yEndPos'         : 'yEndPos: microns',
+	'numFrames'       : 'numFrames: frames',
+	'firstFrame'      : 'firstFrame: frame',
+	'lastFrame'       : 'lastFrame: frame'
 
 }
 
 
 axesLimits = {
 	
-	'xStartPos'            : (0, 10000),
-	'yStartPos'            : (0, 10000),
-	'directionality'       : (-1, 1),
-	'avgMov'               : (0, 10),
-	'age'                  : (0, 100),
-	'mp' : (0, 1),
-	'velocity'             : (0, 20)
+	'xStartPos'      : (0, 10000),
+	'yStartPos'      : (0, 10000),
+	'directionality' : (-1, 1),
+	'avgMov'         : (0, 10),
+	'age'            : (0, 100),
+	'mp'             : (0, 1),
+	'velocity'       : (0, 20)
 
 }
 
@@ -130,7 +130,7 @@ DefaultFilters = {
 	'avgMov'               : maxRange,
 	'concentration'        : maxRange,
 	'directionality'       : maxRange,
-	'mp' : maxRange,
+	'mp' 				   : maxRange,
 	'velocity'             : maxRange,
 	'xMigrationSpeed'      : maxRange,
 	'yMigrationSpeed'      : maxRange,
@@ -149,52 +149,52 @@ DefaultFilters = {
 PlotDefaults = {
 	
 	#general plot settings
-	'show'                     : False,
-	'save'                     : True,
-	'bins'                     : 20,
-	'norm'                     : False,
-	'percent'                  : False,
-	'title'                    : '',
-	'weight'                   : 'age',
-	'legend'                   : True,
-	'legendLoc'                : 1,
-	'newFig'                   : True,
-	'stdErrorBars'             : True,
-	"average"				   : "weighted",
+	'show'                  : False,
+	'save'                  : True,
+	'bins'                  : 20,
+	'norm'                  : False,
+	'percent'               : False,
+	'title'                 : '',
+	'weight'                : 'age',
+	'legend'                : True,
+	'legendLoc'             : 1,
+	'newFig'                : True,
+	'stdErrorBars'          : True,
+	"average"				           : "weighted",
 
 	#movie settings
-	'movie'                    : True,
+	'movie'                 : True,
 
 	#temporal analysis settings
-	'startFrame'               : 0,
-	'endFrame'                 : 30,
-	'frameInterval'            : 10, #TODO: MAKE THIS FRAMBINS. RIGHT NOW THIS SPECIFIES EXACT FRAMES IN EACH BIN
-	'startConcentration'       : 0,
-	'endConcentration'         : 10,
-	'concentrationInterval'    : 2,
-	'xStartPosBins'            : 20,
-	'directionalityBins'       : 10,
-	'mpBins' : 10,
-	'velocityBins'             : 10,
-	'avgMovBins'               : 10,
-	'concentrationBins'        : 10,
+	'startFrame'            : 0,
+	'endFrame'              : 30,
+	'frameInterval'         : 10, #TODO: MAKE THIS FRAMBINS. RIGHT NOW THIS SPECIFIES EXACT FRAMES IN EACH BIN
+	'startConcentration'    : 0,
+	'endConcentration'      : 10,
+	'concentrationInterval' : 2,
+	'xStartPosBins'         : 20,
+	'directionalityBins'    : 10,
+	'mpBins'                : 10,
+	'velocityBins'          : 10,
+	'avgMovBins'            : 10,
+	'concentrationBins'     : 20,
 
 
 	#spatial analysis settings
-	'spatialBins'              : 10,
+	'spatialBins'           : 10,
 
 	#rotation angles for 3dPlotMovie
-	'rotStartAngle'            : 220,
-	'rotEndAngle'              : 221,
-	'rotResolution'            : 1,
+	'rotStartAngle'         : 220,
+	'rotEndAngle'           : 221,
+	'rotResolution'         : 1,
 
 
 	#cellVisualization settings
-	'colorMin'                 : -1,
-	'colorMax'                 : 1,
+	'colorMin'              : -1,
+	'colorMax'              : 1,
 
 	#percents
-	'percents'                 : [0, 25, 50, 75, 100]
+	'percents'              : [0, 25, 50, 75, 100]
 
 }
 
@@ -282,5 +282,4 @@ Default_Track_Measurements = {
 "yMigrationSpeed" : yMigrationSpeed,
 "numFrames"       : numFrames      ,
 "age"             : age
-
 }

@@ -15,8 +15,6 @@ from FullAnalysis_Job import *
 from general import setAllDictVals
 
 
-
-
 '''Custom Nanofiber Analysis'''
 if 1:
 
