@@ -68,7 +68,7 @@ with open(DATA_SAVE_NAME, 'rb') as input:
 		#v.cellVisualization('avgMov', ps)
 		#v.getNumbers('directionality', settings = ps)
 		#v.plotBinDataSummary('directionality', ps)
-		#v.plotWeightedAverageCorr('xStartPos', 'directionality', settings = ps)
+		#v.plotBinData('xStartPos', 'directionality', settings = ps)
 		#v.plotBinDataSummary('xStartPos', settings = ps);
 		#v.histogramScan('directionality', 'xStartPos', ps)
 		#v.histogramScan('directionality', 'concentration', ps)

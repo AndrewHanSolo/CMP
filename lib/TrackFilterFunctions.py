@@ -10,7 +10,7 @@ def selectFrames(self, filters):
 	for frameBin in filters['frames']:
 		minFrame, maxFrame = frameBin[0], frameBin[1]
 		if minFrame == float('-inf') and maxFrame == float('inf'):
-			continue
+			return
 		goodTracks = []
 		for track in self.tracks:
 			newXarray = []
@@ -41,7 +41,7 @@ def selectArea(self, filters):
 		minY, maxY = yArray[0], yArray[1]
 		if minX == float('-inf') and maxX == float('inf') \
 		 and minY == float('-inf') and maxY == float('inf'):
-			continue
+			return
 		goodTracks = []
 		for track in self.tracks:
 			newXarray = []

@@ -4,14 +4,10 @@ matplotlib should make directories in which to save plots if they dont exist
 
 test if getHistograms can do polytonically distributed bins
 clean up plot preprocessing and postprocessing. constructfig
-remove redundancy - getWeightedAvgCorr vs getBinData
-analysis should no longer compute all original fields
-make selectFrames iterable on any plot
 axesLimits should be set after TrackFile analysis in constructor function
 axesLimits should be set to max value of property
 don't forget about comparePlots
 Plots need to be scaled
-plotBinDataSummary plots not all appearing - probably a binnum issue
 
 
 
@@ -44,8 +40,6 @@ plot path of all cells moving from one origin
 compare plots - side by side plotting of various experiment plots
 
 search for REMOVE and TODO keywords
-
-getWeightedAverageCorr can be removed. plotBins is good
 
 
 

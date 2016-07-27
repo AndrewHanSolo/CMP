@@ -2,7 +2,7 @@ from TrackMeasurementFunctions import *
 
 VERBOSE = True
 DEBUG = False
-SAVE_DIRECTORY = '/home/andrewhan/Desktop'
+SAVE_DIRECTORY = '/home/andrewhan/Desktop/'
 #MIGRATION_DIRECTORY = 'C:/Users/Andrew Han/Desktop/CMP/migrationData' //not being used right now
 SPEED_CONVERSION_FACTOR = 6
 FIELD_VECTOR_SPECIAL = [1, 0]
@@ -10,26 +10,6 @@ GLOBAL_FIELD_VECTOR = [-1, 0]
 FIELD_VECTOR_INSTANCE = [-1, 0]
 
 
-'''Default_Track_Measurements = { 
-
-	'absVelocity'     : getAbsVelocity,
-	'age'             : getAge,
-	'avgMov'          : getAverageMovement,
-	'concentration'   : getConcentration,
-	'directionality'  : getDirectionality,
-	'mp'              : getmp,
-	'velocity'        : getVelocity,
-	'xMigrationSpeed' : getxMigrationSpeed,
-	'yMigrationSpeed' : getyMigrationSpeed,
-	'xStartPos'       : getxStartPos,
-	'xEndPos'         : getxEndPos,
-	'yStartPos'       : getyStartPos,
-	'yEndPos'         : getyEndPos,
-	'numFrames'       : getNumFrames,
-	'firstFrame'      : getFirstFrame,
-	'lastFrame'       : getLastFrame
-
-}'''
 
 DEAULT_TRACK_FILE_FIELDS = {
 	
@@ -54,7 +34,7 @@ AnalysisDefaults = {
 	'writeData'                      : 0,
 	'histogramTemporalAnalysis'      : 0,
 	'spatioTemporalAnalysis'         : 0,
-	'plotWeightedAverageCorrSummary' : 0,
+	'plotBinDataSummary' 			 : 0,
 	'comparisonAnalysis'             : 0,
 	'heatMaps'                       : 0,
 	'plotScatter'                    : 0,
@@ -66,39 +46,7 @@ AnalysisDefaults = {
 
 
 
-axesLabels = {
 
-	'absVelocity'     : 'absVelocity: microns/hour',
-	'age'             : 'age: frames',
-	'avgMov'          : 'avgMov: microns/hour',
-	'concentration'   : 'concentration: ug',
-	'directionality'  : 'directionality',
-	'mp'              : 'migration persistence',
-	'velocity'        : 'velocity: microns/hour',
-	'xMigrationSpeed' : 'xMigrationSpeed: microns/hour',
-	'yMigrationSpeed' : 'yMigrationSpeed: microns/hour',
-	'xStartPos'       : 'xStartPos: microns',
-	'xEndPos'         : 'xEndPos: microns',
-	'yStartPos'       : 'yStartPos: microns',
-	'yEndPos'         : 'yEndPos: microns',
-	'numFrames'       : 'numFrames: frames',
-	'firstFrame'      : 'firstFrame: frame',
-	'lastFrame'       : 'lastFrame: frame'
-
-}
-
-
-axesLimits = {
-	
-	'xStartPos'      : (0, 10000),
-	'yStartPos'      : (0, 10000),
-	'directionality' : (-1, 1),
-	'avgMov'         : (0, 10),
-	'age'            : (0, 100),
-	'mp'             : (0, 1),
-	'velocity'       : (0, 20)
-
-}
 
 
 ColorMapPropertyDict = {
@@ -143,7 +91,7 @@ DefaultFilters = {
 	'firstFrame'           : maxRange,
 	'lastFrame'            : maxRange,
 
-		}
+}
 
 #plot defualts
 PlotDefaults = {
@@ -155,19 +103,19 @@ PlotDefaults = {
 	'norm'                  : False,
 	'percent'               : False,
 	'title'                 : '',
-	'weight'                : 'age',
+	'weights'               : 'age',
 	'legend'                : True,
 	'legendLoc'             : 1,
 	'newFig'                : True,
 	'stdErrorBars'          : True,
-	"average"				           : "weighted",
+	"average"				: "weighted",
 
 	#movie settings
 	'movie'                 : True,
 
 	#temporal analysis settings
-	'startFrame'            : 0,
-	'endFrame'              : 30,
+	'startFrame'            : 30,
+	'endFrame'              : 70,
 	'frameInterval'         : 10, #TODO: MAKE THIS FRAMBINS. RIGHT NOW THIS SPECIFIES EXACT FRAMES IN EACH BIN
 	'startConcentration'    : 0,
 	'endConcentration'      : 10,
@@ -176,7 +124,7 @@ PlotDefaults = {
 	'directionalityBins'    : 10,
 	'mpBins'                : 10,
 	'velocityBins'          : 10,
-	'avgMovBins'            : 10,
+	'avgMovBins'            : 3,
 	'concentrationBins'     : 20,
 
 
@@ -212,7 +160,6 @@ AnimationDefaults = {
 
 
 
-
 ##
 ## @brief      { Class that holds measurement calculation function, and analysis/plot settings }
 ##
@@ -243,9 +190,8 @@ class TrackMeasurement():
 		self.function = function
 		self.axisLabel = axisLabel
 		self.axisLimits = axisLimits
-		self.function == axesLimits
+		self.function == function
 		self.colorMap = colorMap
-
 
 
 
@@ -283,3 +229,40 @@ Default_Track_Measurements = {
 "numFrames"       : numFrames      ,
 "age"             : age
 }
+
+
+axesLabels = {
+
+	'absVelocity'     : 'absVelocity: microns/hour',
+	'age'             : 'age: frames',
+	'avgMov'          : 'avgMov: microns/hour',
+	'concentration'   : 'concentration: ug',
+	'directionality'  : 'directionality',
+	'mp'              : 'migration persistence',
+	'velocity'        : 'velocity: microns/hour',
+	'xMigrationSpeed' : 'xMigrationSpeed: microns/hour',
+	'yMigrationSpeed' : 'yMigrationSpeed: microns/hour',
+	'xStartPos'       : 'xStartPos: microns',
+	'xEndPos'         : 'xEndPos: microns',
+	'yStartPos'       : 'yStartPos: microns',
+	'yEndPos'         : 'yEndPos: microns',
+	'numFrames'       : 'numFrames: frames',
+	'firstFrame'      : 'firstFrame: frame',
+	'lastFrame'       : 'lastFrame: frame'
+
+}
+
+
+axesLimits = {
+	
+	'xStartPos'      : (0, 10000),
+	'yStartPos'      : (0, 10000),
+	'directionality' : (-1, 1),
+	'avgMov'         : (0, 10),
+	'age'            : (0, 100),
+	'mp'             : (0, 1),
+	'velocity'       : (0, 20)
+
+}
+
+

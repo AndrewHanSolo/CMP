@@ -23,8 +23,8 @@ from PlotScripts import *
 SAVE                = False
 TrackFile_Test      = True
 TrackFolder_Test    = False
-ALL_EXP_FOLDER_PATH = '/home/andrewhan/Desktop/analysis/nfs/'
-DATA_SAVE_NAME      = './../data/gradient'
+ALL_EXP_FOLDER_PATH = '/home/andrewhan/Desktop/track files/Nov experiments data/'
+DATA_SAVE_NAME      = '/home/andrewhan/Desktop/CMP/data/test'
 
 #SAVE DATA
 if SAVE is True:
@@ -42,9 +42,10 @@ with open(DATA_SAVE_NAME, 'rb') as input:
 
 	#SELECT SETTINGS
 	ps = TCG.PlotDefaults.copy()
-	ps["show"] = True
+	ps["show"] = False
 	ps["xStartPosBins"] = [0, 200, 300, 500, 10000]
-	#ps['percent'] = True
+	ps['percent'] = True
+	ps['weight'] = 'age'
 	#ps['bins'] = 5
 	#ps['xStartPosBins'] = 5
 	#ps['directionalityBins'] = 5
@@ -59,12 +60,20 @@ with open(DATA_SAVE_NAME, 'rb') as input:
 if TrackFile_Test:
 
 	for experiment, v in data.experiments.items():
-		print(experiment)
-		avgMovVals = np.array(v.d['avgMov'])
-		velocityVals = np.array(v.d['velocity'])
-		directionalityVals = np.array(v.d['directionality'])
 
 
+
+		#P.scatter(v.d['xStartPos'], v.d['yStartPos'])
+		#function = TrackFile.plotCurve(, "xStartPos", "avgMov")
+		#v.writeData()
+		v.scan('xStartPos', 0, 10000, 5, TrackFile.plotBinData, "avgMov", "directionality", ps)
+		#v.scan('frames', 30, 70, 10, TrackFile.plotScatter, "firstFrame", "avgMov", ps)
+		#v.scan('xStartPos', 0, 10000, 3, TrackFile.plotHistogram, "avgMov", None, ps)
+		#v.scan('xStartPos', 0, 10000, 5, TrackFile.plotHistogram, "avgMov", ps)
+		v.scan('xPos', 0, 10000, 5, TrackFile.plotBinData, "avgMov", "directionality", ps)
+		#v.cellVisualization('avgMov')
+		#v.heatmapVisualization('xStartPos', 'yStartPos', 'avgMov')
+		#v.plotPercentHistogram('directionality', 'avgMov')
 		#3D PLOTS
 		#fig = plt.figure()
 		#ax = fig.gca(projection='3d')
@@ -72,16 +81,16 @@ if TrackFile_Test:
 		#ax.scatter(avgMovVals, velocityVals, directionalityVals)
 
 		# CMP PLOTS
-		v.plotBinData('xStartPos', 'avgMov', ps)
+		#v.plotBinData('xStartPos', 'avgMov', ps)
 		#v.plotBinDataSummary('xStartPos', ps)
 		#v.plotHistogram('directionality', ps)
 		#v.plotHistogramSummary(ps)
-		#v.plotWeightedAverageCorr('xStartPos', 'directionality', ps)
-		#v.plotWeightedAverageCorr('xStartPos', 'velocity', ps)
-		v.plotWeightedAverageCorr('xStartPos', 'avgMov', ps)
+		#v.plotBinData('xStartPos', 'directionality', ps)
+		#v.plotBinData('xStartPos', 'velocity', ps)
+		#v.plotBinData('xStartPos', 'avgMov', ps)
 		#v.plotScatter('directionality', 'avgMov', ps)
 		#v.plotPercentHistogram('directionality', 'avgMov', ps)
-		#v.plotWeightedAverageCorrTemporalScan('xStartPos', 'avgMov', ps)
+		#v.plotBinDataTemporalScan('xStartPos', 'avgMov', ps)
 		#v.plotHistogramScan('directionality', 'avgMov', ps)
 		#v.plotHistogramTemporalScan('directionality', ps)
 		#v.temporalHistogramAnalysis(ps)
@@ -106,8 +115,8 @@ if TrackFile_Test:
 	#data.cellVisualization('avgMov', ps)
 	#data.plotScatter('xStartPos', 'avgMov', ps)
 	#data.scatterVisualization('xStartPos', 'avgMov', ps)
-	#data.plotWeightedAverageCorr('xStartPos', 'avgMov', ps)
-	#data.plotWeightedAverageCorrSummary(ps)
+	#data.plotBinData('xStartPos', 'avgMov', ps)
+	#data.plotBinDataSummary(ps)
 	#data.plotHistograms('avgMov', ps)
 	#data.comparisonAnalysis(ps)
 

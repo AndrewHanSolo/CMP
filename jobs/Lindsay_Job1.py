@@ -56,12 +56,12 @@ with open(DATA_SAVE_NAME, 'rb') as input:
 
 	#HOW YOU CAN ACCESS INDIVIDUAL EXPERIMENT FILES
 	#v1 = data.experiments['VEGF0_10']
-	#v1.plotWeightedAverageCorr('xStartPos', 'directionality', gps)
+	#v1.plotBinData('xStartPos', 'directionality', gps)
 
 
 	data.histogramTemporalAnalysis(gps)
 	data.spatialTemporalAnalysis(gps)
-	data.plotWeightedAverageCorrSummary(gps)
+	data.plotBinDataSummary(gps)
 	data.comparisonAnalysis(gps)
 	#data.cellVisualization('velocity', gps)
 	#data.cellVisualization('directionality', gps)
@@ -69,7 +69,7 @@ with open(DATA_SAVE_NAME, 'rb') as input:
 	P.close()'''
 
 	#data.cellVisualization('directionality', gps)
-	#data.plotWeightedAverageCorrSummary(gps)
+	#data.plotBinDataSummary(gps)
 	#data.comparisonAnalysis(gps)
 
 	for experiment, v in data.experiments.items():
@@ -81,16 +81,16 @@ with open(DATA_SAVE_NAME, 'rb') as input:
 		v.plotScatter('avgMov', 'directionality')
 		v.totalVisualization('directionality', gps)
 		v.totalVisualization('avgMov', gps)
-		v.plotWeightedAverageCorr('age', 'velocity')
+		v.plotBinData('age', 'velocity')
 		v.plotScatter('age', 'velocity')
 		v.plotScatter('age', 'directionality')
 		v.plotScatter('xStartPos', 'velocity')
 		v.plotScatter('velocity', 'directionality')
-		v.plotWeightedAverageCorr('yStartPos', 'velocity')
+		v.plotBinData('yStartPos', 'velocity')
 
 		#plotBinDataSummary(v, 'directionality', gps)
 		#plotBinDataSummary(v, 'velocity', gps)
-		v.plotWeightedAverageCorr('xStartPos', 'directionality', gps)
+		v.plotBinData('xStartPos', 'directionality', gps)
 
 		#plotBinDataSummary('xStartPos', gps);
 		v.histogramScan('directionality', 'xStartPos', gps)

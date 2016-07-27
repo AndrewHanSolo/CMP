@@ -45,8 +45,8 @@ def fullAnalysis(DATA_SAVE_NAME, PATH = 0, filters = TCG.DefaultFilters, ps = TC
 		if funcs['spatioTemporalAnalysis']:
 			data.spatialTemporalAnalysis(ps)
 
-		if funcs['plotWeightedAverageCorrSummary']:
-			data.plotWeightedAverageCorrSummary(ps)
+		if funcs['plotBinDataSummary']:
+			data.plotBinDataSummary(ps)
 
 		if funcs['comparisonAnalysis']:
 			data.comparisonAnalysis(ps)	
@@ -68,9 +68,9 @@ def fullAnalysis(DATA_SAVE_NAME, PATH = 0, filters = TCG.DefaultFilters, ps = TC
 				v.plotScatter(keyProperty2, keyProperty3)
 
 			if funcs['weightedAverageCorr']:
-				v.plotWeightedAverageCorr('xStartPos', 'avgMov', ps)
-				v.plotWeightedAverageCorr('xStartPos', 'velocity', ps)
-				v.plotWeightedAverageCorr('xStartPos', 'directionality', ps)
+				v.plotBinData('xStartPos', 'avgMov', ps)
+				v.plotBinData('xStartPos', 'velocity', ps)
+				v.plotBinData('xStartPos', 'directionality', ps)
 
 			if funcs['binDataSummary']:
 				v.plotBinDataSummary('xStartPos', ps)

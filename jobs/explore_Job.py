@@ -44,25 +44,25 @@ with open(DATA_SAVE_NAME, 'rb') as input:
 
 	#HOW YOU CAN ACCESS INDIVIDUAL EXPERIMENT FILES
 	#v1 = data.experiments['VEGF0_10']
-	#v1.plotWeightedAverageCorr('xStartPos', 'directionality', ps)
+	#v1.plotBinData('xStartPos', 'directionality', ps)
 
 
 	#data.histogramTemporalAnalysis(ps)
 	#data.spatialTemporalAnalysis(ps)
-	data.plotWeightedAverageCorrSummary(ps)
+	data.plotBinDataSummary(ps)
 	data.comparisonAnalysis(ps)
 	#data.cellVisualization('mp', ps)
 
 	P.close()
 
 	for experiment, v in data.experiments.items():
-		#v.plotWeightedAverageCorr('age', 'velocity')
+		#v.plotBinData('age', 'velocity')
 		#v.plotScatter('age', 'velocity')
 		v.plotScatter('xStartPos', 'velocity')
-		#v.plotWeightedAverageCorr('yStartPos', 'velocity')
+		#v.plotBinData('yStartPos', 'velocity')
 
 		#plotBinDataSummary(v, 'directionality', ps)
-		#v.plotWeightedAverageCorr('xStartPos', 'directionality', ps)
+		#v.plotBinData('xStartPos', 'directionality', ps)
 
 		#plotBinDataSummary(v, 'xStartPos', ps);
 		#v.histogramScan('directionality', 'xStartPos', ps)

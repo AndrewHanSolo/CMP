@@ -15,6 +15,7 @@ import sys
 def importAndSave(folderPath, saveName):
 	print('Importing, processing, and saving data for analysis...')
 	data = TC.AllExperimentData(folderPath)
+	print(saveName)
 	with open(saveName, 'wb') as output:
 		pickle.dump(data, output, -1)
 	print('Done.')
@@ -120,6 +121,14 @@ def getDistance(x1,x2,y1,y2):
 #Pythagorean theorem operation
 def pythagorean(dx, dy):
 	return sqrt(pow(dx, 2) + pow(dy, 2))
+	
+
+def get_spaced_colors(n):
+    max_value = 16581375 #255**3
+    interval = int(max_value / n)
+    colors = [hex(I)[2:].zfill(6) for I in range(0, max_value, interval)]
+    
+    return [(int(i[:2], 16), int(i[2:4], 16), int(i[4:], 16)) for i in colors]
 
 
 #################################

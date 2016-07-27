@@ -20,6 +20,8 @@ from matplotlib.ticker import FuncFormatter
 import xlsxwriter
 import _pickle as pickle
 import sys
+from colorsys import *
+import matplotlib.pyplot as plt
 
 
 
@@ -67,7 +69,8 @@ class TrackFile():
 	##                       found, and initial analysis is performed to prep
 	##                       for filtering.
 	##
-	def __init__(self, tracks, fileName, 
+	def __init__(self, tracks, 
+				 fileName, 
 				 fields = TCG.Default_Track_Measurements, 
 				 filters = TCG.DefaultFilters, 
 				 path = 0, 
@@ -75,19 +78,22 @@ class TrackFile():
 
 		self.tracks = tracks
 		self.fileName = fileName
+		self.fields = fields
 		self.filters = filters
 		self.path = path
 		self.gradient = 0
 		self.d = {} #Dictionary of Track measurement lists, 
 		            #where indices across lists correlate to 
 		            #the same Track
-		self.maxX = 0,
+		self.meta = {} #Dict in which track measurement metadata is stored
+		self.axis = {} #Dict in which track measurement min and max values are stored
+		self.maxX = 0
 		self.maxY = 0
 		self.master = master
 		
 		#to be done on TrackFile that has merged tracks
+		#first analysis performed, axeslimits are updated
 		if self.master:
-			print("hit")
 			self.maxX, self.maxY = getTrackFileDimensions(self)
 			self.analysis(fields)
 		return
@@ -108,7 +114,8 @@ class TrackFile():
 			TFF.selectArea(self, filters)
 			TFF.selectDictBins(self, filters)
 		except:
-			vprint('Exception hit in track filtering.')
+			#pass
+			vprint('Warning: exception hit in track filtering. Possibly no tracks in this experiment')
 			traceback.print_exc(file = sys.stdout)
 		return
 
@@ -120,48 +127,20 @@ class TrackFile():
 	#
 	def analysis(self, fields = TCG.Default_Track_Measurements):
 
-		##REMOVE
-		if self.fileName == 'b GDNF 10':
-			TCG.FIELD_VECTOR_INSTANCE = TCG.FIELD_VECTOR_SPECIAL
-			print('hit')
-		else: 
-			TCG.FIELD_VECTOR_INSTANCE = TCG.GLOBAL_FIELD_VECTOR
-		########
-
 		for key, measurementClass in fields.items():
 			fieldBuffer = []
 			for track in self.tracks:
 				fieldBuffer.append(measurementClass.function(track, maxX = self.maxX, gradient = self.gradient))
 			self.d[key] = fieldBuffer
+			self.meta[key] = self.getAverage(key)
+			self.axis[key] = [min(fieldBuffer), max(fieldBuffer)]
+			try:
+				self.fields[key].axisLimits[1] = max(fieldBuffer)
+			except:
+				self.fields[key].axisLimits = [0, 0]
+
 		return
 
-
-	# returns weightedAverage and standard deviation 
-	# or number average and standard error of a measurement in Trackfile
-	# TODO: Maybe nAvg should also have stdDev
-	# TODO: handle errors, don't return 0. will have to do for now
-	# TODO: rename to getAverage()
-	#
-	# @param      self          TrackFile
-	# @param      propertyName  measurementName
-	# @param      settings      The settings
-	#
-	# @return     either wAvg and stdErr or nAvg and stdDev
-	#
-	def getWeightedAverage(self, propertyName, settings = TCG.PlotDefaults):
-		try:
-			if settings["average"] == "weighted":
-				weightedAvg = np.average(self.d[propertyName], weights = self.d[settings['weight']])
-				stdDev = sqrt(np.average((self.d[propertyName] - weightedAvg)**2, weights = self.d[settings['weight']]))
-				stdErr = stdErr = stats.sem(self.d[propertyName])
-				return weightedAvg, stdDev, stdErr
-			if settings["average"] == "number":
-				avg = np.average(self.d[propertyName])
-				stdErr = stats.sem(self.d[propertyName])
-				return avg, 0, stdErr
-		except:
-			print("exception hit in getweightedAverage")
-			return 0, 0, 0
 
 	# prints all track measurement data to excel file
 	# TODO: Add sheet and write metadata for experiment
@@ -191,9 +170,135 @@ class TrackFile():
 				rowindex += 1
 				worksheet.write(rowindex, colindex, value)
 
+
+		worksheet2 = workbook.add_worksheet("Metadata")
+		worksheet2.write(0, 0, "propertyName")
+		worksheet2.write(0, 1, "wAvg")
+		worksheet2.write(0, 2, "nAvg")
+		worksheet2.write(0, 3, "stdDev")
+		worksheet2.write(0, 4, "stdErr")
+		worksheet2.write(0, 5, "nAvg")
+		worksheet2.write(0, 6, "nAvg")
+
+		rowIndex = 1
+		for propertyName, na in sorted(self.d.items()):
+			print(propertyName)
+			worksheet2.write(rowIndex, 0, propertyName)
+			rowIndex += 1
+
 		workbook.close()
 		return
 
+
+	##
+	## Scans over tracks by propertyName, and computes function on them
+	## at each slice
+	##
+	## @param      self          The object
+	## @param      propertyName  The property name
+	## @param      minVal        The minimum value
+	## @param      maxVal        The maximum value
+	## @param      resolution    The resolution
+	## @param      function      The function
+	## @param      args     	 The scan settings
+	##
+	def scan(self,
+			 propertyName,
+			 minVal,
+			 maxVal,
+			 resolution,
+			 function,
+			 *args):
+
+
+		bins = np.linspace(minVal, maxVal, resolution+1)
+		settings = args[2]
+		title = "%s, %s scan of %s vs %s" % (self.fileName , propertyName, args[0], args[1])
+		legendStrings = []
+		colorIndices = np.linspace(0, 1, resolution)
+		fig = constructFig(self, title)
+		
+		for index, colorIdx in zip (range(0, len(bins)-1), colorIndices):
+
+			#get filter instance range
+			lowerVal = bins[index]
+			upperVal = bins[index+1]
+
+			print(lowerVal, upperVal)
+			
+			#copy data
+			filtersCopy = TCG.DefaultFilters.copy()
+			filtersCopy[propertyName] = [[lowerVal, upperVal]]
+			trackFileCopy = deepcopy(self)
+			trackFileCopy.selectData(filtersCopy)
+
+			#turn off settings new fig
+			settings["show"] = False
+			settings["newFig"] = False
+			settings["save"] = False
+
+			#get plot instance legend name
+			legendString = "%.1f to %.1f" % (lowerVal, upperVal)
+			legendStrings.append(legendString)
+
+			#plot
+			P = function(trackFileCopy, *args, color = plt.cm.cool(colorIdx))
+			P.legend(legendStrings)
+
+		savePlot(fig, title)
+		P.close()
+
+
+
+	##
+	## @brief      splits tracks into framebins, and creates individual plots
+	##             per framebin
+	##
+	## @param      self        The object
+	## @param      startFrame  The start frame
+	## @param      endFrame    The end frame
+	## @param      resolution  The resolution
+	## @param      function    The function
+	##
+	## @return     { description_of_the_return_value }
+	##
+	#def separateScan(self, startFrame, endFrame, resolution, function, *args):
+
+
+
+
+	# returns weightedAverage and standard deviation 
+	# or number average and standard error of a measurement in Trackfile
+	# TODO: Maybe nAvg should also have stdDev
+	# TODO: handle errors, don't return 0. will have to do for now
+	# TODO: rename to getAverage()
+	#
+	# @param      self          TrackFile
+	# @param      propertyName  measurementName
+	# @param      settings      The settings
+	#
+	# @return     either wAvg and stdErr or nAvg and stdDev
+	#
+	def getAverage(self, propertyName, weights = False):
+		try:
+			if not weights:
+				avg = np.average(self.d[propertyName])
+				stdErr = stats.sem(self.d[propertyName])
+				return avg, 0, stdErr
+
+			weightedAvg = np.average(self.d[propertyName], weights = self.d[weights])
+			stdDev = sqrt(np.average((self.d[propertyName] - weightedAvg)**2, weights = self.d[weights]))
+			stdErr = stdErr = stats.sem(self.d[propertyName])
+			return weightedAvg, stdDev, stdErr
+
+		except:
+			print("exception hit in getAverage")
+			return 0, 0, 0
+
+
+	##
+	## BEGIN SCAN COMPATIBLE FUNCTIONS
+	##
 
 	# Bins dataPropertyName values by binnedPropertyName
 	# calculates avg, stdDev, stdErr for n bins and returns size N lists
@@ -213,6 +318,9 @@ class TrackFile():
 	# @return     averages, stdDevs, stdErrs, trackCounts, countPercents (bin# to experiment#), bincenters
 	#
 	def getBinData(self, binnedPropertyName, dataPropertyName, settings = TCG.PlotDefaults):
+		if len(self.d[binnedPropertyName]) == 0:
+			return 0, 0, 0, 0, 0, 0
+
 		wAvgs = []
 		stdDevs = []
 		stdErrs = []
@@ -238,7 +346,7 @@ class TrackFile():
 
 			copy = deepcopy(self)
 			copy.selectData(filters)
-			wAvg, stdDev, stdErr = copy.getWeightedAverage(dataPropertyName, settings = settings)
+			wAvg, stdDev, stdErr = copy.getAverage(dataPropertyName, weights = settings['weights'])
 
 			wAvgs.append(wAvg)
 			stdDevs.append(stdDev)
@@ -254,6 +362,7 @@ class TrackFile():
 		return wAvgs, stdDevs, stdErrs, trackCounts, countPercents, binCenters
 
 
+
 	# Plots getBinData. Error bars are stdError right now.
 	# 
 	# TODO: choose stdDev or stdErr, based on getAverage settings
@@ -264,7 +373,7 @@ class TrackFile():
 	# @param      dataPropertyName    The data property name
 	# @param      settings            The settings
 	#
-	def plotBinData(self, binnedPropertyName, dataPropertyName, settings = TCG.PlotDefaults):
+	def plotBinData(self, binnedPropertyName, dataPropertyName, settings = TCG.PlotDefaults, **kwargs):
 		#plot info
 		plotTitle = "%s, wAvgs of %s binned by %s %s" % (self.fileName, dataPropertyName, binnedPropertyName, settings['title'])
 		if settings['newFig']: fig = constructFig(self, plotTitle)
@@ -273,16 +382,11 @@ class TrackFile():
 		P.ylabel(axesLabels[dataPropertyName])
 
 		wAvgs, stdDevs, stdErrs, trackCounts, countPercents, binCenters = self.getBinData(binnedPropertyName, dataPropertyName, settings = settings)
-		print(wAvgs, stdErrs)
-		P.errorbar(binCenters, wAvgs, yerr = stdErrs)
-		#density = gaussian_kde(wAvgs)
-		#xs = binCenters
-		#density.covariance_factor = lambda : .25
-		#density._compute_covariance()
-		#P.plot(xs,density(xs))
+		P.errorbar(binCenters, wAvgs, yerr = stdErrs, **kwargs)
 
 		if settings['show']: P.show()
 		if settings['save']: savePlot(fig, plotTitle)
+		return P
 
 
 	# Gets histogram values
@@ -295,8 +399,8 @@ class TrackFile():
 	#
 	# @return     y values and corresponding bincenters
 	#
-	def getHistogram(self, propertyName, settings = TCG.PlotDefaults):
-		values = self.d[propertyName]
+	def getHistogram(self, propertyName1, propertyName2 = None, settings = TCG.PlotDefaults, **kwargs):
+		values = self.d[propertyName1]
 		data = np.array(values)
 		y, binEdges = np.histogram(data, bins = settings['bins'], density = settings['norm'])
 		bincenters = 0.5*(binEdges[1:]+binEdges[:-1])
@@ -305,118 +409,43 @@ class TrackFile():
 
 	# Plots a histogram, using getHistogram
 	#
-	# @param      self          The object
+	# @param      self       FH   The object
 	# @param      propertyName  The property name
 	# @param      settings      The settings
 	#
 	# @return     The Pylab plot
 	#
-	def plotHistogram(self, propertyName, settings = TCG.PlotDefaults):
+	def plotHistogram(self, propertyName1, propertyName2 = None, settings = TCG.PlotDefaults, **kwargs):
 		#plot info
-		plotTitle = self.fileName + ', ' + propertyName + ', histogram' + ' ' + settings['title']
+		plotTitle = "%s %s histogram, %s" % (self.fileName, propertyName1, settings['title'])
 		if settings['newFig']: fig = constructFig(self, plotTitle)
 
 		normStr = {True : "normalized count", False : "count"}
 		P.ylabel(normStr[settings['norm']])
-		P.xlabel(axesLabels[propertyName])
+		P.xlabel(axesLabels[propertyName1])
 
 		#histogram generation
-		y, bincenters = self.getHistogram(propertyName, settings = settings)
-		print(bincenters)
-		P.hist(y, bincenters)
+		y, bincenters = self.getHistogram(propertyName1, settings = settings)
+		P.plot(bincenters, y, **kwargs)
 
 		if settings['show']: P.show()
 		if settings['save']: savePlot(fig, plotTitle)
 		return P
 
 
-	#correlates weighted averages of property2 to property 1. propertyName1 is the xaxis (the dependent propertyName being scanned), 
-	#propertyName2 is the yaxis, weightpropertyName are the weights used to find the weighted average
-	#of propertyName2 within the scanned range of prpertyName1
-	def getWeightedAverageCorr(self, propertyName1, propertyName2, settings = TCG.PlotDefaults):
-		xValues = self.d[propertyName1]
-		yValues = self.d[propertyName2]
-		weightValues = self.d[settings['weight']]
-
-		#sort all values by their xValue (not to be confused with xPos)
-		sortedTuples = sorted(zip(xValues, yValues, weightValues))
-		sortedxValues = [x for (x,y,z) in sortedTuples]
-		sortedyValues = [y for (x,y,z) in sortedTuples]
-		sortedWeightValues = [z for (x,y,z) in sortedTuples]
-		weightedAverages = []
-		#get evenly spaced bins for scanning analysis
-		hist, bins = np.histogram(sortedxValues, settings['bins'])
-		for binIndex in range(0, len(bins)):
-			bins[binIndex] = bins[binIndex]
-		#get weighted averages (by weightpropertyName) of propertyName2 for every bin of propertyName1
-		xAxisValues = []
-		stdErrs = []
-		for binIndex in range(0, len(bins)-1):
-			selectedxValues = []
-			selectedyValues = []
-			selectedWeightValues = []
-
-			minbinValue = bins[binIndex]
-			maxbinValue = bins[binIndex + 1]
-			xAxisValues.append((maxbinValue + minbinValue)/2)
-
-			sortedxValues = np.array(sortedxValues)
-			tmp = []; tmp = np.where(np.logical_and(sortedxValues > minbinValue, sortedxValues < maxbinValue))
-			tmp = tmp[0]
-
-			for index in tmp:
-				selectedxValues.append(sortedxValues[index])
-				selectedyValues.append(sortedyValues[index])
-				selectedWeightValues.append(sortedWeightValues[index])
-			try:
-				weightedAverage = np.average(selectedyValues, weights = selectedWeightValues)
-				stdErr = stats.sem(selectedyValues)
-			except:
-				weightedAverage = float('nan')
-				stdErr = 0
-			weightedAverages.append(weightedAverage)
-			stdErrs.append(stdErr)
-
-		return xAxisValues, weightedAverages, stdErrs #weightedAverages is yAxisValue
-
-
-	#plots weightedAverageCorr values
-	def plotWeightedAverageCorr(self, propertyName1, propertyName2, settings = TCG.PlotDefaults):
+	# Simple scatter plot
+	#
+	# @param      self           The object
+	# @param      propertyName1  x axis
+	# @param      propertyName2  y axis
+	# @param      settings       The settings
+	# @param      kwargs         The kwargs
+	#
+	# @return     the plot object
+	#
+	def plotScatter(self, propertyName1, propertyName2, settings = TCG.PlotDefaults, **kwargs):
 		#plot info
-		plotTitle = "%s corr of %s and %s; weight = %s; %s" % (self.fileName, propertyName1, propertyName2, settings['weight'], settings['title'])
-		if settings['newFig']: fig = constructFig(self, plotTitle)
-			
-		P.xlabel(propertyName1)
-		P.ylabel(propertyName2)
-
-		xValues, yValues, stdErrs = self.getWeightedAverageCorr(propertyName1, propertyName2, settings = settings)
-		P.errorbar(xValues, yValues, stdErrs)
-
-		if settings['show']: P.show()
-		if settings['save']: savePlot(fig, plotTitle)
-
-		return P
-
-	#plots weightedAverageCorr values
-	def plotCurve(self, propertyName1, propertyName2, settings = TCG.PlotDefaults):
-		#plot info
-		plotTitle = "%s corr of %s and %s; weight = %s; %s" % (self.fileName, propertyName1, propertyName2, settings['weight'], settings['title'])
-		if settings['newFig']: fig = constructFig(self, plotTitle)
-			
-		P.xlabel(propertyName1)
-		P.ylabel(propertyName2)
-		
-		P.plot(self.d[propertyName1], self.d[propertyName2])
-
-		if settings['show']: P.show()
-		if settings['save']: savePlot(fig, plotTitle)
-
-		return P
-
-	#propertyName1 is xAxis, propertyName2 is yAxis
-	def plotScatter(self, propertyName1, propertyName2, settings = TCG.PlotDefaults):
-		#plot info
-		plotTitle = "%s scatterplot of %s and %s; %s" % (self.fileName, propertyName1, propertyName2, settings['title'])
+		plotTitle = "%s scatterplot of %s and %s, %s" % (self.fileName, propertyName1, propertyName2, settings['title'])
 		if settings['newFig']: fig = constructFig(self, plotTitle)
 		P.xlabel(axesLabels[propertyName1])
 		P.ylabel(axesLabels[propertyName2])
@@ -424,15 +453,27 @@ class TrackFile():
 		#plot generation
 		xValues = self.d[propertyName1]
 		yValues = self.d[propertyName2]
-		P.scatter(xValues, yValues)
-		#P.xlim(axesLimits[propertyName1])
-		#P.ylim(axesLimits[propertyName2])
+		P.scatter(xValues, yValues, **kwargs)
 
 		if settings['show']: P.show()
 		if settings['save']: savePlot(fig, plotTitle)
+		return P
+
+	##
+	## END SCAN COMPATIBLE FUNCTIONS
+	##
 
 
-	#bin tracks based on the percentile of their propertyName value. e.g. for getting wAvg of avgMov of top 10% avgMov
+	# bin tracks based on the percentile of their propertyName value. e.g. for
+	# getting avgMov of top 10% avgMov
+	#
+	# @param      self                 The object
+	# @param      propertyName         The property name
+	# @param      percentPropertyName  The percent property name
+	# @param      settings             The settings
+	#
+	# @return     lists of histogram values, bincenters, and label lists
+	#
 	def getPercentHistogram(self, propertyName, percentPropertyName, settings = TCG.PlotDefaults):
 		allHistogramValues = {}
 		allHistogramBincenters = {}
@@ -453,7 +494,7 @@ class TrackFile():
 		return allHistogramValues, allHistogramBincenters, allHistogramLabels
 
 
-	#plots getPercentHistogram
+	# plots getPercentHistogram
 	def plotPercentHistogram(self, propertyName, percentPropertyName, settings = TCG.PlotDefaults):
 		#plot info
 		plotTitle = "%s %s histograms by %% %s; %s" % (self.fileName, propertyName, percentPropertyName, settings['title'])
@@ -475,270 +516,29 @@ class TrackFile():
 		return P
 
 
-	#for each range of frames, do getWeightedAverageCorr of propertyName2 with propertyName1 as weights
-	def weightedAverageCorrTemporalScan(self, propertyName1, propertyName2, settings = TCG.PlotDefaults):
 
-		xAxisValues = {}
-		weightedAverages = {} #yAxisValues
-		index = 0
+	# generates heatmap movie of all tracks in experiment, where each dot is
+	# placed at xStartPos. colors represent propertyName values of each track
+	#
+	# @param      self          The object
+	# @param      propertyName  The property name
+	# @param      snapshots     The snapshots
+	# @param      settings      The settings
+	#
+	# @return     { description_of_the_return_value }
+	#
+	def cellVisualization(self, propertyName, snapshots = None, settings = TCG.PlotDefaults):
+		#check or set snapshot value
+		firstFrame = (self.axis['firstFrame'])[0]
+		lastFrame = (self.axis['lastFrame'])[1]
+		maxPossibleSnaps = lastFrame - firstFrame
+		if not snapshots:
+			snapshots = maxPossibleSnaps / 3
+		if snapshots > maxPossibleSnaps or snapshots < 1:
+			print("Invalid snapshot number for moving cell visualization.")
 
-		#for each frameBin, getweightedAverageCorr with spatialBins
-		for frame in range(settings['startFrame'], settings['endFrame'], settings['frameInterval']):
-			minFrame = frame
-			maxFrame = frame + settings['frameInterval']
-			#copy data
-			fileCopy = []
-			fileCopy = deepcopy(self)
-			#select new frames
-			filtersCopy = TCG.DefaultFilters.copy()
-			filtersCopy['frames'] = [[minFrame, maxFrame]]
-			fileCopy.selectData(filtersCopy)
-			xAxisValues[index], weightedAverages[index], na = fileCopy.getWeightedAverageCorr(propertyName1, propertyName2, settings = settings)
-			index += 1
-
-		return xAxisValues, weightedAverages
-
-
-	#plots weightedAverageCorrTemporalScan
-	def plotWeightedAverageCorrTemporalScan(self, propertyName1, propertyName2, settings = TCG.PlotDefaults):
-		#plot info
-		plotTitle = self.fileName + ', weightedAverageCorrTemporalScan of ' + propertyName1 + ' and ' + propertyName2 + ' ' + settings['title']
-		if settings['newFig']: fig = constructFig(self, plotTitle)
-
-		P.xlabel(axesLabels[propertyName1])
-		P.ylabel(axesLabels[propertyName2])
-
-		#get the data
-		xAxisValues, weightedAverages = self.weightedAverageCorrTemporalScan(propertyName1, propertyName2, settings = settings)
-
-		#add each temporal bin weightedAverageCorr values to plot
-		for plotIndex in range(0, len(xAxisValues)):
-			minFrame = settings['startFrame'] + plotIndex * settings['frameInterval']
-			maxFrame = settings['startFrame'] + (plotIndex + 1) * settings['frameInterval']
-			xValues = xAxisValues[plotIndex]
-			yValues = weightedAverages[plotIndex]
-			P.plot(xValues, yValues, label = ('frames ' + str(minFrame) + ' to ' + str(maxFrame)))
-		if settings['legend'] == True: P.legend(loc = settings['legendLoc'], prop = {'size': 9})
-
-		if settings['show']: P.show()
-		if settings['save']: savePlot(fig, plotTitle)
-		return P
-
-
-	#get bins for propertyNameToScan, and for each of those bins,
-	#get histogram of propertyNameToFocus
-	#e.g. for multiple xStartPos bins, get histogram values of directionality for each bin
-	def histogramScan(self, propertyNameToScan, propertyNameToFocus, settings = TCG.PlotDefaults):
-		allHistogramValues = {}
-		allHistogramBincenters = {}
-		allHistogramLabels = {}
-		index = 0
-
-		#for each frameBin, getHistogram
-		binValSettingsArray = propertyNameToScan + 'Bins'; 
-		binArray = settings[binValSettingsArray]
-		if type(binArray) == int:
-			minValueProperty = 0
-			maxValueProperty = max(self.d[propertyNameToScan])
-			binArray = np.linspace(minValueProperty, maxValueProperty, 1+binArray)
-
-
-		for binIndex in range(0, len(binArray)-1):
-			minVal = binArray[binIndex]
-			maxVal = binArray[binIndex+1]
-			#copy data
-			fileCopy = []
-			fileCopy = deepcopy(self)
-			#select new frames
-			filtersCopy = TCG.DefaultFilters.copy()
-			filtersCopy[propertyNameToScan] = [[minVal, maxVal]]
-			fileCopy.selectData(filtersCopy)
-			plotInstance = settings.copy()
-			plotInstance['title'] = '%s %.2f to %.2f' % (propertyNameToScan, minVal, maxVal)
-			try:
-				fileCopy.plotBinDataSummary(propertyNameToFocus, settings = plotInstance)
-				fileCopy.getNumbers(propertyNameToFocus, settings = plotInstance)
-			except:
-				continue
-
-			y, bincenters = fileCopy.getHistogram(propertyNameToFocus, settings)
-			newY = []
-			if settings['percent']:
-				for i in range(0, len(y)):
-					newY.append(100 * y[i] / len(fileCopy.tracks))
-			if newY: y = newY
-
-			allHistogramValues[index] = y
-			allHistogramBincenters[index] = bincenters
-			allHistogramLabels[index] = "%s %.1f to %.1f" % (propertyNameToScan, minVal, maxVal)
-			newY = []
-			index += 1
-		
-		P.close()
-		return allHistogramValues, allHistogramBincenters, allHistogramLabels
-
-
-	#plots histogramScan
-	def plotHistogramScan(self, propertyNameToFocus, propertyNameToScan, settings = TCG.PlotDefaults):
-		#plot info
-		plotTitle = "%s, histograms of %s scanned by %s, %s" % (self.fileName, propertyNameToFocus, propertyNameToScan, settings['title'])
-		if settings['newFig']: fig = constructFig(self, plotTitle)
-
-		normStr = {True : "normalized count", False : "count"}
-		P.ylabel(normStr[settings['norm']])
-		if settings['percent']:
-			P.ylabel("% of cells within select xStartPos range")
-		P.xlabel(axesLabels[propertyNameToFocus])
-
-		y, bincenters, labels = self.histogramScan(propertyNameToFocus, propertyNameToScan, settings = settings)
-		#histogram generation
-		for i in range(0, len(y)):
-			P.plot(bincenters[i], y[i],'-', label = labels[i])
-		if settings['legend']:
-			P.legend(loc = settings['legendLoc'], prop = {'size': 9})
-
-		if settings['show']: P.show()
-		if settings['save']: savePlot(fig, plotTitle)
-		return P
-
-
-	#for each range of frames, get histograms of propertyName
-	def histogramTemporalScan(self, propertyName, settings = TCG.PlotDefaults):
-		allHistogramValues = {}
-		allHistogramBincenters = {}
-		allHistogramLabels = {}
-		index = 0
-
-		#for each frameBin, getHistogram
-		for frame in range(settings['startFrame'], settings['endFrame'], settings['frameInterval']):
-			minFrame = frame
-			maxFrame = frame + settings['frameInterval']
-			#copy data
-			fileCopy = []
-			fileCopy = deepcopy(self)
-			#select new frames
-			filtersCopy = TCG.DefaultFilters.copy()
-			filtersCopy['frames'] = [[minFrame, maxFrame]]
-			fileCopy.selectData(filtersCopy)
-			y, bincenters = fileCopy.getHistogram(propertyName, settings)
-			allHistogramValues[index] = y
-			allHistogramBincenters[index] = bincenters
-			allHistogramLabels[index] = 'frames ' + str(minFrame) + ' to ' + str(maxFrame)
-			index += 1
-			
-		return allHistogramValues, allHistogramBincenters, allHistogramLabels
-
-
-	#plots histogramTemporalScan
-	def plotHistogramTemporalScan(self, propertyName, settings = TCG.PlotDefaults):
-		#plot info
-		plotTitle = self.fileName + ', ' + propertyName + ', temporal histogram' + settings['title']
-		if settings['newFig']: fig = constructFig(self, plotTitle)
-
-		normStr = {True : "normalized count", False : "count"}
-
-		P.ylabel(normStr[settings['norm']])
-		P.xlabel(axesLabels[propertyName])
-
-		y, bincenters, labels = self.histogramTemporalScan(propertyName, settings = settings)
-		#histogram generation
-		for i in range(0, len(y)):
-			P.plot(bincenters[i], y[i],'-', label = labels[i])
-		if settings['legend']:
-			P.legend(loc = settings['legendLoc'], prop = {'size': 9})
-
-		if settings['show']: P.show()
-		if settings['save']: savePlot(fig, plotTitle)
-		return P
-
-
-	#plots general temporal analysis. not dynamic
-	def temporalHistogramAnalysis(self, settings = TCG.PlotDefaults):
-		#plot info
-		plotTitle = self.fileName + ', full temporal histogram analysis ' + settings['title']
-		P.figure(figsize = (24.0, 5.0))
-		fig = constructFig(self, plotTitle)
-
-		setInst = settings.copy()
-		setInst['save'] = False
-		setInst['newFig'] = False
-
-		P.subplot(1,3,1)
-		ax1 = self.plotHistogramTemporalScan('velocity', settings = setInst)	
-
-		setInst['legend'] = False
-
-		P.subplot(1,3,2)
-		ax2 = self.plotHistogramTemporalScan('avgMov', settings = setInst)
-
-		P.subplot(1,3,3)
-		ax3 = self.plotHistogramTemporalScan('directionality', settings = setInst)
-
-		if settings['show']: P.show()
-		if settings['save']: savePlot(fig, plotTitle)
-		return P
-
-
-	#plots general spatialTemporalAnalysis. not dynamic
-	def spatialTemporalAnalysis(self, settings = TCG.PlotDefaults):
-		#plot info
-		plotTitle = self.fileName + ', spatial temporal analysis ' + settings['title']
-		P.figure(figsize = (16.0, 10.0))
-		if settings['newFig']: fig = constructFig(self, plotTitle)
-			
-		setInst = settings.copy()
-		setInst['save'] = False
-		setInst['newFig'] = False
-
-		#plot temporal scan
-		P.subplot(2,2,1)
-		ax1 = self.plotWeightedAverageCorrTemporalScan('xStartPos', 'velocity', settings = setInst)
-
-		setInst['legend'] = False
-
-		P.subplot(2,2,2)
-		ax2 = self.plotWeightedAverageCorrTemporalScan('xStartPos', 'avgMov', settings = setInst)
-
-		P.subplot(2,2,3)
-		ax3 = self.plotWeightedAverageCorrTemporalScan('xStartPos', 'directionality', settings = setInst)
-
-		P.subplot(2,2,4)
-		ax3 = self.plotWeightedAverageCorrTemporalScan('avgMov', 'directionality', settings = setInst)
-
-		if settings['show']: P.show()
-		if settings['save']: savePlot(fig, plotTitle)
-		return P
-
-
-	#3d plot of 3 propertyNames. if movie==True in settings, saves frames of rotating plot
-	def plot3d(self, propertyName1, propertyName2, propertyName3, settings = TCG.PlotDefaults):
-		#plot info
-		plotTitle = self.fileName + ', ' + propertyName1 + " " + propertyName2 + " " + propertyName3 + ' 3dplot' + ' ' + settings['title']
-		if settings['newFig']: fig = constructFig(self, plotTitle)
-		
-		ax = Axes3D(fig)
-		ax.scatter(self.d[propertyName1], self.d[propertyName2], self.d[propertyName3], marker='o', s=20, c="goldenrod", alpha=0.6)
-		ax.set_xlabel(propertyName1)
-		ax.set_ylabel(propertyName2)
-		ax.set_zlabel(propertyName3)
-
-		if settings['movie'] == True:
-			for ii in range(settings['rotStartAngle'],settings['rotEndAngle'],settings['rotResolution']):
-				ax.view_init(elev=10., azim=ii)
-				if settings['save']:
-					savePlot(fig, plotTitle + ' ' + str(ii))
-		else:
-			ax.view_init(elev=10., azim=settings['rotStartAngle'])
-			if settings['save']:
-				savePlot(fig, plotTitle)
-
-		return P
-
-
-	#generates heatmap movie of all tracks in experiment, where each dot is placed
-	#at xStartPos. colors represent propertyName values of each track
-	def cellVisualization(self, propertyName, settings = TCG.PlotDefaults):
-		print('Generating movie for ' + self.fileName)
+		#print status
+		print("Generating movie for %s with %d frames..." % (self.fileName, snapshots))
 
 		Blues = P.get_cmap('jet')
 		xPositionsAllFrames = []
@@ -746,7 +546,9 @@ class TrackFile():
 		propertyAllFrames = []
 
 		#for each frame
-		for frame in range(settings['startFrame'], settings['endFrame'], settings['frameInterval']):
+		frames = np.linspace(int(firstFrame), int(lastFrame), int(snapshots))
+		for frame in frames:
+			frame = int(frame)
 			xPositionsPerFrame = []
 			yPositionsPerFrame = []
 			propertyPerFrame = []
@@ -770,12 +572,9 @@ class TrackFile():
 
 		maxXPos = max(map(max, xPositionsAllFrames))
 		maxYPos = max(map(max, yPositionsAllFrames))
-		#	maxXPos = 10000
-		#	maxYPos = 10000
 
-		frameIndex = 0
-		for xFrame, yFrame, cFrame in zip(xPositionsAllFrames, yPositionsAllFrames, propertyAllFrames):
-			plotTitle = self.fileName + ' movie of ' + propertyName + ', Frame ' + str(settings['startFrame'] + frameIndex) + ' ' + settings['title']
+		for xFrame, yFrame, cFrame, frameNum in zip(xPositionsAllFrames, yPositionsAllFrames, propertyAllFrames, frames):
+			plotTitle = "%s cellVisual, %s: Frame %d, %s" % (self.fileName, propertyName, int(frameNum), settings['title'])
 			fig = constructFig(self, plotTitle)
 			cm = P.cm.get_cmap('jet')
 			settingsCopy = settings.copy()
@@ -786,7 +585,6 @@ class TrackFile():
 			P.ylim(ymin = 0, ymax = maxYPos)
 			P.ylabel('microns')
 			savePlot(fig, plotTitle)
-			frameIndex += settings['frameInterval']
 		return
 
 
@@ -806,7 +604,7 @@ class TrackFile():
 		maxXPos = max(self.d[xPropertyName])
 		maxYPos = max(self.d[yPropertyName])
 		minXPos = min(self.d[xPropertyName])
-		minYPos = min(self.d[yPropertyName])
+		minYPos = min(self.d[yPropertyName] )
 		P.xlim(xmin = minXPos, xmax = maxXPos)
 		P.xlabel(axesLabels[xPropertyName])
 		P.ylim(ymin = minYPos, ymax = maxYPos)
@@ -835,106 +633,6 @@ class TrackFile():
 
 		return
 
-
-	#ugly function for getting excel sheets of data. not dynamic
-	def getNumbers(self, propertyName, settings = TCG.PlotDefaults):
-		#bins = settings['bins']
-		directs = []
-		directsStd = []
-		avgMovs = []
-		avgMovsStd = []
-		vels = []
-		velsStd = []
-		count = []
-		printBins = []
-
-		bins = settings[propertyName + 'Bins']
-		if type(bins) == int:
-			maxBin = max(self.d[propertyName])
-			bins = np.arange(0, maxBin, maxBin/bins)
-
-		for index in range(len(bins) - 1):
-			minVal = bins[index]
-			maxVal = bins[index+1]
-			filters = TCG.DefaultFilters.copy()
-			filters[propertyName] = [[minVal, maxVal]]
-
-			copy = deepcopy(self)
-			copy.selectData(filters)
-			wAvg1, stdDev1, stdErr1 = copy.getWeightedAverage('directionality')
-			wAvg2, stdDev2, stdErr2 = copy.getWeightedAverage('avgMov')
-			wAvg3, stdDev3, stdErr3 = copy.getWeightedAverage('velocity')
-
-			directs.append(wAvg1)
-			directsStd.append(stdErr1)
-			avgMovs.append(wAvg2)
-			avgMovsStd.append(stdErr2)
-			vels.append(wAvg3)
-			velsStd.append(stdErr3)
-			count.append(len(copy.d[propertyName]))
-			printBins.append([minVal, maxVal])
-
-
-		workbook = xlsxwriter.Workbook(TCG.SAVE_DIRECTORY + self.fileName + " " + propertyName + " " + settings['title'] + '.xlsx',  {'nan_inf_to_errors': True})
-		worksheet = workbook.add_worksheet()
-		colindex = 0
-		rowindex = 0
-
-		worksheet.write(rowindex, colindex, 'histogram of ' + propertyName + " " + settings['title'])
-
-		rowindex = 2
-
-		worksheet.write(rowindex, colindex, 'bins')
-		worksheet.write(rowindex, colindex+1, 'trackCount')
-		worksheet.write(rowindex, colindex+2, 'count %')
-		worksheet.write(rowindex, colindex+3, 'wAvg, stdErr...')
-		worksheet.write(rowindex, colindex+4, 'mp')
-		worksheet.write(rowindex, colindex+5, 'mpStdErr')
-		worksheet.write(rowindex, colindex+6, 'avgMov')
-		worksheet.write(rowindex, colindex+7, 'avgMovStdErr')
-		worksheet.write(rowindex, colindex+8, 'vel')
-		worksheet.write(rowindex, colindex+9, 'velStdErr')
-
-		rowindex = rowindex + 1
-
-		for b, d, d1, a, a1, v, v1, c in zip(printBins, directs, directsStd, avgMovs, avgMovsStd, vels, velsStd, count):
-			
-			if b: worksheet.write(rowindex, colindex, str(b))
-			if c: worksheet.write(rowindex, colindex+1, c)
-			if c: worksheet.write(rowindex, colindex+2, 100 * c / len(self.d[propertyName]))
-			if d: worksheet.write(rowindex, colindex+4, d)
-			if d1: worksheet.write(rowindex, colindex+5, d1)
-			if a: worksheet.write(rowindex, colindex+6, a)
-			if a1: worksheet.write(rowindex, colindex+7, a1)
-			if v: worksheet.write(rowindex, colindex+8, v)
-			if v1: worksheet.write(rowindex, colindex+9, v1)
-			rowindex = rowindex + 1
-
-		completeDirWeightedAvg, stdDev, stdErr1 = self.getWeightedAverage('directionality', settings = settings);
-		completeAvgMovWeightedAvg, stdDev, stdErr2 = self.getWeightedAverage('avgMov', settings = settings);
-		completeVelocityWeightedAvg, stdDev, stdErr3 = self.getWeightedAverage('velocity', settings);
-
-		rowIndex = rowindex
-
-		worksheet.write(rowIndex+3, 0, 'wAvg dir over exp')
-		worksheet.write(rowIndex+4, 0, completeDirWeightedAvg)
-		worksheet.write(rowIndex+5, 0, 'stdErr')
-		worksheet.write(rowIndex+6, 0, stdErr1)
-		worksheet.write(rowIndex+3, 1, 'wAvg avgMov over exp')
-		worksheet.write(rowIndex+4, 1, completeAvgMovWeightedAvg)
-		worksheet.write(rowIndex+5, 1, 'stdErr')
-		worksheet.write(rowIndex+6, 1, stdErr2)
-		worksheet.write(rowIndex+3, 2, 'wAvg Vel over exp')
-		worksheet.write(rowIndex+4, 2, completeVelocityWeightedAvg)
-		worksheet.write(rowIndex+5, 2, 'stdErr')
-		worksheet.write(rowIndex+6, 2, stdErr3)
-
-		workbook.close()
-		return
-
-
-
-		#TrackFile
 
 	#plots several plotBinData plots in one figure. not dynamic
 	#propertyName is for first histogram plot and bins for plotBinData functions
@@ -1088,7 +786,7 @@ class AllExperimentData():
 
 
 	#TODO: include errorbars
-	def plotWeightedAverageCorr(self, propertyName1, propertyName2, settings = TCG.PlotDefaults):
+	def plotBinData(self, propertyName1, propertyName2, settings = TCG.PlotDefaults):
 		#plot info
 		plotTitle = 'wAvgCorr comp of ' + propertyName1 + ' and ' + propertyName2 + ', weight = ' + settings['weight'] + settings['title']
 		if settings['newFig']: fig = constructFig(self, plotTitle)
@@ -1097,7 +795,7 @@ class AllExperimentData():
 		P.ylabel(axesLabels[propertyName2])
 
 		for experiment in sorted(self.experiments.items()):
-			xAxisValues, weightedAverages, na = experiment[1].getWeightedAverageCorr(propertyName1, propertyName2, settings = settings)
+			xAxisValues, weightedAverages, na = experiment[1].getBinData(propertyName1, propertyName2, settings = settings)
 			P.plot(xAxisValues, weightedAverages, label = experiment[0])
 			
 		if settings['legend']: P.legend(loc = settings['legendLoc'], prop = {'size': 9})
@@ -1107,7 +805,7 @@ class AllExperimentData():
 
 
 	#general summary of weightedAvgCorrelations. not dynamic
-	def plotWeightedAverageCorrSummary(self, settings = TCG.PlotDefaults):
+	def plotBinDataSummary(self, settings = TCG.PlotDefaults):
 		
 		vprint('Plotting weightedAverageCorr experiment comparisons.')
 
@@ -1121,18 +819,18 @@ class AllExperimentData():
 		setInst['save'] = False
 
 		P.subplot(2,2,1)
-		ax1 = self.plotWeightedAverageCorr('xStartPos', 'velocity', settings = setInst)
+		ax1 = self.plotBinData('xStartPos', 'velocity', settings = setInst)
 
 		setInst['legend'] = False
 
 		P.subplot(2,2,2)
-		ax2 = self.plotWeightedAverageCorr('xStartPos', 'avgMov', settings = setInst)
+		ax2 = self.plotBinData('xStartPos', 'avgMov', settings = setInst)
 		
 		P.subplot(2,2,3)
-		ax3 = self.plotWeightedAverageCorr('xStartPos', 'directionality', settings = setInst)
+		ax3 = self.plotBinData('xStartPos', 'directionality', settings = setInst)
 
 		P.subplot(2,2,4)
-		ax4 = self.plotWeightedAverageCorr('avgMov', 'directionality', settings = setInst)
+		ax4 = self.plotBinData('avgMov', 'directionality', settings = setInst)
 
 		if settings['show']: P.show()
 		if settings['save']: savePlot(fig, plotTitle)
@@ -1225,18 +923,28 @@ class AllExperimentData():
 
 		P.subplot(2,2,1)
 		setInst['legend'] = True
-		ax1 = self.plotWeightedAverageCorr('xStartPos', 'velocity', settings = setInst)
+		ax1 = self.plotBinData('xStartPos', 'velocity', settings = setInst)
 
 		P.subplot(2,2,2)
 		setInst['legend'] = False
-		ax2 = self.plotWeightedAverageCorr('xStartPos', 'avgMov', settings = setInst)
+		ax2 = self.plotBinData('xStartPos', 'avgMov', settings = setInst)
 
 		P.subplot(2,2,3)
-		ax3 = self.plotWeightedAverageCorr('xStartPos', 'directionality', settings = setInst)
+		ax3 = self.plotBinData('xStartPos', 'directionality', settings = setInst)
 
 		P.subplot(2,2,4)
-		ax4 = self.plotWeightedAverageCorr('avgMov', 'directionality', settings = setInst)
+		ax4 = self.plotBinData('avgMov', 'directionality', settings = setInst)
 
 		if settings['show']: P.show()
 		if settings['save']: savePlot(fig, plotTitle)
 
+
+
+
+
+##generic Trackfile plot wrapper
+#def plotHelper(trackfile, function, propertyName1, propertyName2, settings):
+#	xaxis = trackfile.d[propertyname1]
+#	yaxis = trackfile.d[propertyName3]
+#	function(xaxis, yaxis, settings)
+#
