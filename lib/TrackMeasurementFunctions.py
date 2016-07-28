@@ -107,7 +107,10 @@ def getMP(track, **kwargs):
 
 	return gen.pythagorean(xDistance, yDistance) / totalTravel
 
-def getConcentration(track, maxX = None, gradient = None):
-	if maxX and gradient:
-		return ((gradient) / maxX) * (maxX - getxStartPos(track))
-	return 0
+def getConcentration(track, **kwargs):
+	if ("maxX" not in kwargs) or ("gradientStrength" not in kwargs):
+		vprint("Warning: no maxX or gradientStrength in expParams to calculate concentration.")
+		return 0
+	gradientStrength = kwargs.pop("gradientStrength")
+	maxX = kwargs.pop("maxX")
+	return (gradientStrength / maxX) * (maxX - getxStartPos(track))

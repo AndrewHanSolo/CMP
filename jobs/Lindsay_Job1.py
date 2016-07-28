@@ -28,7 +28,7 @@ with open(DATA_SAVE_NAME, 'rb') as input:
 	#data2 = deepcopy(data)
 
 
-	filters = TCG.DefaultFilters.copy()
+	filters = {}
 	filters['age'] = [[5, 37]]
 	filters['frames'] = [[30, float('inf')]]
 	#filters['xStartPos'] = [[20, 9980]]

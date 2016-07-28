@@ -58,8 +58,8 @@ class TrackFolder():
 		self.trackFiles = trackFiles
 		self.folderName = folderName
 		self.path = folderPath
-		self.filters = TCG.DefaultFilters
-		self.expParams = TCG.Default_Exp_Params.copy()
+		self.filters = {}
+		self.expParams = TCG.DefaultExpParams.copy()
 
 
 	def getExperimentParameters(self):
@@ -98,7 +98,7 @@ class TrackFolder():
 
 		#transfers attributes from TrackFolder to newly merged TrackFile (transfer of metadata)
 		print("merging....")
-		mergedTrackFile =  TC.TrackFile(mergedTracks, self.folderName, path = self.path, filters = self.filters, master = True)
+		mergedTrackFile =  TC.TrackFile(mergedTracks, self.folderName, path = self.path, master = True)
 		for key, val in self.expParams.items():
 			setattr(mergedTrackFile, key, val)
 		return mergedTrackFile

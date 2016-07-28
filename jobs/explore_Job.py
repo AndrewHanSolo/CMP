@@ -28,7 +28,7 @@ with open(DATA_SAVE_NAME, 'rb') as input:
 	data = pickle.load(input)
 
 
-	filters = TCG.DefaultFilters.copy()
+	filters = {}
 	filters['age'] = [[5, float('inf')]]
 
 	ps = TCG.PlotDefaults.copy()

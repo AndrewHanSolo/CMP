@@ -20,7 +20,7 @@ import TrackClassGlobals as TCG
 from mpl_toolkits.mplot3d import Axes3D
 from PlotScripts import *
 
-SAVE                = False
+SAVE                = True
 TrackFile_Test      = True
 TrackFolder_Test    = False
 ALL_EXP_FOLDER_PATH = '/home/andrewhan/Desktop/track files/Nov experiments data/'
@@ -36,7 +36,7 @@ with open(DATA_SAVE_NAME, 'rb') as input:
 	data = pickle.load(input)
 
 	#SELECT FILTERS
-	filters = TCG.DefaultFilters.copy()
+	filters = {}
 	filters["frames"] = [[30, float('inf')]]
 	filters['age'] = [[40, float('inf')]]
 
@@ -66,11 +66,14 @@ if TrackFile_Test:
 		#P.scatter(v.d['xStartPos'], v.d['yStartPos'])
 		#function = TrackFile.plotCurve(, "xStartPos", "avgMov")
 		#v.writeData()
-		v.scan('xStartPos', 0, 10000, 5, TrackFile.plotBinData, "avgMov", "directionality", ps)
+		
+		#v.iterate('frames', 30, 70, 10, TrackFile.heatmapVisualization, "xStartPos", "yStartpos", "avgMov", ps)
+		v.scan('xStartPos', 0, 11000, 4, TrackFile.plotBinData, "avgMov", "directionality", ps)
+
 		#v.scan('frames', 30, 70, 10, TrackFile.plotScatter, "firstFrame", "avgMov", ps)
 		#v.scan('xStartPos', 0, 10000, 3, TrackFile.plotHistogram, "avgMov", None, ps)
 		#v.scan('xStartPos', 0, 10000, 5, TrackFile.plotHistogram, "avgMov", ps)
-		v.scan('xPos', 0, 10000, 5, TrackFile.plotBinData, "avgMov", "directionality", ps)
+		#v.scan('xPos', 0, 10000, 5, TrackFile.plotBinData, "avgMov", "directionality", ps)
 		#v.cellVisualization('avgMov')
 		#v.heatmapVisualization('xStartPos', 'yStartPos', 'avgMov')
 		#v.plotPercentHistogram('directionality', 'avgMov')

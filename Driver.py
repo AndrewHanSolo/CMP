@@ -19,7 +19,7 @@ from general import setAllDictVals
 if 1:
 
 	#Filter settings
-	oldFilters = TCG.DefaultFilters.copy()
+	oldFilters = {}
 	oldFilters['age'] = [[25, float('inf')]]
 	oldFilters['frames'] = [[0, float('inf')]]
 
@@ -45,7 +45,7 @@ if 1:
 if 1:
 
 	#Filter settings
-	oldFilters = TCG.DefaultFilters.copy()
+	oldFilters = {}
 	oldFilters['age'] = [[40, float('inf')]]
 	oldFilters['frames'] = [[30, float('inf')]]
 

@@ -71,31 +71,31 @@ class TrackFile():
 	##
 	def __init__(self, tracks, 
 				 fileName, 
-				 fields = TCG.Default_Track_Measurements, 
-				 filters = TCG.DefaultFilters, 
+				 expParams = TCG.DefaultExpParams,
 				 path = 0, 
 				 master = False):
 
-		self.tracks = tracks
 		self.fileName = fileName
-		self.fields = fields
-		self.filters = filters
 		self.path = path
-		self.gradient = 0
+
+		self.fields = TCG.DefaultTrackMeasurements
+		self.filters = {}
+		self.expParams = expParams
+		self.tracks = tracks
 		self.d = {} #Dictionary of Track measurement lists, 
 		            #where indices across lists correlate to 
 		            #the same Track
 		self.meta = {} #Dict in which track measurement metadata is stored
-		self.axis = {} #Dict in which track measurement min and max values are stored
-		self.maxX = 0
-		self.maxY = 0
-		self.master = master
+		self.axisLimits = {} #Dict in which track measurement min and max values are stored
+		               
+		self.master = master #True means the trackfile contains full experiment data
+		                     #and is ready for analysis
 		
 		#to be done on TrackFile that has merged tracks
 		#first analysis performed, axeslimits are updated
 		if self.master:
-			self.maxX, self.maxY = getTrackFileDimensions(self)
-			self.analysis(fields)
+			self.expParams['maxX'], self.expParams['maxY'] = getTrackFileDimensions(self)
+			self.analysis()
 		return
    
 
@@ -106,7 +106,9 @@ class TrackFile():
 	# 
 	# @exception  <exception_object> { Error occured while filtering }
 	#
-	def selectData(self, filters = TCG.DefaultFilters):
+	def selectData(self, filters):
+		if not filters:
+			return
 		#for filterInstance in filters:
 		updateFilterSettings(self, filters)
 		try:
@@ -115,7 +117,7 @@ class TrackFile():
 			TFF.selectDictBins(self, filters)
 		except:
 			#pass
-			vprint('Warning: exception hit in track filtering. Possibly no tracks in this experiment')
+			vprint('Warning: exception hit in track filtering. Possibly no tracks to filter.')
 			traceback.print_exc(file = sys.stdout)
 		return
 
@@ -125,19 +127,18 @@ class TrackFile():
 	# @param      self    The object
 	# @param      fields  The fields
 	#
-	def analysis(self, fields = TCG.Default_Track_Measurements):
+	def analysis(self):
 
-		for key, measurementClass in fields.items():
-			fieldBuffer = []
+		for key, measurementClass in self.fields.items():
+			dataBuffer = []
 			for track in self.tracks:
-				fieldBuffer.append(measurementClass.function(track, maxX = self.maxX, gradient = self.gradient))
-			self.d[key] = fieldBuffer
+				dataBuffer.append(measurementClass.function(track, **self.expParams))
+			self.d[key] = dataBuffer
 			self.meta[key] = self.getAverage(key)
-			self.axis[key] = [min(fieldBuffer), max(fieldBuffer)]
-			try:
-				self.fields[key].axisLimits[1] = max(fieldBuffer)
-			except:
-				self.fields[key].axisLimits = [0, 0]
+			if len(dataBuffer) == 0:
+				self.axisLimits[key] = [0, 0]
+			else:
+				self.axisLimits[key] = [min(dataBuffer), max(dataBuffer)]
 
 		return
 
@@ -210,6 +211,15 @@ class TrackFile():
 			 function,
 			 *args):
 
+		#check that scanning range is valid and update if otherwise
+		if minVal < (self.axisLimits[propertyName])[0]:
+			minVal = (self.axisLimits[propertyName])[0]
+			vprint("Notice: scan of %s was started at lowest value %.1f instead" % (propertyName, minVal))
+
+		if maxVal > (self.axisLimits[propertyName])[0]:
+			maxVal = (self.axisLimits[propertyName])[0]
+			vprint("Notice: scan of %s was ended at highest value %.1f instead" % (propertyName, maxVal))
+
 
 		bins = np.linspace(minVal, maxVal, resolution+1)
 		settings = args[2]
@@ -223,11 +233,9 @@ class TrackFile():
 			#get filter instance range
 			lowerVal = bins[index]
 			upperVal = bins[index+1]
-
-			print(lowerVal, upperVal)
 			
 			#copy data
-			filtersCopy = TCG.DefaultFilters.copy()
+			filtersCopy = {}
 			filtersCopy[propertyName] = [[lowerVal, upperVal]]
 			trackFileCopy = deepcopy(self)
 			trackFileCopy.selectData(filtersCopy)
@@ -251,21 +259,45 @@ class TrackFile():
 
 
 	##
-	## @brief      splits tracks into framebins, and creates individual plots
-	##             per framebin
+	## Scans over tracks by propertyName, and computes function on them at each
+	## slice
 	##
-	## @param      self        The object
-	## @param      startFrame  The start frame
-	## @param      endFrame    The end frame
-	## @param      resolution  The resolution
-	## @param      function    The function
+	## @param      self          The object
+	## @param      propertyName  The property name
+	## @param      minVal        The minimum value
+	## @param      maxVal        The maximum value
+	## @param      resolution    The resolution
+	## @param      function      The function
+	## @param      args          The scan settings
 	##
 	## @return     { description_of_the_return_value }
 	##
-	#def separateScan(self, startFrame, endFrame, resolution, function, *args):
+	def iterate(self,
+				propertyName,
+				minVal,
+				maxVal,
+				resolution,
+				function,
+				*args):
 
+		bins = np.linspace(minVal, maxVal, resolution+1)
+		settings = args[2]
+		title = "%s, %s scan of %s vs %s" % (self.fileName , propertyName, args[0], args[1])
 
+		for index in range(0, len(bins)-1):
+			lowerVal = bins[index]
+			upperVal = bins[index+1]
 
+			#copy data
+			filtersCopy = {}
+			filtersCopy[propertyName] = [[lowerVal, upperVal]]
+			trackFileCopy = deepcopy(self)
+			trackFileCopy.selectData(filtersCopy)
+			settings['title'] = ("%s: %.1f to %.1f" % (propertyName, lowerVal, upperVal))
+			settings["newFig"] = True
+			settings["save"] = True
+			P = function(trackFileCopy, *args)
+			P.close()
 
 	# returns weightedAverage and standard deviation 
 	# or number average and standard error of a measurement in Trackfile
@@ -329,8 +361,7 @@ class TrackFile():
 		binCenters = []
 
 		#format bin setting to iterator (hacky)
-		binValSettingsArray = binnedPropertyName + 'Bins'; 
-		binArray = settings[binValSettingsArray]
+		binArray = (self.fields[binnedPropertyName]).bins
 		if type(binArray) == int:
 			minValueProperty = 0
 			maxValueProperty = max(self.d[binnedPropertyName])
@@ -341,7 +372,7 @@ class TrackFile():
 		for index in range(len(binArray) - 1):
 			minVal = binArray[index]
 			maxVal = binArray[index+1]
-			filters = TCG.DefaultFilters.copy()
+			filters = {}
 			filters[binnedPropertyName] = [[minVal, maxVal]]
 
 			copy = deepcopy(self)
@@ -436,8 +467,8 @@ class TrackFile():
 	# Simple scatter plot
 	#
 	# @param      self           The object
-	# @param      propertyName1  x axis
-	# @param      propertyName2  y axis
+	# @param      propertyName1  x axisLimits
+	# @param      propertyName2  y axisLimits
 	# @param      settings       The settings
 	# @param      kwargs         The kwargs
 	#
@@ -529,8 +560,8 @@ class TrackFile():
 	#
 	def cellVisualization(self, propertyName, snapshots = None, settings = TCG.PlotDefaults):
 		#check or set snapshot value
-		firstFrame = (self.axis['firstFrame'])[0]
-		lastFrame = (self.axis['lastFrame'])[1]
+		firstFrame = (self.axisLimits['firstFrame'])[0]
+		lastFrame = (self.axisLimits['lastFrame'])[1]
 		maxPossibleSnaps = lastFrame - firstFrame
 		if not snapshots:
 			snapshots = maxPossibleSnaps / 3
@@ -589,12 +620,11 @@ class TrackFile():
 
 
 	def heatmapVisualization(self, xPropertyName, yPropertyName, colorPropertyName, settings = TCG.PlotDefaults):
-		print('Generating movie for ' + self.fileName)
 
 		plotTitle = "%s x=%s y=%s c=%s heatmap %s" % (self.fileName, xPropertyName, yPropertyName, colorPropertyName, settings['title'])
 		fig = constructFig(self, plotTitle)
 
-		cm = P.get_cmap(TCG.ColorMapPropertyDict[colorPropertyName])
+		cm = P.get_cmap('jet')
 		xPositionsAllFrames = []
 		yPositionsAllFrames = []
 		propertyAllFrames = []
@@ -720,7 +750,7 @@ class AllExperimentData():
 
 	def __init__(self, directoryPath):
 		self.experiments = {}
-		self.filters = TCG.DefaultFilters
+		self.filters = {}
 		#get all files from folderpath and sort in numerical order
 		files = (os.listdir(directoryPath)) 
 		sort_nicely(files)
@@ -733,7 +763,7 @@ class AllExperimentData():
 			self.experiments[experimentName] = experimentFile
 
 
-	def selectData(self, filters = TCG.DefaultFilters):
+	def selectData(self, filters = {}):
 		for experiment in self.experiments:
 			self.experiments[experiment].selectData(filters)
 

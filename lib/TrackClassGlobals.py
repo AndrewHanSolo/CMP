@@ -3,31 +3,24 @@ from TrackMeasurementFunctions import *
 VERBOSE = True
 DEBUG = False
 SAVE_DIRECTORY = '/home/andrewhan/Desktop/'
-#MIGRATION_DIRECTORY = 'C:/Users/Andrew Han/Desktop/CMP/migrationData' //not being used right now
 SPEED_CONVERSION_FACTOR = 6
 FIELD_VECTOR_SPECIAL = [1, 0]
 GLOBAL_FIELD_VECTOR = [-1, 0]
 FIELD_VECTOR_INSTANCE = [-1, 0]
 
 
-
-DEAULT_TRACK_FILE_FIELDS = {
+DefaultExpParams = {
 	
-	'fileName': '',
-	'path': ''
-
-}
-
-Default_Exp_Params = {
-	
-	'gradient'                : 0,
+	'gradientStrength'        : 0,
+	'gradientVector'          : [-1, 0],
 	'reverse'                 : False,
-	'maxX'                    : 0,
-	'maxY'                    : 0,
-	'spatialConversionFactor' : 0.64
-
+	'maxX'                    : 10000,
+	'maxY'                    : 10000,
+	'spatialConversionFactor' : 0.64, #microns per pixel
+	'frameInterval'	  		  : 10,   #time between frames (in minutes)
 
 }
+
 
 AnalysisDefaults = {
 
@@ -45,54 +38,6 @@ AnalysisDefaults = {
 }
 
 
-
-
-
-
-ColorMapPropertyDict = {
-	#diverging colormap
-	'directionality'       : 'jet',
-	'mp' : 'jet',
-
-	#sequential colormap
-	'velocity'             : 'YlOrRd',
-	'avgMov'               : 'YlOrRd',
-	'xStartPos'            : 'YlOrRd',
-	'yStartPos'            : 'YlOrRd',
-	'startFrame'           : 'YlOrRd',
-	'endFrame'             : 'YlOrRd'
-}
-
-
-maxRange = [[float('-inf'), float('inf')]]
-
-DefaultFilters = {
-	
-	'frames'               : maxRange,
-	'xPos'                 : maxRange,
-	'yPos'                 : maxRange,
-
-	#enter scalar field values. multiple ranges possible
-	'absVelocity'          : maxRange,
-	'age'                  : maxRange,
-	'avgMov'               : maxRange,
-	'concentration'        : maxRange,
-	'directionality'       : maxRange,
-	'mp' 				   : maxRange,
-	'velocity'             : maxRange,
-	'xMigrationSpeed'      : maxRange,
-	'yMigrationSpeed'      : maxRange,
-
-	'xStartPos'            : maxRange,
-	'xEndPos'              : maxRange,
-	'yStartPos'            : maxRange,
-	'yEndPos'              : maxRange,
-	'numFrames'            : maxRange,
-	'firstFrame'           : maxRange,
-	'lastFrame'            : maxRange,
-
-}
-
 #plot defualts
 PlotDefaults = {
 	
@@ -106,36 +51,10 @@ PlotDefaults = {
 	'weights'               : 'age',
 	'legend'                : True,
 	'legendLoc'             : 1,
+	'fontsize'				: 9,
 	'newFig'                : True,
 	'stdErrorBars'          : True,
 	"average"				: "weighted",
-
-	#movie settings
-	'movie'                 : True,
-
-	#temporal analysis settings
-	'startFrame'            : 30,
-	'endFrame'              : 70,
-	'frameInterval'         : 10, #TODO: MAKE THIS FRAMBINS. RIGHT NOW THIS SPECIFIES EXACT FRAMES IN EACH BIN
-	'startConcentration'    : 0,
-	'endConcentration'      : 10,
-	'concentrationInterval' : 2,
-	'xStartPosBins'         : 20,
-	'directionalityBins'    : 10,
-	'mpBins'                : 10,
-	'velocityBins'          : 10,
-	'avgMovBins'            : 3,
-	'concentrationBins'     : 20,
-
-
-	#spatial analysis settings
-	'spatialBins'           : 10,
-
-	#rotation angles for 3dPlotMovie
-	'rotStartAngle'         : 220,
-	'rotEndAngle'           : 221,
-	'rotResolution'         : 1,
-
 
 	#cellVisualization settings
 	'colorMin'              : -1,
@@ -182,38 +101,38 @@ class TrackMeasurement():
 		         name,
 		         function,
 		         axisLabel,
-		         axisLimits,
-		         colorMap,
-		         description):		
+		         description,
+		         colorMap = "jet",
+		         bins = 5):		
 
 		self.name = name
 		self.function = function
 		self.axisLabel = axisLabel
-		self.axisLimits = axisLimits
-		self.function == function
+		self.description = description
 		self.colorMap = colorMap
+		self.bins = bins
 
 
 
 
-avgMov          = TrackMeasurement("avgMov", getAvgMov, "um/hour", maxRange, "jet", "average distance travelled per frame")
-velocity        = TrackMeasurement("velocity", getVelocity, "um/hour", maxRange, "jet", "average migration distance per frame")
-concentration   = TrackMeasurement("concentration", getConcentration, "ug", maxRange, "jet", "local chemical concentration at starting pos")
-directionality  = TrackMeasurement("directionality", getDirectionality, "%", maxRange, "jet", "ratio of movement in direction of increasing gradient")
-getMP           = TrackMeasurement("mp", getMP, "um/%", maxRange, "jet", "ratio of movement in one direction")
-getXStartPos    = TrackMeasurement("xStartPos", getxStartPos, "microns", maxRange, "jet", "x starting position")
-getYStartPos    = TrackMeasurement("yStartPos", getyStartPos, "microns", maxRange, "jet", "y starting position")
-firstFrame      = TrackMeasurement("firstFrame", getFirstFrame, "microns", maxRange, "jet", "first frame of track")
-lastFrame       = TrackMeasurement("lastFrame", getLastFrame, "microns", maxRange, "jet", "last frame of track")
-xMigrationSpeed = TrackMeasurement("xMigrationSpeed", getxMigrationSpeed, "microns", maxRange, "jet", "xMigrationSpeed")
-yMigrationSpeed = TrackMeasurement("yMigrationSpeed", getyMigrationSpeed, "microns", maxRange, "jet", "yMigrationSpeed")
-numFrames       = TrackMeasurement("numFrames", getNumFrames, "# frames", maxRange, "jet", "range of tracks over which track exists")
-age             = TrackMeasurement("age", getAge, "microns", maxRange, "jet", "number of frames in which track exists")
+avgMov          = TrackMeasurement("avgMov", getAvgMov, "um/hour", "average distance travelled per frame")
+velocity        = TrackMeasurement("velocity", getVelocity, "um/hour", "average migration distance per frame")
+concentration   = TrackMeasurement("concentration", getConcentration, "ug", "local chemical concentration at starting pos")
+directionality  = TrackMeasurement("directionality", getDirectionality, "%", "ratio of movement in direction of increasing gradient")
+getMP           = TrackMeasurement("mp", getMP, "um/%", "ratio of movement in one direction")
+getXStartPos    = TrackMeasurement("xStartPos", getxStartPos, "microns", "x starting position")
+getYStartPos    = TrackMeasurement("yStartPos", getyStartPos, "microns", "y starting position")
+firstFrame      = TrackMeasurement("firstFrame", getFirstFrame, "microns", "first frame of track")
+lastFrame       = TrackMeasurement("lastFrame", getLastFrame, "microns", "last frame of track")
+xMigrationSpeed = TrackMeasurement("xMigrationSpeed", getxMigrationSpeed, "microns", "xMigrationSpeed")
+yMigrationSpeed = TrackMeasurement("yMigrationSpeed", getyMigrationSpeed, "microns", "yMigrationSpeed")
+numFrames       = TrackMeasurement("numFrames", getNumFrames, "# frames", "range of tracks over which track exists")
+age             = TrackMeasurement("age", getAge, "microns", "number of frames in which track exists")
 
 
 
 
-Default_Track_Measurements = {
+DefaultTrackMeasurements = {
 
 "avgMov"          : avgMov         ,
 "velocity"        : velocity       ,
@@ -228,6 +147,7 @@ Default_Track_Measurements = {
 "yMigrationSpeed" : yMigrationSpeed,
 "numFrames"       : numFrames      ,
 "age"             : age
+
 }
 
 

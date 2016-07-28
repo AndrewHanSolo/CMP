@@ -26,7 +26,7 @@ with open(DATA_SAVE_NAME, 'rb') as input:
 	data = pickle.load(input)
 
 
-	filters = TCG.DefaultFilters.copy()
+	filters = {}
 	filters['frames'] = [[30, float('inf')]]
 	filters['age'] = [[5, float('inf')]]
 	#filters['concentration'] = [[0, 1]]
