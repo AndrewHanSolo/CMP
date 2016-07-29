@@ -23,6 +23,8 @@ don't hardcode settings
 
 weightedAverage should return Nan if error and not 0
 
+histogramscan has bad plot title
+
 
 
 -----------------------------------------

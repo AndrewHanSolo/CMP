@@ -2,7 +2,7 @@ from TrackMeasurementFunctions import *
 
 VERBOSE = True
 DEBUG = False
-SAVE_DIRECTORY = '/home/andrewhan/Desktop/'
+SAVE_DIRECTORY = '/home/ahan/Desktop/analysis/'
 SPEED_CONVERSION_FACTOR = 6
 FIELD_VECTOR_SPECIAL = [1, 0]
 GLOBAL_FIELD_VECTOR = [-1, 0]
@@ -11,6 +11,7 @@ FIELD_VECTOR_INSTANCE = [-1, 0]
 
 DefaultExpParams = {
 	
+	'id'                      : None,
 	'gradientStrength'        : 0,
 	'gradientVector'          : [-1, 0],
 	'reverse'                 : False,
@@ -115,19 +116,21 @@ class TrackMeasurement():
 
 
 
-avgMov          = TrackMeasurement("avgMov", getAvgMov, "um/hour", "average distance travelled per frame")
-velocity        = TrackMeasurement("velocity", getVelocity, "um/hour", "average migration distance per frame")
-concentration   = TrackMeasurement("concentration", getConcentration, "ug", "local chemical concentration at starting pos")
-directionality  = TrackMeasurement("directionality", getDirectionality, "%", "ratio of movement in direction of increasing gradient")
-getMP           = TrackMeasurement("mp", getMP, "um/%", "ratio of movement in one direction")
-getXStartPos    = TrackMeasurement("xStartPos", getxStartPos, "microns", "x starting position")
-getYStartPos    = TrackMeasurement("yStartPos", getyStartPos, "microns", "y starting position")
-firstFrame      = TrackMeasurement("firstFrame", getFirstFrame, "microns", "first frame of track")
-lastFrame       = TrackMeasurement("lastFrame", getLastFrame, "microns", "last frame of track")
-xMigrationSpeed = TrackMeasurement("xMigrationSpeed", getxMigrationSpeed, "microns", "xMigrationSpeed")
-yMigrationSpeed = TrackMeasurement("yMigrationSpeed", getyMigrationSpeed, "microns", "yMigrationSpeed")
-numFrames       = TrackMeasurement("numFrames", getNumFrames, "# frames", "range of tracks over which track exists")
-age             = TrackMeasurement("age", getAge, "microns", "number of frames in which track exists")
+avgMov          = TrackMeasurement("avgMov", getAvgMov, "avgMov: um/hour", "average distance travelled per frame")
+velocity        = TrackMeasurement("velocity", getVelocity, "velocity: um/hour", "average migration distance per frame")
+concentration   = TrackMeasurement("concentration", getConcentration, "concentration: ug", "local chemical concentration at starting pos")
+directionality  = TrackMeasurement("directionality", getDirectionality, "directionality: %", "ratio of movement in direction of increasing gradient")
+getMP           = TrackMeasurement("mp", getMP, "mp: %", "ratio of movement in one direction")
+getXStartPos    = TrackMeasurement("xStartPos", getxStartPos, "xStartPos: um", "x starting position")
+getXEndPos      = TrackMeasurement("xEndPos", getxEndPos, "xEndPos: um", "x ending position")
+getYStartPos    = TrackMeasurement("yStartPos", getyStartPos, "yStartPos: um", "y starting position")
+getYEndPos      = TrackMeasurement("yEndPos", getyEndPos, "yEndPos: um", "y ending position")
+firstFrame      = TrackMeasurement("firstFrame", getFirstFrame, "firstFrame: frame#", "first frame of track")
+lastFrame       = TrackMeasurement("lastFrame", getLastFrame, "lastFrame: frame#", "last frame of track")
+xMigrationSpeed = TrackMeasurement("xMigrationSpeed", getxMigrationSpeed, "xMigrationSpeed: um/hour", "xMigrationSpeed")
+yMigrationSpeed = TrackMeasurement("yMigrationSpeed", getyMigrationSpeed, "yMigrationSpeed: um/hour", "yMigrationSpeed")
+numFrames       = TrackMeasurement("numFrames", getNumFrames, "numFrames: # of frames", "range of tracks over which track exists")
+age             = TrackMeasurement("age", getAge, "age: range of frames", "number of frames in which track exists")
 
 
 
@@ -140,7 +143,9 @@ DefaultTrackMeasurements = {
 "directionality"  : directionality ,
 "mp"              : getMP          ,
 "xStartPos"       : getXStartPos   ,
+"xEndPos"         : getXEndPos     ,
 "yStartPos"       : getYStartPos   ,
+"yEndPos"         : getYEndPos     ,
 "firstFrame"      : firstFrame     ,
 "lastFrame"       : lastFrame      ,
 "xMigrationSpeed" : xMigrationSpeed,
@@ -151,26 +156,6 @@ DefaultTrackMeasurements = {
 }
 
 
-axesLabels = {
-
-	'absVelocity'     : 'absVelocity: microns/hour',
-	'age'             : 'age: frames',
-	'avgMov'          : 'avgMov: microns/hour',
-	'concentration'   : 'concentration: ug',
-	'directionality'  : 'directionality',
-	'mp'              : 'migration persistence',
-	'velocity'        : 'velocity: microns/hour',
-	'xMigrationSpeed' : 'xMigrationSpeed: microns/hour',
-	'yMigrationSpeed' : 'yMigrationSpeed: microns/hour',
-	'xStartPos'       : 'xStartPos: microns',
-	'xEndPos'         : 'xEndPos: microns',
-	'yStartPos'       : 'yStartPos: microns',
-	'yEndPos'         : 'yEndPos: microns',
-	'numFrames'       : 'numFrames: frames',
-	'firstFrame'      : 'firstFrame: frame',
-	'lastFrame'       : 'lastFrame: frame'
-
-}
 
 
 axesLimits = {

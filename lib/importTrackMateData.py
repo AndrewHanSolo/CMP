@@ -84,7 +84,7 @@ class TrackFolder():
 		self.getExperimentParameters()
 		self.convertSpatialCoords()
 		self.updateTrackFilePositions()
-		self.setMaxX()
+		self.shiftTracksToOrigin()
 		if self.expParams['reverse']:
 			self.reverseCoords()
 		#print("\n") #for separating preprocessing outputs for 
@@ -149,24 +149,26 @@ class TrackFolder():
 
 	#find the max x position across all tracks in all TrackFiles
 	#(this should be done after updateTrackFilePositions)
-	def setMaxX(self):
+	def shiftTracksToOrigin(self):
 		#find the minX and maxX to do shift track positions for consolidation
 		minX = []
 		maxX = []
+		minY = []
+		maxY = []
 		for trackFile in self.trackFiles:
 			for track in trackFile.tracks:
 				if not minX or (minX > min(track.x)): minX = min(track.x)
 				if not maxX or (maxX < max(track.x)): maxX = max(track.x)
+				if not minY or (minY > min(track.y)): minY = min(track.y)
+				if not maxY or (maxY < max(track.y)): maxY = max(track.y)
 
-		#shift the tracks to prep for consolidation, set new maxX
-		print(minX, maxX)
+		#shift tracks relative to 0,0 position (origin)
 		for trackFile in self.trackFiles:
 			for track in trackFile.tracks:
 				for index in range(0, len(track.x)):
-					#continue
 					track.x[index] = track.x[index] - minX
-
-		self.expParams['maxX'] = maxX - minX
-
+					track.y[index] = track.y[index] - minY
+		#self.expParams['maxX'] = maxX - minX
+		#self.expParams['maxY'] = maxY - minY
 
 

@@ -1,6 +1,26 @@
 Cell Migration Analysis Platform (CMP)
-This program is designed to facilitate high-population single-cell migration analysis for non-programmers. It is useful for comparing the migration behavior of thousands of cells within various environments.  
 
+@INTRO This program is designed to facilitate high-population single-cell
+migration analysis. It is used to analyze cell-track data outputted by the
+FIJI TrackMate plugin. Multiple data files belonging to one experiment can be 
+combined for full experimental reconstruction, and 
+
+@ANALYSIS STAGES
+
+
+
+
+@CAPABILITIES
+-
+
+
+
+@CODE STRUCTURE
+
+
+
+
+useful for comparing the migration behavior of thousands of cells within various environments. 
 
 The analysis pipeline involves 5 stages: 
 a. Cell-Tracking and Migration Data Generation

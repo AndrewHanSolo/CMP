@@ -94,7 +94,6 @@ class TrackFile():
 		#to be done on TrackFile that has merged tracks
 		#first analysis performed, axeslimits are updated
 		if self.master:
-			self.expParams['maxX'], self.expParams['maxY'] = getTrackFileDimensions(self)
 			self.analysis()
 		return
    
@@ -122,7 +121,8 @@ class TrackFile():
 		return
 
 
-	# Recomputes track measurement dict d
+	# Recomputes track measurement dict d. Updates
+	# axislimits of all trackmeasurements
 	#
 	# @param      self    The object
 	# @param      fields  The fields
@@ -139,6 +139,12 @@ class TrackFile():
 				self.axisLimits[key] = [0, 0]
 			else:
 				self.axisLimits[key] = [min(dataBuffer), max(dataBuffer)]
+
+		#update xPos, yPos, frames axis for filtering
+		if len(self.tracks) > 0:
+			self.axisLimits["xPos"] = [min(self.d["xStartPos"]), max(self.d["xEndPos"])]
+			self.axisLimits["yPos"] = [min(self.d["yStartPos"]), max(self.d["yEndPos"])]
+			self.axisLimits["frames"] = [min(self.d["firstFrame"]), max(self.d["lastFrame"])]
 
 		return
 
@@ -183,8 +189,8 @@ class TrackFile():
 
 		rowIndex = 1
 		for propertyName, na in sorted(self.d.items()):
-			print(propertyName)
 			worksheet2.write(rowIndex, 0, propertyName)
+
 			rowIndex += 1
 
 		workbook.close()
@@ -216,8 +222,8 @@ class TrackFile():
 			minVal = (self.axisLimits[propertyName])[0]
 			vprint("Notice: scan of %s was started at lowest value %.1f instead" % (propertyName, minVal))
 
-		if maxVal > (self.axisLimits[propertyName])[0]:
-			maxVal = (self.axisLimits[propertyName])[0]
+		if maxVal > (self.axisLimits[propertyName])[1]:
+			maxVal = (self.axisLimits[propertyName])[1]
 			vprint("Notice: scan of %s was ended at highest value %.1f instead" % (propertyName, maxVal))
 
 
@@ -312,6 +318,9 @@ class TrackFile():
 	# @return     either wAvg and stdErr or nAvg and stdDev
 	#
 	def getAverage(self, propertyName, weights = False):
+		if len(self.tracks) == 0:
+			vprint("Notice: getAverage called on 0 tracks")
+			return 0, 0, 0
 		try:
 			if not weights:
 				avg = np.average(self.d[propertyName])
@@ -324,7 +333,7 @@ class TrackFile():
 			return weightedAvg, stdDev, stdErr
 
 		except:
-			print("exception hit in getAverage")
+			print("Warning: Exception hit in getAverage")
 			return 0, 0, 0
 
 
@@ -405,12 +414,14 @@ class TrackFile():
 	# @param      settings            The settings
 	#
 	def plotBinData(self, binnedPropertyName, dataPropertyName, settings = TCG.PlotDefaults, **kwargs):
+		vprint("Plotting binData: %s scanned by %s" % (dataPropertyName, binnedPropertyName))
+
 		#plot info
 		plotTitle = "%s, wAvgs of %s binned by %s %s" % (self.fileName, dataPropertyName, binnedPropertyName, settings['title'])
 		if settings['newFig']: fig = constructFig(self, plotTitle)
 				
-		P.xlabel(axesLabels[binnedPropertyName])
-		P.ylabel(axesLabels[dataPropertyName])
+		P.xlabel((self.fields[binnedPropertyName]).axisLabel)
+		P.ylabel((self.fields[dataPropertyName]).axisLabel)
 
 		wAvgs, stdDevs, stdErrs, trackCounts, countPercents, binCenters = self.getBinData(binnedPropertyName, dataPropertyName, settings = settings)
 		P.errorbar(binCenters, wAvgs, yerr = stdErrs, **kwargs)
@@ -431,6 +442,7 @@ class TrackFile():
 	# @return     y values and corresponding bincenters
 	#
 	def getHistogram(self, propertyName1, propertyName2 = None, settings = TCG.PlotDefaults, **kwargs):
+
 		values = self.d[propertyName1]
 		data = np.array(values)
 		y, binEdges = np.histogram(data, bins = settings['bins'], density = settings['norm'])
@@ -447,13 +459,15 @@ class TrackFile():
 	# @return     The Pylab plot
 	#
 	def plotHistogram(self, propertyName1, propertyName2 = None, settings = TCG.PlotDefaults, **kwargs):
+		vprint("Plotting histogram: %s" % (propertyName1))
+
 		#plot info
 		plotTitle = "%s %s histogram, %s" % (self.fileName, propertyName1, settings['title'])
 		if settings['newFig']: fig = constructFig(self, plotTitle)
 
 		normStr = {True : "normalized count", False : "count"}
 		P.ylabel(normStr[settings['norm']])
-		P.xlabel(axesLabels[propertyName1])
+		P.xlabel((self.fields[propertyName1]).axisLabel)
 
 		#histogram generation
 		y, bincenters = self.getHistogram(propertyName1, settings = settings)
@@ -475,11 +489,13 @@ class TrackFile():
 	# @return     the plot object
 	#
 	def plotScatter(self, propertyName1, propertyName2, settings = TCG.PlotDefaults, **kwargs):
+		vprint("Plotting scatterplot: %s vs %s" % (propertyName1, propertyName2))
+
 		#plot info
 		plotTitle = "%s scatterplot of %s and %s, %s" % (self.fileName, propertyName1, propertyName2, settings['title'])
 		if settings['newFig']: fig = constructFig(self, plotTitle)
-		P.xlabel(axesLabels[propertyName1])
-		P.ylabel(axesLabels[propertyName2])
+		P.xlabel((self.fields[propertyName1]).axisLabel)
+		P.ylabel((self.fields[propertyName2]).axisLabel)
 
 		#plot generation
 		xValues = self.d[propertyName1]
@@ -527,12 +543,14 @@ class TrackFile():
 
 	# plots getPercentHistogram
 	def plotPercentHistogram(self, propertyName, percentPropertyName, settings = TCG.PlotDefaults):
+		vprint("Plotting percent histogram: %s scanned by %s" % (propertyName, percentPropertyName))
+
 		#plot info
 		plotTitle = "%s %s histograms by %% %s; %s" % (self.fileName, propertyName, percentPropertyName, settings['title'])
 		if settings['newFig']: fig = constructFig(self, plotTitle)
 		normStr = {True : "normalized count", False : "count"}
 		P.ylabel(normStr[settings['norm']])
-		P.xlabel(axesLabels[propertyName])
+		P.xlabel((self.fields[propertyName]).axisLabel)
 
 		y, bincenters, labels = self.getPercentHistogram(propertyName, percentPropertyName, settings = settings)
 
@@ -636,32 +654,12 @@ class TrackFile():
 		minXPos = min(self.d[xPropertyName])
 		minYPos = min(self.d[yPropertyName] )
 		P.xlim(xmin = minXPos, xmax = maxXPos)
-		P.xlabel(axesLabels[xPropertyName])
+		P.xlabel((self.fields[propertyName]).axisLabel[xPropertyName])
 		P.ylim(ymin = minYPos, ymax = maxYPos)
-		P.ylabel(axesLabels[yPropertyName])
+		P.ylabel((self.fields[propertyName]).axisLabel[yPropertyName])
 
 		savePlot(fig, plotTitle)
 
-
-
-	#generates animation frames for scatterPlots of propertyName1 and 2, where each frame
-	#corresponds to a range of frames
-	def scatterVisualization(self, propertyName1, propertyName2, settings = TCG.PlotDefaults):
-		filterInst = self.filters.copy()
-
-		for i in range(settings['startFrame'], settings['endFrame'], settings['frameInterval']):
-			filterInst['frames'] = [[i, i+settings['frameInterval']]]
-			plotTitle = "scatter of %s and %s, frames %d to %d, %s" % (propertyName1, propertyName2, i, i+settings['frameInterval'], settings['title'])
-			fig = constructFig(self, plotTitle)
-
-			copy = deepcopy(self)
-			copy.selectData(filterInst)
-			setInst = settings.copy()
-			setInst['title'] = 'Frames ' + str(i) + ' to ' + str(i + settings['frameInterval'])
-			copy.plotScatter(propertyName1, propertyName2, settings = setInst)
-			del(copy)
-
-		return
 
 
 	#plots several plotBinData plots in one figure. not dynamic
@@ -684,17 +682,17 @@ class TrackFile():
 		P.subplot(2,3,1)
 		ax1 = P.hist(self.d[propertyName], bins = bins)
 		P.title("histograms")
-		P.xlabel(axesLabels[propertyName])
+		P.xlabel((self.fields[propertyName]).axisLabel[propertyName])
 		P.ylabel("count")
 
 		P.subplot(2,3,2)
 		ax2 = P.hist(self.d['avgMov'], bins = 15)
-		P.xlabel(axesLabels['avgMov'])
+		P.xlabel((self.fields[propertyName]).axisLabel['avgMov'])
 		P.ylabel("count")
 
 		P.subplot(2,3,3)
 		ax3 = P.hist(self.d['velocity'], bins = 15)	
-		P.xlabel(axesLabels['velocity'])
+		P.xlabel((self.fields[propertyName]).axisLabel['velocity'])
 		P.ylabel("count")
 
 		P.subplot(2,3,4)
@@ -821,8 +819,8 @@ class AllExperimentData():
 		plotTitle = 'wAvgCorr comp of ' + propertyName1 + ' and ' + propertyName2 + ', weight = ' + settings['weight'] + settings['title']
 		if settings['newFig']: fig = constructFig(self, plotTitle)
 			
-		P.xlabel(axesLabels[propertyName1])
-		P.ylabel(axesLabels[propertyName2])
+		P.xlabel(cpoconfig[propertyName1])
+		P.ylabel((self.fields[propertyName]).axisLabel[propertyName2])
 
 		for experiment in sorted(self.experiments.items()):
 			xAxisValues, weightedAverages, na = experiment[1].getBinData(propertyName1, propertyName2, settings = settings)
@@ -894,7 +892,7 @@ class AllExperimentData():
 
 		normStr = {True : "(normalized count)", False : "(count)"}
 		P.ylabel('% of total cell count ' + normStr[settings['norm']])
-		P.xlabel(axesLabels[propertyName])
+		P.xlabel((self.fields[propertyName]).axisLabel[propertyName])
 
 		y, bincenters, labels = self.getHistograms(propertyName, settings = settings)
 		

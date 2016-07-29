@@ -44,17 +44,17 @@ def plotBinDataSummary(self, propertyName, settings = TCG.PlotDefaults):
 	P.subplot(2,3,1)
 	ax1 = P.hist(self.d[propertyName], bins = bins)
 	P.title("histograms")
-	P.xlabel(axesLabels[propertyName])
+	P.xlabel((self.fields[propertyName]).axisLabel[propertyName])
 	P.ylabel("count")
 
 	P.subplot(2,3,2)
 	ax2 = P.hist(self.d['avgMov'], bins = 15)
-	P.xlabel(axesLabels['avgMov'])
+	P.xlabel((self.fields[propertyName]).axisLabel['avgMov'])
 	P.ylabel("count")
 
 	P.subplot(2,3,3)
 	ax3 = P.hist(self.d['velocity'], bins = 15)	
-	P.xlabel(axesLabels['velocity'])
+	P.xlabel((self.fields[propertyName]).axisLabel['velocity'])
 	P.ylabel("count")
 
 	P.subplot(2,3,4)

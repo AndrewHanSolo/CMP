@@ -20,11 +20,20 @@ import TrackClassGlobals as TCG
 from mpl_toolkits.mplot3d import Axes3D
 from PlotScripts import *
 
-SAVE                = True
+SAVE                = False
 TrackFile_Test      = True
 TrackFolder_Test    = False
-ALL_EXP_FOLDER_PATH = '/home/andrewhan/Desktop/track files/Nov experiments data/'
-DATA_SAVE_NAME      = '/home/andrewhan/Desktop/CMP/data/test'
+ALL_EXP_FOLDER_PATH = '/home/ahan/Desktop/track files/Nov experiments data/'
+DATA_SAVE_NAME      = '/home/ahan/Desktop/CMP/data/test'
+
+#TEST BOOLS
+TEST_plotBinData = True
+TEST_writeData = True
+TEST_plotScatter = True
+TEST_plotBinData = True
+TEST_plotHistogram = True
+TEST_plotPercentHistogram = True
+TEST_scan = True
 
 #SAVE DATA
 if SAVE is True:
@@ -43,14 +52,7 @@ with open(DATA_SAVE_NAME, 'rb') as input:
 	#SELECT SETTINGS
 	ps = TCG.PlotDefaults.copy()
 	ps["show"] = False
-	ps["xStartPosBins"] = [0, 200, 300, 500, 10000]
-	ps['percent'] = True
-	ps['weight'] = 'age'
-	#ps['bins'] = 5
-	#ps['xStartPosBins'] = 5
-	#ps['directionalityBins'] = 5
-	#ps['migrationPersistenceBins'] = np.linspace(0, 1, 6)
-	#ps['norm'] = True
+
 
 	#FILTER DATA
 	data.selectData(filters)
@@ -61,15 +63,47 @@ if TrackFile_Test:
 
 	for experiment, v in data.experiments.items():
 
+		if TEST_writeData:
+			v.writeData()
 
+		if TEST_plotScatter:
+			v.plotScatter("firstFrame", "age")
+			v.plotScatter("xStartPos", "yStartPos")
+			v.plotScatter("xEndPos", "directionality")
+
+		if TEST_plotBinData:
+			v.plotBinData("xStartPos", "avgMov", ps)
+			v.plotBinData("age", "directionality", ps)
+			v.plotBinData("avgMov", "velocity", ps)
+
+		if TEST_plotHistogram:
+			v.plotHistogram("xStartPos")
+			v.plotHistogram("firstFrame")
+			v.plotHistogram("avgMov")
+
+		if TEST_plotPercentHistogram:
+			v.plotPercentHistogram("directionality", "avgMov", ps)
+			v.plotPercentHistogram("age", "xStartPos", ps)
+			v.plotPercentHistogram("mp", "yStartPos", ps)
+
+		if TEST_scan:
+			v.scan("xStartPos", 0, 10000, 5, TrackFile.plotScatter, "avgMov", "directionality", ps)
+			v.scan("frames", 0, 100, 5, TrackFile.plotScatter, "firstFrame", "age", ps)
+			v.scan("xPos", 0, 10000, 5, TrackFile.plotScatter, "xStartPos", "avgMov", ps)
+			v.scan("xPos", 0, 10000, 5, TrackFile.plotBinData, "age", "firstFrame", ps)
+			v.scan("frames", 0, 100, 10, TrackFile.plotBinData, "xStartPos", "avgMov", ps)
+			v.scan("xStartPos", 0, 10000, 4, TrackFile.plotBinData, "avgMov", "directionality", ps)
+			v.scan("xStartPos", 0, 10000, 5, TrackFile.plotHistogram, "avgMov", None, ps)
+			v.scan("avgMov", 0, 10000, 5, TrackFile.plotHistogram, "directionality", None, ps)
+			v.scan("firstFrame", 0, 10000, 5, TrackFile.plotHistogram, "age", None, ps)
 
 		#P.scatter(v.d['xStartPos'], v.d['yStartPos'])
 		#function = TrackFile.plotCurve(, "xStartPos", "avgMov")
 		#v.writeData()
 		
 		#v.iterate('frames', 30, 70, 10, TrackFile.heatmapVisualization, "xStartPos", "yStartpos", "avgMov", ps)
-		v.scan('xStartPos', 0, 11000, 4, TrackFile.plotBinData, "avgMov", "directionality", ps)
-
+		#v.scan('xStartPos', 0, 11000, 4, TrackFile.plotBinData, "avgMov", "directionality", ps)
+		#v.scan('frames', 0, 100, 10, TrackFile.plotBinData, "xStartPos", "avgMov", ps)
 		#v.scan('frames', 30, 70, 10, TrackFile.plotScatter, "firstFrame", "avgMov", ps)
 		#v.scan('xStartPos', 0, 10000, 3, TrackFile.plotHistogram, "avgMov", None, ps)
 		#v.scan('xStartPos', 0, 10000, 5, TrackFile.plotHistogram, "avgMov", ps)
