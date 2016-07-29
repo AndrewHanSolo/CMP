@@ -1,6 +1,7 @@
 Cell Migration Analysis Platform (CMP)
 This program is designed to facilitate high-population single-cell migration analysis for non-programmers. It is useful for comparing the migration behavior of thousands of cells within various environments.  
 
+
 The analysis pipeline involves 5 stages: 
 a. Cell-Tracking and Migration Data Generation
 b. Data Preprocessing (experiment reconstruction and grouping)
