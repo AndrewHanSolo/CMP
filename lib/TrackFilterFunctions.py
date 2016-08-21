@@ -2,6 +2,7 @@ import TrackClassGlobals as TCG
 import general as gen
 import TrackMeasurementFunctions as TMF
 import numpy as np
+from itertools import cycle
 
 ###Functions only work on TrackFile objects
 
@@ -37,9 +38,14 @@ def selectFrames(self, filters):
 def selectArea(self, filters):
 	if ("xPos" not in filters) and ("yPos" not in filters):
 		return
-	for xArray, yArray in zip(filters['xPos'], filters['yPos']):
-		minX, maxX = xArray[0], xArray[1]
-		minY, maxY = yArray[0], yArray[1]
+
+	try: xFilters = filters["xPos"] 
+	except: xFilters =  [[float("-inf"), float("inf")]]
+
+	try: yFilters = filters["yPos"] 
+	except: yFilters = [[float("-inf"), float("inf")]]	 
+
+	for xFilter, yFilter in zip(xFilters, cycle(yFilters)) if len(xFilters) > len(yFilters) else zip(cycle(xFilters), yFilters):
 		goodTracks = []
 		for track in self.tracks:
 			newXarray = []
@@ -47,8 +53,8 @@ def selectArea(self, filters):
 			newZarray = []
 			newTarray = []
 			for x, y, z, t in zip(track.x, track.y, track.z, track.t):
-				if gen.withinRange(x, minX, maxX) \
-				 and gen.withinRange(y, minY, maxY):
+				if xFilter[0] <= x <= xFilter[1] and \
+				   yFilter[0] <= y <= yFilter[1]:
 					newXarray.append(x)
 					newYarray.append(y)
 					newZarray.append(z)

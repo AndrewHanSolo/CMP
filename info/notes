@@ -1,53 +1,49 @@
+
+-----------------------------------------
 HIGH PRIORITY
 
-matplotlib should make directories in which to save plots if they dont exist
 
-test if getHistograms can do polytonically distributed bins
-clean up plot preprocessing and postprocessing. constructfig
-axesLimits should be set after TrackFile analysis in constructor function
-axesLimits should be set to max value of property
-don't forget about comparePlots
-Plots need to be scaled
 
 
 
 -----------------------------------------
 LOW PRIORITY
 
-add the field functions as seen in the Cell Particle Tracking doc - angular histogram
-dictionaries for Experiment settings and trackfile coordinates
-test settingsLabel
-TFF line 56
-label on colorbar
-don't hardcode settings
+IMPROVE heatmapvisualization xStartPos yStartPos offset
+IMPROVE plot title
+	-date/time, propagate title down, 
+IMPROVE dictionaries for Experiment settings and trackfile coordinates
+IMPROVE histogramscan has bad plot title
+IMPROVE clean up imports
+IMPROVE scan function and kwargs passing
+IMPROVE refactor parameters into kwargs
+IMPROVE combine plotScanner and heatMapVisualization functions
+IMPROVE weightedAverage should return Nan if error and not 0
+		-need to write handlers for nan values
+IMPROVE test settingsLabel
+IMPROVE matplotlib should make directories in which to save plots if they dont exist
+IMPROVE scale plots
+IMPROVE histogram visualizations 
+		-bars preferable over lines in some cases, but scan makes bars difficult to see
+IMPROVE set axesLimits in ExpParams of TrackFile object
+IMPROVE histogram scale
+IMPROVE remove axesLimits
+IMPROVE axesLimits should be updated upon import unless already set 
+IMPROVE commented out xpos and ypos filters break plots (i think plotbindata)
 
-weightedAverage should return Nan if error and not 0
 
-histogramscan has bad plot title
+ADD gui
+ADD unit tests
+ADD summary, comparison functions
+ADD serialization
+ADD the field functions as seen in the Cell Particle Tracking doc - angular histogram, moving from origin
+ADD plot function encapsulation
 
-
-
------------------------------------------
-TO DO
-
-
-use structs instead of dicts and have dict linking strings to structs for user
-TrackClassGlobals should be structured in 
-plotScatter and heatMapVisualization should be merged together, have one master 4d scatterplot func
-metadata summary function
-move wordDoc to readme
-gui
-tests
-plot path of all cells moving from one origin
-compare plots - side by side plotting of various experiment plots
 
 search for REMOVE and TODO keywords
 
 
 
-
-
-------------------------------------------
 
 
 

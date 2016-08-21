@@ -1,7 +1,7 @@
 #General Functions File
 
 from TrackClassGlobals import *
-import TrackClass as TC
+from TrackClass import *
 from math import *
 import matplotlib.pyplot as plt
 import re
@@ -9,26 +9,31 @@ import pylab as P
 import _pickle as pickle
 import traceback
 import sys
+#from itertools import *
 
 
 #imports, preprocesses, and saves all data from Full Experiment Folder for analysis
 def importAndSave(folderPath, saveName):
 	print('Importing, processing, and saving data for analysis...')
-	data = TC.AllExperimentData(folderPath)
+	data = AllExperimentData(folderPath)
 	print(saveName)
 	with open(saveName, 'wb') as output:
 		pickle.dump(data, output, -1)
 	print('Done.')
 	return data
 
+#clear any remaining data out of TrackFile object
+def clear(self):
+	#if type(self).__name__ not "TrackFile":
+	#	dprint("Clear not being called on TrackFile")
+	#	return
+	if len(self.tracks) == 0:
+		self.axisLimits = {}
+		for key, values in self.fields.items():
+			self.d[key] = []
+		return
 
-# constructs new figure with window and figure titles
-#
-# @param      self   The object
-# @param      title  The title
-#
-# @return     { description_of_the_return_value }
-#		
+# constructs new figure with window and figure titles	
 def constructFig(self, title):
 	P.clf()
 	fig = P.gcf()
@@ -36,13 +41,7 @@ def constructFig(self, title):
 	fig.suptitle(title + getSettingsLabel(self), fontsize = 8)
 	return fig
 
-# sets AnalysisDefaults to all 0 or all 1
-#
-# @param      self   The object
-# @param      value  The value
-#
-# @return     { description_of_the_return_value }
-#
+#set all keys in dict to value
 def setAllDictVals(self, value):
 	for key in self:
 		self[key] = value
@@ -83,10 +82,7 @@ def getSettingsLabel(self):
 	settingsString = ''
 	try:
 		for key in self.filters:
-			for array in self.filters[key]:
-				minVal, maxVal = array[0], array[1]
-				if minVal != float('-inf') or maxVal != float('inf'):
-					settingsString = settingsString + ', ' + str(key) + ': ' + str(self.filters[key])
+			settingsString = settingsString + ', ' + str(key) + ': ' + str(self.filters[key])
 	except:
 		print("Failed to generate settings label.")
 		traceback.print_exc(file = sys.stdout)

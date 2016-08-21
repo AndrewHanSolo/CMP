@@ -1,0 +1,63 @@
+Cell Migration Analysis Platform (CMP)
+
+CMP was developed to assist the analysis of single-cell migration data generated using a novel cell migration experiment platform developed by HMao et. al.
+
+Mao Experiment in brief
+
+The migration chamber is a PDMS mold that has two wells at opposite ends
+connected by a 1 cm long channel through which chemical gradients can be
+established and cells can migrate. The migration channel has an exposed bottom
+that can be placed on a desired topographical surface, and by filling one well
+with a chemical of known concentration and the other well with a blank
+solution, beautiful linear gradients that last for more than 24 hours can be
+established. Once the environment is constructed, cells can be seeded into the
+chamber and observed via microscopy imaging. In order to capture migration
+occurring across the entire 1 cm channel for 12+ hours, a programmable stage
+is used to generate time-lapse videos at various positions along the gradient
+simultaneously. Cell blobs are detected by gaussian filtering in each frame, and migration tracks are reconstructed from blob positions using a linear assignment problem algorithm. For one experiment there exist multiple track files that correspond to known positions within the experiment. 
+
+CMP Features
+-Modular import/save, filtering, analysis, excel serialization, and plotting of track data
+-Tunable analysis scope and resolution that supports spationtemporal and measurement scanning
+-Turn-key single-execution scripts that provide data import, comprehensive filtering, analysis, excel serialization, and plotting of (multi)experiment data sets
+-Flexibile for easy dynamic addition of new track dimensions and track measurement functions by taking advantage of python introspection and reflection
+-Multi-file experiment reconstruction and experiment parameter customizability for calculations with accurate units
+-Functions for multi-experiment comparison and cross-correlations
+-Simple code structure for accessibility to non programmers, and easy extensibility
+
+Notice/Legal
+
+
+Tutorial
+
+Installation
+	-linux, windows
+	-dependencies
+
+Importing data to CMP
+	-file organization and setting files
+	-setting experiment parameters
+	-import and save to pickle
+
+Datastructure
+	-AllExperimentData
+		-TrackFile
+			-Tracks
+				-x,y,z,t, (c)
+			-Measurements
+
+Measurement Definitions
+
+Filtering
+	-select tracks based on a measurement
+	-filter functions
+
+Analysis/Plot
+Single Experiment
+	-plotCurve/plotScatter
+	-getHistogram/plotHistogram
+	-getBinData/plotBinData
+	-writeData
+	-scan
+	-heatmap visualization
+Multiple Experiments

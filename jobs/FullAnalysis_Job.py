@@ -15,7 +15,7 @@ from matplotlib import *
 
 
 
-def fullAnalysis(DATA_SAVE_NAME, PATH = 0, filters = {}, ps = TCG.PlotDefaults, funcs = TCG.AnalysisDefaults):
+def fullAnalysis(DATA_SAVE_NAME, PATH = 0, filters = {}, ps = TCG.PlotDefaults, funcs = TCG.DefaultAnalysis):
 
 	#save data from folder path if given
 	if PATH:

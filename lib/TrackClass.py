@@ -22,6 +22,7 @@ import _pickle as pickle
 import sys
 from colorsys import *
 import matplotlib.pyplot as plt
+from TrackMeasurements import *
 
 
 
@@ -109,7 +110,7 @@ class TrackFile():
 		if not filters:
 			return
 		#for filterInstance in filters:
-		updateFilterSettings(self, filters)
+		updateFilterSettings(self, filters, True)
 		try:
 			TFF.selectFrames(self, filters)
 			TFF.selectArea(self, filters)
@@ -118,6 +119,7 @@ class TrackFile():
 			#pass
 			vprint('Warning: exception hit in track filtering. Possibly no tracks to filter.')
 			traceback.print_exc(file = sys.stdout)
+
 		return
 
 
@@ -129,22 +131,26 @@ class TrackFile():
 	#
 	def analysis(self):
 
+		#if no tracks analysis cannot be performed. clear data and return
+		if len(self.tracks) == 0:
+			clear(self)
+			return
+
 		for key, measurementClass in self.fields.items():
 			dataBuffer = []
 			for track in self.tracks:
 				dataBuffer.append(measurementClass.function(track, **self.expParams))
-			self.d[key] = dataBuffer
-			self.meta[key] = self.getAverage(key)
 			if len(dataBuffer) == 0:
-				self.axisLimits[key] = [0, 0]
+				clear(self)
+				return
 			else:
+				self.d[key] = dataBuffer
+				self.meta[key] = self.getAverage(key)
 				self.axisLimits[key] = [min(dataBuffer), max(dataBuffer)]
 
-		#update xPos, yPos, frames axis for filtering
-		if len(self.tracks) > 0:
-			self.axisLimits["xPos"] = [min(self.d["xStartPos"]), max(self.d["xEndPos"])]
-			self.axisLimits["yPos"] = [min(self.d["yStartPos"]), max(self.d["yEndPos"])]
-			self.axisLimits["frames"] = [min(self.d["firstFrame"]), max(self.d["lastFrame"])]
+		self.axisLimits["xPos"] = [min(self.d["xStartPos"]), max(self.d["xEndPos"])]
+		self.axisLimits["yPos"] = [min(self.d["yStartPos"]), max(self.d["yEndPos"])]
+		self.axisLimits["frames"] = [min(self.d["firstFrame"]), max(self.d["lastFrame"])]
 
 		return
 
@@ -218,6 +224,11 @@ class TrackFile():
 			 *args):
 
 		#check that scanning range is valid and update if otherwise
+		if not self.axisLimits:
+			vprint("Warning: scan called on TrackFile with no axisLimits.")
+			vprint("	TrackFile has %d tracks." % (len(self.tracks)))
+			return
+
 		if minVal < (self.axisLimits[propertyName])[0]:
 			minVal = (self.axisLimits[propertyName])[0]
 			vprint("Notice: scan of %s was started at lowest value %.1f instead" % (propertyName, minVal))
@@ -567,7 +578,7 @@ class TrackFile():
 
 
 	# generates heatmap movie of all tracks in experiment, where each dot is
-	# placed at xStartPos. colors represent propertyName values of each track
+	# placed at xStartPos, yStartPos. colors represent propertyName values of each track
 	#
 	# @param      self          The object
 	# @param      propertyName  The property name
@@ -628,7 +639,7 @@ class TrackFile():
 			cm = P.cm.get_cmap('jet')
 			settingsCopy = settings.copy()
 			sc = P.scatter(xFrame, yFrame, c = cFrame, vmin = axesLimits[propertyName][0], vmax = axesLimits[propertyName][1], s = 35, cmap = cm)
-			P.colorbar(sc)
+			P.colorbar(sc, label = (self.fields[propertyName]).axisLabel)
 			P.xlim(xmin = 0, xmax = maxXPos)
 			P.xlabel('microns')
 			P.ylim(ymin = 0, ymax = maxYPos)
@@ -647,16 +658,18 @@ class TrackFile():
 		yPositionsAllFrames = []
 		propertyAllFrames = []
 		sc = P.scatter(self.d[xPropertyName], self.d[yPropertyName], c = self.d[colorPropertyName], vmin = axesLimits[colorPropertyName][0], vmax = axesLimits[colorPropertyName][1], s = 35, cmap = cm)
-		P.colorbar(sc)
+		P.colorbar(sc, label = (self.fields[colorPropertyName]).axisLabel)
 
 		maxXPos = max(self.d[xPropertyName])
 		maxYPos = max(self.d[yPropertyName])
 		minXPos = min(self.d[xPropertyName])
 		minYPos = min(self.d[yPropertyName] )
+
+
 		P.xlim(xmin = minXPos, xmax = maxXPos)
-		P.xlabel((self.fields[propertyName]).axisLabel[xPropertyName])
+		P.xlabel((self.fields[xPropertyName]).axisLabel)
 		P.ylim(ymin = minYPos, ymax = maxYPos)
-		P.ylabel((self.fields[propertyName]).axisLabel[yPropertyName])
+		P.ylabel((self.fields[yPropertyName]).axisLabel)
 
 		savePlot(fig, plotTitle)
 

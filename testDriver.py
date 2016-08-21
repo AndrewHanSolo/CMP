@@ -35,7 +35,7 @@ if 0:
 	ps['title'] = 'old'
 
 	#Analysis functions
-	funcs = TCG.AnalysisDefaults
+	funcs = TCG.DefaultAnalysis
 	setAllDictVals(funcs, 1)
 
 	#Analysis
@@ -61,7 +61,7 @@ if 1:
 	ps['title'] = 'old'
 
 	#Analysis functions
-	funcs = TCG.AnalysisDefaults
+	funcs = TCG.DefaultAnalysis
 	#setAllDictVals(funcs, 1)
 
 	#Analysis

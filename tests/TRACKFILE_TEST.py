@@ -20,25 +20,32 @@ import TrackClassGlobals as TCG
 from mpl_toolkits.mplot3d import Axes3D
 from PlotScripts import *
 
-SAVE                = False
-TrackFile_Test      = True
-TrackFolder_Test    = False
+#DATA IMPORT AND SAVE PATHS
 ALL_EXP_FOLDER_PATH = '/home/ahan/Desktop/track files/Nov experiments data/'
 DATA_SAVE_NAME      = '/home/ahan/Desktop/CMP/data/test'
 
+#TEST MODULES
+SAVE                = False
+TrackFile_Test      = True
+TrackFolder_Test    = False
+
 #TEST BOOLS
-TEST_plotBinData = True
-TEST_writeData = True
-TEST_plotScatter = True
-TEST_plotBinData = True
-TEST_plotHistogram = True
-TEST_plotPercentHistogram = True
-TEST_scan = True
+TEST_writeData            = True
+TEST_plotScatter          = False
+TEST_plotBinData          = True
+TEST_plotHistogram        = False
+TEST_plotPercentHistogram = False
+TEST_scan                 = True
+TEST_cellVisualization    = True
+TEST_heatmapVisualization = False
+
+###############################################
+#BEGIN TEST SCRIPT#############################
+###############################################
 
 #SAVE DATA
 if SAVE is True:
 	data = importAndSave(ALL_EXP_FOLDER_PATH, DATA_SAVE_NAME)
-
 
 #LOAD DATA
 with open(DATA_SAVE_NAME, 'rb') as input:
@@ -46,13 +53,14 @@ with open(DATA_SAVE_NAME, 'rb') as input:
 
 	#SELECT FILTERS
 	filters = {}
-	filters["frames"] = [[30, float('inf')]]
+	filters['frames'] = [[30, float('inf')]]
 	filters['age'] = [[40, float('inf')]]
+	#filters['xPos'] = [[0, 3000],[6000, 10000]]
+	#filters['yPos'] = [[4000, 6000]]
 
 	#SELECT SETTINGS
 	ps = TCG.PlotDefaults.copy()
 	ps["show"] = False
-
 
 	#FILTER DATA
 	data.selectData(filters)
@@ -97,6 +105,14 @@ if TrackFile_Test:
 			v.scan("avgMov", 0, 10000, 5, TrackFile.plotHistogram, "directionality", None, ps)
 			v.scan("firstFrame", 0, 10000, 5, TrackFile.plotHistogram, "age", None, ps)
 
+		if TEST_cellVisualization:
+			v.cellVisualization("avgMov", 10, ps)
+
+		if TEST_heatmapVisualization:
+			v.heatmapVisualization("xStartPos", "yStartPos", "avgMov", ps)
+
+
+			
 		#P.scatter(v.d['xStartPos'], v.d['yStartPos'])
 		#function = TrackFile.plotCurve(, "xStartPos", "avgMov")
 		#v.writeData()
