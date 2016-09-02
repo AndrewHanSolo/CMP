@@ -13,6 +13,7 @@ import sys
 #from itertools import *
 
 
+
 #imports, preprocesses, and saves all data from Full Experiment Folder for analysis
 def importAndSave(folderPath, saveName):
 	print('Importing, processing, and saving data for analysis...')
@@ -120,12 +121,30 @@ def pythagorean(dx, dy):
 	return sqrt(pow(dx, 2) + pow(dy, 2))
 	
 
+#helper for appropriate property clamping in scan function
+def scanAxesClampHelper(self, propertyName, minVal, maxVal):
+	if not self.axisLimits:
+		vprint("Warning: scan called on TrackFile with no axisLimits.")
+		vprint("	TrackFile has %d tracks." % (len(self.tracks)))
+		return
+
+	if minVal < (self.axisLimits[propertyName])[0]:
+		minVal = (self.axisLimits[propertyName])[0]
+		vprint("Notice: scan of %s was started at lowest value %.1f instead" % (propertyName, minVal))
+
+	if maxVal > (self.axisLimits[propertyName])[1]:
+		maxVal = (self.axisLimits[propertyName])[1]
+		vprint("Notice: scan of %s was ended at highest value %.1f instead" % (propertyName, maxVal))
+
+	return minVal, maxVal
+
 def get_spaced_colors(n):
     max_value = 16581375 #255**3
     interval = int(max_value / n)
     colors = [hex(I)[2:].zfill(6) for I in range(0, max_value, interval)]
     
     return [(int(i[:2], 16), int(i[2:4], 16), int(i[4:], 16)) for i in colors]
+
 
 
 #################################

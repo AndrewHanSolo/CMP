@@ -23,6 +23,7 @@ import sys
 from colorsys import *
 import matplotlib.pyplot as plt
 from TrackMeasurements import *
+from serialization import *
 
 
 
@@ -155,17 +156,10 @@ class TrackFile():
 
 		return
 
+	def writeTrackData(self, workbook, worksheetName):
+		vprint("Writing TrackData")
+		worksheet = workbook.add_worksheet(worksheetName + " Track Data")
 
-	# prints all track measurement data to excel file
-	# TODO: Add sheet and write metadata for experiment
-	#
-	# @param      self      The object
-	# @param      settings  The settings
-	#
-	def writeData(self, settings = TCG.PlotDefaults):
-		workbookName = "%s%s measurement data %s.xlsx" % (TCG.SAVE_DIRECTORY, self.fileName, settings['title'])
-		workbook = xlsxwriter.Workbook(workbookName, {'nan_inf_to_errors': True})
-		worksheet = workbook.add_worksheet()
 		colindex = 0
 		rowindex = 0
 		#label track ids
@@ -184,23 +178,51 @@ class TrackFile():
 				rowindex += 1
 				worksheet.write(rowindex, colindex, value)
 
+		return
 
-		worksheet2 = workbook.add_worksheet("Metadata")
-		worksheet2.write(0, 0, "propertyName")
-		worksheet2.write(0, 1, "wAvg")
-		worksheet2.write(0, 2, "nAvg")
-		worksheet2.write(0, 3, "stdDev")
-		worksheet2.write(0, 4, "stdErr")
-		worksheet2.write(0, 5, "nAvg")
-		worksheet2.write(0, 6, "nAvg")
+	#helper function for writing current instance of data to exel file
+	#@param workbookName	Name of the excel file to write to
+	#@param worksheetName	Name of the new sheet to be added to the file
+	def writeMetaData(self, workbook, worksheetName):
+		vprint("Writing MetaData")
+
+		#workbook = xlsxwriter.Workbook(TCG.SAVE_DIRECTORY + workbookName + ".xlsx", {'nan_inf_to_errors': True})
+		worksheet = workbook.add_worksheet(worksheetName + " MetaData")
+		worksheet.write(0, 0, "propertyName")
+		worksheet.write(0, 2, "wAvg")
+		worksheet.write(0, 3, "stdDev")
+		worksheet.write(0, 5, "nAvg")
+		worksheet.write(0, 6, "stdDev")
+		worksheet.write(0, 7, "stdErr")
 
 		rowIndex = 1
 		for propertyName, na in sorted(self.d.items()):
-			worksheet2.write(rowIndex, 0, propertyName)
+			worksheet.write(rowIndex, 0, (self.fields[propertyName]).axisLabel)
+
+			weightAvgVals = self.getAverage(propertyName, weights = TCG.PlotDefaults["weights"]);
+			numAvgVals = self.getAverage(propertyName, weights = False)
+
+			worksheet.write(rowIndex, 2, weightAvgVals[0])
+			worksheet.write(rowIndex, 3, weightAvgVals[1])
+			worksheet.write(rowIndex, 5, numAvgVals[0])
+			worksheet.write(rowIndex, 6, numAvgVals[1])
+			worksheet.write(rowIndex, 7, numAvgVals[2])
 
 			rowIndex += 1
 
-		workbook.close()
+		return
+
+	# prints all track measurement data to excel file
+	# TODO: Add sheet and write metadata for experiment
+	#
+	# @param      self      The object
+	# @param      settings  The settings
+	#
+	def writeData(self, workbook, worksheetName):
+
+		self.writeTrackData(workbook, worksheetName)
+		self.writeMetaData(workbook, worksheetName)
+
 		return
 
 
@@ -225,19 +247,11 @@ class TrackFile():
 			 *args):
 
 		#check that scanning range is valid and update if otherwise
-		if not self.axisLimits:
-			vprint("Warning: scan called on TrackFile with no axisLimits.")
-			vprint("	TrackFile has %d tracks." % (len(self.tracks)))
-			return
+		minVal, maxVal = scanAxesClampHelper(self, propertyName, minVal, maxVal)
 
-		if minVal < (self.axisLimits[propertyName])[0]:
-			minVal = (self.axisLimits[propertyName])[0]
-			vprint("Notice: scan of %s was started at lowest value %.1f instead" % (propertyName, minVal))
-
-		if maxVal > (self.axisLimits[propertyName])[1]:
-			maxVal = (self.axisLimits[propertyName])[1]
-			vprint("Notice: scan of %s was ended at highest value %.1f instead" % (propertyName, maxVal))
-
+		#Instantiate workbook for writing data from this function
+		workBookName = "%s %s scan of %s vs %s by %s.xlsx" % (TCG.SAVE_DIRECTORY, self.fileName, args[0], args[1], propertyName)
+		workbook = xlsxwriter.Workbook(workBookName, {'nan_inf_to_errors': True, 'in_memory': True})
 
 		bins = np.linspace(minVal, maxVal, resolution+1)
 		settings = args[2]
@@ -246,11 +260,14 @@ class TrackFile():
 		colorIndices = np.linspace(0, 1, resolution)
 		fig = constructFig(self, title)
 		
+
+		keepOpen = True #flag for whether to close the excel workbook on the next write
 		for index, colorIdx in zip (range(0, len(bins)-1), colorIndices):
 
 			#get filter instance range
 			lowerVal = bins[index]
 			upperVal = bins[index+1]
+
 			
 			#copy data
 			filtersCopy = {}
@@ -267,8 +284,11 @@ class TrackFile():
 			legendString = "%.1f to %.1f" % (lowerVal, upperVal)
 			legendStrings.append(legendString)
 
+			if (index == len(bins)-1):
+				keepOpen = False
+			
 			#plot
-			P = function(trackFileCopy, *args, color = plt.cm.cool(colorIdx))
+			P = function(trackFileCopy, *args, color = plt.cm.cool(colorIdx), workbook = [workbook, legendString, keepOpen])
 			P.legend(legendStrings, title=(self.fields[propertyName]).axisLabel)
 
 		savePlot(fig, title)
@@ -319,6 +339,9 @@ class TrackFile():
 
 	# returns weightedAverage and standard deviation 
 	# or number average and standard error of a measurement in Trackfile
+	# 
+	# no standard method for calculating weighted average standard error
+	# 
 	# TODO: Maybe nAvg should also have stdDev
 	# TODO: handle errors, don't return 0. will have to do for now
 	# TODO: rename to getAverage()
@@ -336,13 +359,13 @@ class TrackFile():
 		try:
 			if not weights:
 				avg = np.average(self.d[propertyName])
+				stdDev = np.std(self.d[propertyName])
 				stdErr = stats.sem(self.d[propertyName])
-				return avg, 0, stdErr
+				return avg, stdDev, stdErr
 
 			weightedAvg = np.average(self.d[propertyName], weights = self.d[weights])
 			stdDev = sqrt(np.average((self.d[propertyName] - weightedAvg)**2, weights = self.d[weights]))
-			stdErr = stdErr = stats.sem(self.d[propertyName])
-			return weightedAvg, stdDev, stdErr
+			return weightedAvg, stdDev, 0
 
 		except:
 			print("Warning: Exception hit in getAverage")
@@ -425,7 +448,7 @@ class TrackFile():
 	# @param      dataPropertyName    The data property name
 	# @param      settings            The settings
 	#
-	def plotBinData(self, binnedPropertyName, dataPropertyName, settings = TCG.PlotDefaults, **kwargs):
+	def plotBinData(self, binnedPropertyName, dataPropertyName, settings = TCG.PlotDefaults, workbook = None, **kwargs):
 		vprint("Plotting binData: %s scanned by %s" % (dataPropertyName, binnedPropertyName))
 
 		#plot info
@@ -437,6 +460,12 @@ class TrackFile():
 
 		wAvgs, stdDevs, stdErrs, trackCounts, countPercents, binCenters = self.getBinData(binnedPropertyName, dataPropertyName, settings = settings)
 		P.errorbar(binCenters, wAvgs, yerr = stdErrs, **kwargs)
+
+		if workbook:
+			worksheetName = workbook[1]
+			writeBinData(workbook[0], worksheetName, wAvgs, stdDevs, stdErrs, trackCounts, countPercents, binCenters)
+			if not workbook[2]:
+				workbook[0].close()
 
 		if settings['show']: P.show()
 		if settings['save']: savePlot(fig, plotTitle)
@@ -453,7 +482,7 @@ class TrackFile():
 	#
 	# @return     y values and corresponding bincenters
 	#
-	def getHistogram(self, propertyName1, propertyName2 = None, settings = TCG.PlotDefaults, **kwargs):
+	def getHistogram(self, propertyName1, propertyName2 = None, settings = TCG.PlotDefaults, workbook = None, **kwargs):
 
 		values = self.d[propertyName1]
 		data = np.array(values)
@@ -470,7 +499,7 @@ class TrackFile():
 	#
 	# @return     The Pylab plot
 	#
-	def plotHistogram(self, propertyName1, propertyName2 = None, settings = TCG.PlotDefaults, **kwargs):
+	def plotHistogram(self, propertyName1, propertyName2 = None, settings = TCG.PlotDefaults, workbook = None, **kwargs):
 		vprint("Plotting histogram: %s" % (propertyName1))
 
 		#plot info
@@ -484,6 +513,12 @@ class TrackFile():
 		#histogram generation
 		y, bincenters = self.getHistogram(propertyName1, settings = settings)
 		P.plot(bincenters, y, **kwargs)
+
+		if workbook:
+			self.writeTrackData(workbook[0], workbook[1])
+			self.writeMetaData(workbook[0], workbook[1])
+			if not workbook[2]:
+				workbook[0].close()
 
 		if settings['show']: P.show()
 		if settings['save']: savePlot(fig, plotTitle)
@@ -500,7 +535,7 @@ class TrackFile():
 	#
 	# @return     the plot object
 	#
-	def plotScatter(self, propertyName1, propertyName2, settings = TCG.PlotDefaults, **kwargs):
+	def plotScatter(self, propertyName1, propertyName2, settings = TCG.PlotDefaults, workbook = None, **kwargs):
 		vprint("Plotting scatterplot: %s vs %s" % (propertyName1, propertyName2))
 
 		#plot info
@@ -513,6 +548,12 @@ class TrackFile():
 		xValues = self.d[propertyName1]
 		yValues = self.d[propertyName2]
 		P.scatter(xValues, yValues, **kwargs)
+
+		if workbook:
+			self.writeTrackData(workbook[0], workbook[1])
+			self.writeMetaData(workbook[0], workbook[1])
+			if not workbook[2]:
+				workbook[0].close()
 
 		if settings['show']: P.show()
 		if settings['save']: savePlot(fig, plotTitle)
@@ -554,7 +595,7 @@ class TrackFile():
 
 
 	# plots getPercentHistogram
-	def plotPercentHistogram(self, propertyName, percentPropertyName, settings = TCG.PlotDefaults):
+	def plotPercentHistogram(self, propertyName, percentPropertyName, settings = TCG.PlotDefaults, workbook = None, **kwargs):
 		vprint("Plotting percent histogram: %s scanned by %s" % (propertyName, percentPropertyName))
 
 		#plot info
