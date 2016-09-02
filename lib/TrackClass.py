@@ -137,16 +137,17 @@ class TrackFile():
 			return
 
 		for key, measurementClass in self.fields.items():
-			dataBuffer = []
-			for track in self.tracks:
-				dataBuffer.append(measurementClass.function(track, **self.expParams))
-			if len(dataBuffer) == 0:
-				clear(self)
-				return
-			else:
-				self.d[key] = dataBuffer
-				self.meta[key] = self.getAverage(key)
-				self.axisLimits[key] = [min(dataBuffer), max(dataBuffer)]
+			if measurementClass.function:
+				dataBuffer = []
+				for track in self.tracks:
+					dataBuffer.append(measurementClass.function(track, **self.expParams))
+				if len(dataBuffer) == 0:
+					clear(self)
+					return
+				else:
+					self.d[key] = dataBuffer
+					self.meta[key] = self.getAverage(key)
+					self.axisLimits[key] = [min(dataBuffer), max(dataBuffer)]
 
 		self.axisLimits["xPos"] = [min(self.d["xStartPos"]), max(self.d["xEndPos"])]
 		self.axisLimits["yPos"] = [min(self.d["yStartPos"]), max(self.d["yEndPos"])]
@@ -240,7 +241,7 @@ class TrackFile():
 
 		bins = np.linspace(minVal, maxVal, resolution+1)
 		settings = args[2]
-		title = "%s, %s scan of %s vs %s" % (self.fileName , propertyName, args[0], args[1])
+		title = "%s, %s vs %s scanned by %s" % (self.fileName , args[0], args[1], propertyName)
 		legendStrings = []
 		colorIndices = np.linspace(0, 1, resolution)
 		fig = constructFig(self, title)
@@ -268,7 +269,7 @@ class TrackFile():
 
 			#plot
 			P = function(trackFileCopy, *args, color = plt.cm.cool(colorIdx))
-			P.legend(legendStrings)
+			P.legend(legendStrings, title=(self.fields[propertyName]).axisLabel)
 
 		savePlot(fig, title)
 		P.close()
@@ -383,8 +384,8 @@ class TrackFile():
 		#format bin setting to iterator (hacky)
 		binArray = (self.fields[binnedPropertyName]).bins
 		if type(binArray) == int:
-			minValueProperty = 0
-			maxValueProperty = max(self.d[binnedPropertyName])
+			minValueProperty = (self.axisLimits[binnedPropertyName])[0] #min value
+			maxValueProperty = (self.d[binnedPropertyName])[1] #max value
 			binArray = np.linspace(minValueProperty, maxValueProperty, binArray+1)
 
 		#iterate across bins, select data, get dataPropertyName wavgs, stdDevs, stderrs and 
@@ -588,6 +589,9 @@ class TrackFile():
 	# @return     { description_of_the_return_value }
 	#
 	def cellVisualization(self, propertyName, snapshots = None, settings = TCG.PlotDefaults):
+		print(len(self.tracks))
+		print(self.axisLimits)
+
 		#check or set snapshot value
 		firstFrame = (self.axisLimits['firstFrame'])[0]
 		lastFrame = (self.axisLimits['lastFrame'])[1]

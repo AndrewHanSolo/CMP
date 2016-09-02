@@ -19,8 +19,10 @@ class TrackMeasurement():
 	## @param      function     measurement function
 	## @param      axisLabel    The axis label
 	## @param      axisLimits   The axis limits
-	## @param      colorMap     The color map
 	## @param      description  The description
+	## @param      colorMap     The color map
+	## param	   bins         The default number of bins used for histograms
+	## 							It can be a scalar or 2d array in the format [[], [], ...]
 	##
 	def __init__(self, 
 		         name,
@@ -37,8 +39,12 @@ class TrackMeasurement():
 		self.colorMap = colorMap
 		self.bins = bins
 
+#primitive fields (Track dimensions)
+xPos            = TrackMeasurement("xPos", None, "xPos: um", "fundamental track dimension")
+yPos            = TrackMeasurement("yPos", None, "xPos: um", "fundamental track dimension")
+frames          = TrackMeasurement("frame", None, "frame #", "fundamental track dimension")
 
-
+#nonprimitive fields (Track calculated values)
 avgMov          = TrackMeasurement("avgMov", getAvgMov, "avgMov: um/hour", "average distance travelled per frame")
 velocity        = TrackMeasurement("velocity", getVelocity, "velocity: um/hour", "average migration distance per frame")
 concentration   = TrackMeasurement("concentration", getConcentration, "concentration: ug", "local chemical concentration at starting pos")
@@ -68,6 +74,9 @@ axesLimits = {
 	'velocity'       : (0, 20),
 	'frames'         : (0, 100),
 	'xPos'           : (0, 10000),
-	'yPos'           : (0, 10000)
+	'yPos'           : (0, 10000),
+	'firstFrame'     : (0, 72),
+	'lastFrame'      : (0, 72)
+
 
 }

@@ -54,6 +54,10 @@ DefaultAnalysis = {
 #Must exist in TrackMeasurementClass
 DefaultTrackMeasurements = {
 
+	"xPos"            : xPos,
+	"yPos"            : yPos,
+	"frames"          : frames,
+
 	"avgMov"          : avgMov         ,
 	"velocity"        : velocity       ,
 	"concentration"   : concentration  ,

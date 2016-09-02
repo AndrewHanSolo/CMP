@@ -7,6 +7,7 @@ import xml.etree.ElementTree as ET
 from pathlib import Path
 from general import *
 from TrackClassGlobals import *
+import ExperimentParams as EP
 
 
 #returns TrackFile object of TrackMate tracking output file
@@ -63,20 +64,26 @@ class TrackFolder():
 
 
 	def getExperimentParameters(self):
-		#apply settings to all tracks (now merged to single list)
-		settingsFilePath = self.path + '/settings.txt'
-		if os.path.isfile(settingsFilePath):
-			with open(settingsFilePath) as f:
-				reader = csv.reader(f, delimiter='\t')
-				d = list(reader)
-				for line in d:
-				#Reverse track positions if Reverse exists in settings.txt
-					if line[0] == 'Reverse':
-						self.expParams['reverse'] = True
-					if line[0] == 'Gradient':
-						self.expParams['gradient'] = float(line[1])
-					if line[0] == 'SpatialConversion':
-						self.expParams['spatialConversionFactor'] = float(line[1])
+		if self.folderName in EP.ExpParams:
+			self.expParams = EP.ExpParams[self.folderName]
+		else:
+			#apply settings to all tracks (now merged to single list)
+			if os.path.isfile(self.path + '/settings.txt/'):
+				with open(settingsFilePath) as f:
+					reader = csv.reader(f, delimiter='\t')
+					d = list(reader)
+					for line in d:
+					#Reverse track positions if Reverse exists in settings.txt
+						if line[0] == 'Reverse':
+							self.expParams['reverse'] = True
+						if line[0] == 'Gradient':
+							self.expParams['gradient'] = float(line[1])
+						if line[0] == 'SpatialConversion':
+							self.expParams['spatialConversionFactor'] = float(line[1])
+		
+		vprint("Setting %s experiment settings as %s" %(self.folderName, self.expParams))
+		return
+			
 
 
 	#returns TrackFile object (TrackFiles merged and metadata updated)
@@ -87,8 +94,6 @@ class TrackFolder():
 		self.shiftTracksToOrigin()
 		if self.expParams['reverse']:
 			self.reverseCoords()
-		#print("\n") #for separating preprocessing outputs for 
-				  #each individual experiment
 
 		#merge all TrackFile Track objects together to one list
 		mergedTracks = []
@@ -107,7 +112,6 @@ class TrackFolder():
 	#update TrackFile track coordinates based on corresponding entries in
 	#coordinates.txt if it exists in the experiment data folder
 	def updateTrackFilePositions(self):
-		print("updating coords...")
 		coordFilePath = self.path + '/coordinates.txt'
 		print(coordFilePath)
 		if os.path.isfile(coordFilePath):

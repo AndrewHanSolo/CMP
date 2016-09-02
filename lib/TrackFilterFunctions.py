@@ -1,3 +1,4 @@
+import TrackClass as TC
 import TrackClassGlobals as TCG
 import general as gen
 import TrackMeasurementFunctions as TMF
@@ -6,33 +7,40 @@ from itertools import cycle
 
 ###Functions only work on TrackFile objects
 
-#updates track x,y,z,t arrays so that it has data for frames only between minFrame and maxFrame
+#updates track x,y,z,t array so that it has data for xPos between minX and maxX
 def selectFrames(self, filters):
-	if "frames" not in filters:
+	if ("frames" not in filters):
 		return
-	for frameBin in filters['frames']:
-		goodTracks = []
-		for track in self.tracks:
-			newXarray = []
-			newYarray = []
-			newZarray = []
-			newTarray = []
-			for x, y, z, t in zip(track.x, track.y, track.z, track.t):
-				if gen.withinRange(t, frameBin[0], frameBin[1]):
-					newXarray.append(x)
-					newYarray.append(y)
-					newZarray.append(z)
-					newTarray.append(t)
-			track.x = []; track.x = newXarray
-			track.y = []; track.y = newYarray
-			track.z = []; track.z = newZarray
-			track.t = []; track.t = newTarray
-			if len(track.x) >= 2:
-				goodTracks.append(track)
 
-		self.tracks = goodTracks
-		self.analysis()
+	newTracks = []
 
+	for track in self.tracks:
+
+		newX = []
+		newY = []
+		newZ = []
+		newT = []
+
+		skip = True
+
+		for x, y, z, t in zip(track.x, track.y, track.z, track.t):
+			for frames in filters["frames"]:
+				if (frames[0] <= t <= frames[1]):
+					skip = False
+					break
+			if not skip:
+				newX.append(x)
+				newY.append(y)
+				newZ.append(z)
+				newT.append(t)
+
+		if len(newX) > 2:
+			newTrack = TC.Track(newX, newY, newZ, newT)
+			newTracks.append(newTrack)
+
+	self.tracks = newTracks
+	self.analysis()
+	
 
 #updates track x,y,z,t array so that it has data for xPos between minX and maxX
 def selectArea(self, filters):
@@ -43,31 +51,36 @@ def selectArea(self, filters):
 	except: xFilters =  [[float("-inf"), float("inf")]]
 
 	try: yFilters = filters["yPos"] 
-	except: yFilters = [[float("-inf"), float("inf")]]	 
+	except: yFilters = [[float("-inf"), float("inf")]]	
 
-	for xFilter, yFilter in zip(xFilters, cycle(yFilters)) if len(xFilters) > len(yFilters) else zip(cycle(xFilters), yFilters):
-		goodTracks = []
-		for track in self.tracks:
-			newXarray = []
-			newYarray = []
-			newZarray = []
-			newTarray = []
-			for x, y, z, t in zip(track.x, track.y, track.z, track.t):
-				if xFilter[0] <= x <= xFilter[1] and \
-				   yFilter[0] <= y <= yFilter[1]:
-					newXarray.append(x)
-					newYarray.append(y)
-					newZarray.append(z)
-					newTarray.append(t)
-			track.x = []; track.x = newXarray
-			track.y = []; track.y = newYarray
-			track.z = []; track.z = newZarray
-			track.t = []; track.t = newTarray
-			if TMF.getNumFrames(track) > 0 and TMF.getAge(track) >=2:
-				goodTracks.append(track)
+	newTracks = []
 
-		self.tracks = goodTracks
-		self.analysis()
+	for track in self.tracks:
+
+		newX = []
+		newY = []
+		newZ = []
+		newT = []
+
+		skip = True
+
+		for x, y, z, t in zip(track.x, track.y, track.z, track.t):
+			for xFilter, yFilter in zip(xFilters, cycle(yFilters)) if len(xFilters) > len(yFilters) else zip(cycle(xFilters), yFilters):
+				if (xFilter[0] <= x <= xFilter[1] and yFilter[0] <= y <= yFilter[1]):
+					skip = False
+					break
+			if not skip:
+				newX.append(x)
+				newY.append(y)
+				newZ.append(z)
+				newT.append(t)
+
+		if len(newX) > 2:
+			newTrack = TC.Track(newX, newY, newZ, newT)
+			newTracks.append(newTrack)
+
+	self.tracks = newTracks
+	self.analysis()
 
 
 #removes tracks that are not within specified percentile of propertyName. similar to selectData, edits

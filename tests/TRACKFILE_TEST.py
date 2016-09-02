@@ -25,19 +25,19 @@ ALL_EXP_FOLDER_PATH = '/home/ahan/Desktop/track files/Nov experiments data/'
 DATA_SAVE_NAME      = '/home/ahan/Desktop/CMP/data/test'
 
 #TEST MODULES
-SAVE                = False
+SAVE                = True
 TrackFile_Test      = True
 TrackFolder_Test    = False
 
 #TEST BOOLS
 TEST_writeData            = True
-TEST_plotScatter          = False
+TEST_plotScatter          = True
 TEST_plotBinData          = True
-TEST_plotHistogram        = False
-TEST_plotPercentHistogram = False
+TEST_plotHistogram        = True
+TEST_plotPercentHistogram = True
 TEST_scan                 = True
 TEST_cellVisualization    = True
-TEST_heatmapVisualization = False
+TEST_heatmapVisualization = True
 
 ###############################################
 #BEGIN TEST SCRIPT#############################
@@ -53,10 +53,11 @@ with open(DATA_SAVE_NAME, 'rb') as input:
 
 	#SELECT FILTERS
 	filters = {}
-	filters['frames'] = [[30, float('inf')]]
-	filters['age'] = [[40, float('inf')]]
-	#filters['xPos'] = [[0, 3000],[6000, 10000]]
-	#filters['yPos'] = [[4000, 6000]]
+	filters['frames'] = [[40, 50], [60, 70]]
+	#filters['frames'] = [[30, float('inf')]]
+	#filters['age'] = [[40, float('inf')]]
+	filters['xPos'] = [[0, 3000],[6000, 10000]]
+	filters['yPos'] = [[200, 500]]
 
 	#SELECT SETTINGS
 	ps = TCG.PlotDefaults.copy()
@@ -70,6 +71,8 @@ with open(DATA_SAVE_NAME, 'rb') as input:
 if TrackFile_Test:
 
 	for experiment, v in data.experiments.items():
+		print(experiment)
+		print(len(v.tracks))
 
 		if TEST_writeData:
 			v.writeData()
@@ -111,47 +114,6 @@ if TrackFile_Test:
 		if TEST_heatmapVisualization:
 			v.heatmapVisualization("xStartPos", "yStartPos", "avgMov", ps)
 
-
-			
-		#P.scatter(v.d['xStartPos'], v.d['yStartPos'])
-		#function = TrackFile.plotCurve(, "xStartPos", "avgMov")
-		#v.writeData()
-		
-		#v.iterate('frames', 30, 70, 10, TrackFile.heatmapVisualization, "xStartPos", "yStartpos", "avgMov", ps)
-		#v.scan('xStartPos', 0, 11000, 4, TrackFile.plotBinData, "avgMov", "directionality", ps)
-		#v.scan('frames', 0, 100, 10, TrackFile.plotBinData, "xStartPos", "avgMov", ps)
-		#v.scan('frames', 30, 70, 10, TrackFile.plotScatter, "firstFrame", "avgMov", ps)
-		#v.scan('xStartPos', 0, 10000, 3, TrackFile.plotHistogram, "avgMov", None, ps)
-		#v.scan('xStartPos', 0, 10000, 5, TrackFile.plotHistogram, "avgMov", ps)
-		#v.scan('xPos', 0, 10000, 5, TrackFile.plotBinData, "avgMov", "directionality", ps)
-		#v.cellVisualization('avgMov')
-		#v.heatmapVisualization('xStartPos', 'yStartPos', 'avgMov')
-		#v.plotPercentHistogram('directionality', 'avgMov')
-		#3D PLOTS
-		#fig = plt.figure()
-		#ax = fig.gca(projection='3d')
-		#ax.plot_trisurf(avgMovVals, velocityVals, directionalityVals, cmap = cm.jet)
-		#ax.scatter(avgMovVals, velocityVals, directionalityVals)
-
-		# CMP PLOTS
-		#v.plotBinData('xStartPos', 'avgMov', ps)
-		#v.plotBinDataSummary('xStartPos', ps)
-		#v.plotHistogram('directionality', ps)
-		#v.plotHistogramSummary(ps)
-		#v.plotBinData('xStartPos', 'directionality', ps)
-		#v.plotBinData('xStartPos', 'velocity', ps)
-		#v.plotBinData('xStartPos', 'avgMov', ps)
-		#v.plotScatter('directionality', 'avgMov', ps)
-		#v.plotPercentHistogram('directionality', 'avgMov', ps)
-		#v.plotBinDataTemporalScan('xStartPos', 'avgMov', ps)
-		#v.plotHistogramScan('directionality', 'avgMov', ps)
-		#v.plotHistogramTemporalScan('directionality', ps)
-		#v.temporalHistogramAnalysis(ps)
-		#v.spatialTemporalAnalysis(ps)
-		#v.plot3d('xStartPos', 'directionality', 'avgMov', ps)
-		#v.cellVisualization('directionality', ps)
-		#v.scatterVisualization('xStartPos', 'avgMov', ps)
-		#v.getNumbers('directionality', ps)
 		
 		P.show()
 		#P.close()

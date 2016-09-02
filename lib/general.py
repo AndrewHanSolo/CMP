@@ -2,6 +2,7 @@
 
 from TrackClassGlobals import *
 from TrackClass import *
+import TrackClass as TC
 from math import *
 import matplotlib.pyplot as plt
 import re
@@ -15,7 +16,7 @@ import sys
 #imports, preprocesses, and saves all data from Full Experiment Folder for analysis
 def importAndSave(folderPath, saveName):
 	print('Importing, processing, and saving data for analysis...')
-	data = AllExperimentData(folderPath)
+	data = TC.AllExperimentData(folderPath)
 	print(saveName)
 	with open(saveName, 'wb') as output:
 		pickle.dump(data, output, -1)
