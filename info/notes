@@ -9,32 +9,22 @@ HIGH PRIORITY
 -----------------------------------------
 LOW PRIORITY
 
-IMPROVE heatmapvisualization xStartPos yStartPos offset
 IMPROVE plot title
 	-date/time, propagate title down, 
-IMPROVE histogramscan has bad plot title
 IMPROVE clean up imports
 IMPROVE scan function and kwargs passing
 IMPROVE refactor parameters into kwargs
 IMPROVE combine plotScanner and heatMapVisualization functions
-IMPROVE weightedAverage should return Nan if error and not 0
-		-need to write handlers for nan values
 IMPROVE matplotlib should make directories in which to save plots if they dont exist
-IMPROVE scale plots
-IMPROVE histogram visualizations 
-		-bars preferable over lines in some cases, but scan makes bars difficult to see
-IMPROVE set axesLimits in ExpParams of TrackFile object
-IMPROVE histogram scale
-IMPROVE remove axesLimits
 IMPROVE axesLimits should be updated upon import unless already set 
+IMPROVE refactor helperfunctions into trackfile class
+IMPROVE positions offset, see scatterplot
 
 
+ADD plotscripts
 ADD gui
 ADD unit tests
-ADD summary, comparison functions
-ADD serialization
 ADD the field functions as seen in the Cell Particle Tracking doc - angular histogram, moving from origin
-ADD plot function encapsulation
 
 
 search for REMOVE and TODO keywords

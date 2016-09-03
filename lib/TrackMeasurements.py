@@ -40,30 +40,30 @@ class TrackMeasurement():
 		self.bins = bins
 
 #primitive fields (Track dimensions)
-xPos            = TrackMeasurement("xPos", None, "xPos: um", "fundamental track dimension")
-yPos            = TrackMeasurement("yPos", None, "xPos: um", "fundamental track dimension")
-frames          = TrackMeasurement("frame", None, "frame #", "fundamental track dimension")
+xPos            = TrackMeasurement("xPos"            , None               , "xPos: um"                 , "fundamental track dimension")
+yPos            = TrackMeasurement("yPos"            , None               , "xPos: um"                 , "fundamental track dimension")
+frames          = TrackMeasurement("frame"           , None               , "frame #"                  , "fundamental track dimension")
 
 #nonprimitive fields (Track calculated values)
-avgMov          = TrackMeasurement("avgMov", getAvgMov, "avgMov: um/hour", "average distance travelled per frame")
-velocity        = TrackMeasurement("velocity", getVelocity, "velocity: um/hour", "average migration distance per frame")
-concentration   = TrackMeasurement("concentration", getConcentration, "concentration: ug", "local chemical concentration at starting pos")
-directionality  = TrackMeasurement("directionality", getDirectionality, "directionality: %", "ratio of movement in direction of increasing gradient")
-getMP           = TrackMeasurement("mp", getMP, "mp: %", "ratio of movement in one direction")
-getXStartPos    = TrackMeasurement("xStartPos", getxStartPos, "xStartPos: um", "x starting position")
-getXEndPos      = TrackMeasurement("xEndPos", getxEndPos, "xEndPos: um", "x ending position")
-getYStartPos    = TrackMeasurement("yStartPos", getyStartPos, "yStartPos: um", "y starting position")
-getYEndPos      = TrackMeasurement("yEndPos", getyEndPos, "yEndPos: um", "y ending position")
-firstFrame      = TrackMeasurement("firstFrame", getFirstFrame, "firstFrame: frame#", "first frame of track")
-lastFrame       = TrackMeasurement("lastFrame", getLastFrame, "lastFrame: frame#", "last frame of track")
-xMigrationSpeed = TrackMeasurement("xMigrationSpeed", getxMigrationSpeed, "xMigrationSpeed: um/hour", "xMigrationSpeed")
-yMigrationSpeed = TrackMeasurement("yMigrationSpeed", getyMigrationSpeed, "yMigrationSpeed: um/hour", "yMigrationSpeed")
-numFrames       = TrackMeasurement("numFrames", getNumFrames, "numFrames: # of frames", "range of tracks over which track exists")
-age             = TrackMeasurement("age", getAge, "age: range of frames", "number of frames in which track exists")
+avgMov          = TrackMeasurement("avgMov"          , getAvgMov          , "avgMov: um/hour"          , "average distance travelled per frame")
+velocity        = TrackMeasurement("velocity"        , getVelocity        , "velocity: um/hour"        , "average migration distance per frame")
+concentration   = TrackMeasurement("concentration"   , getConcentration   , "concentration: ug"        , "local chemical concentration at starting xpos")
+directionality  = TrackMeasurement("directionality"  , getDirectionality  , "directionality: %"        , "normalized degree of movement in direction of increasing gradient")
+getMP           = TrackMeasurement("mp"              , getMP              , "mp: %"                    , "normalized degree of movement in one direction")
+getXStartPos    = TrackMeasurement("xStartPos"       , getxStartPos       , "xStartPos: um"            , "x starting position")
+getXEndPos      = TrackMeasurement("xEndPos"         , getxEndPos         , "xEndPos: um"              , "x ending position")
+getYStartPos    = TrackMeasurement("yStartPos"       , getyStartPos       , "yStartPos: um"            , "y starting position")
+getYEndPos      = TrackMeasurement("yEndPos"         , getyEndPos         , "yEndPos: um"              , "y ending position")
+firstFrame      = TrackMeasurement("firstFrame"      , getFirstFrame      , "firstFrame: frame#"       , "first frame of track")
+lastFrame       = TrackMeasurement("lastFrame"       , getLastFrame       , "lastFrame: frame#"        , "last frame of track")
+xMigrationSpeed = TrackMeasurement("xMigrationSpeed" , getxMigrationSpeed , "xMigrationSpeed: um/hour" , "xMigrationSpeed")
+yMigrationSpeed = TrackMeasurement("yMigrationSpeed" , getyMigrationSpeed , "yMigrationSpeed: um/hour" , "yMigrationSpeed")
+numFrames       = TrackMeasurement("numFrames"       , getNumFrames       , "numFrames: # of frames"   , "range of tracks over which track exists")
+age             = TrackMeasurement("age"             , getAge             , "age: range of frames"     , "number of frames in which track exists")
 
 
-
-axesLimits = {
+#Default axes limits to be used for plotting
+DefaultAxesLimits = {
 	
 	'xStartPos'      : (0, 10000),
 	'yStartPos'      : (0, 10000),
@@ -77,6 +77,5 @@ axesLimits = {
 	'yPos'           : (0, 10000),
 	'firstFrame'     : (0, 72),
 	'lastFrame'      : (0, 72)
-
 
 }

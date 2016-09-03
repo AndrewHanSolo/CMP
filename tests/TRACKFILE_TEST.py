@@ -25,22 +25,22 @@ ALL_EXP_FOLDER_PATH = '/home/ahan/Desktop/track files/Nov experiments data/'
 DATA_SAVE_NAME      = '/home/ahan/Desktop/CMP/data/test'
 
 #TEST MODULES
-SAVE                      = False
+SAVE                      = True
 TrackFile_Test            = True
 TrackFolder_Test          = True
 
 #TEST BOOLS
-TEST_writeData            = False
-TEST_plotScatter          = False
-TEST_plotBinData          = False
-TEST_plotHistogram        = False
-TEST_plotPercentHistogram = False
-TEST_scan                 = False
-TEST_cellVisualization    = False
-TEST_heatmapVisualization = False
-TEST_individual           = False
-TEST_comparePlots         = False
+TEST_writeData            = True
+TEST_plotScatter          = True
+TEST_plotBinData          = True
+TEST_plotHistogram        = True
+TEST_plotPercentHistogram = True
+TEST_scan                 = True
+TEST_cellVisualization    = True
+TEST_heatmapVisualization = True
+TEST_comparePlots         = True
 TEST_iterate              = True
+TEST_individual           = True
 
 
 ###############################################
@@ -58,14 +58,15 @@ with open(DATA_SAVE_NAME, 'rb') as input:
 	#SELECT FILTERS
 	filters = {}
 	#filters['frames'] = [[40, 50], [60, 70]]
-	#filters['frames'] = [[30, float('inf')]]
-	#filters['age'] = [[40, float('inf')]]
+	filters['frames'] = [[30, float('inf')]]
+	filters['age'] = [[40, float('inf')]]
 	#filters['xPos'] = [[0, 3000],[6000, 10000]]
 	#filters['yPos'] = [[200, 500]]
 
 	#SELECT SETTINGS
 	ps = TCG.PlotDefaults.copy()
 	ps["show"] = False
+	#ps["colorSettings"] = { "vmin": 20, "vmax": 40, "separation": 10, "colorMap": "jet"}
 
 	#FILTER DATA
 	data.selectData(filters)
@@ -74,13 +75,14 @@ with open(DATA_SAVE_NAME, 'rb') as input:
 #FOR INDIVIDUAL TRACKFILE TESTING
 if TrackFile_Test:
 
+	workbook = xlsxwriter.Workbook(TCG.SAVE_DIRECTORY + "fileTest.xlsx", {'nan_inf_to_errors': True, 'in_memory': True})
+
 	for experiment, v in sorted(data.experiments.items()):
-		print(experiment)
-		print(len(v.tracks))
+		print("Experiment:", experiment)
+		print("Track Count: ", len(v.tracks))
 
 		if TEST_writeData:
-			v.writeData(TCG.workbook, "test")
-			v.writeData(TCG.workbook2, "test2")
+			writeData(v, workbook, "")
 
 		if TEST_plotScatter:
 			v.plotScatter("firstFrame", "age")
@@ -88,7 +90,7 @@ if TrackFile_Test:
 			v.plotScatter("xEndPos", "directionality")
 
 		if TEST_plotBinData:
-			v.plotBinData("xStartPos", "avgMov", ps, workbook = [TCG.workbook2, "plotBinData", False])
+			v.plotBinData("xStartPos", "avgMov", ps, workbook = [workbook, experiment, True])
 			v.plotBinData("age", "directionality", ps)
 			v.plotBinData("avgMov", "velocity", ps)
 
@@ -98,7 +100,7 @@ if TrackFile_Test:
 			v.plotHistogram("avgMov")
 
 		if TEST_plotPercentHistogram:
-			v.plotPercentHistogram("directionality", "avgMov", ps)
+			v.plotPercentHistogram("directionality", "avgMov", ps, workbook = [workbook, experiment, True])
 			v.plotPercentHistogram("age", "xStartPos", ps)
 			v.plotPercentHistogram("mp", "yStartPos", ps)
 
@@ -120,15 +122,15 @@ if TrackFile_Test:
 			v.heatmapVisualization("xStartPos", "yStartPos", "avgMov", ps)
 
 		if TEST_individual:
-			v.plotBinData("avgMov", "velocity", ps)
-			v.plotHistogram("avgMov", ps)
-			v.plotScatter("avgMov", "velocity", ps)
+			print("") #syntax requires statement within conditional
+
+	workbook.close()
 
 ########################
 #FOR TRACKFOLDER TESTING
 if TrackFolder_Test:
 
-	workbook = xlsxwriter.Workbook(TCG.SAVE_DIRECTORY + "trackFolderTest.xlsx", {'nan_inf_to_errors': True, 'in_memory': True})
+	workbook = xlsxwriter.Workbook(TCG.SAVE_DIRECTORY + "foldTest.xlsx", {'nan_inf_to_errors': True, 'in_memory': True})
 
 	if TEST_writeData:
 		data.writeData()
@@ -147,14 +149,10 @@ if TrackFolder_Test:
 		data.iterate(TrackFile.heatmapVisualization, "xStartPos", "yStartPos", "avgMov", ps)
 
 	if TEST_individual:
-		print("")
+		#data.iterate(TrackFile.heatmapVisualization, "xStartPos", "yStartPos", "avgMov", ps)
+		data.iterate(TrackFile.plotHistogram, "xStartPos", None, ps, [workbook, "hist", True])
+		data.comparePlots(TrackFile.plotHistogram, "avgMov", None, ps)
 
 
 	workbook.close()
-	TCG.workbook.close()
-	TCG.workbook2.close()
-
-
-
-
 

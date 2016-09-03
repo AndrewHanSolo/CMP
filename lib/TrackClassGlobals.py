@@ -14,10 +14,6 @@ GLOBAL_FIELD_VECTOR = [-1, 0]
 FIELD_VECTOR_INSTANCE = [-1, 0]
 
 
-#Excel workbooks in which data can be written.
-workbook = xlsxwriter.Workbook(TCG.SAVE_DIRECTORY + "test.xlsx", {'nan_inf_to_errors': True, 'in_memory': True})
-workbook2 = xlsxwriter.Workbook(TCG.SAVE_DIRECTORY + "test2.xlsx", {'nan_inf_to_errors': True, 'in_memory': True})
-
 #Default experiment params used when loading 
 #experiment data folder to CMP
 DefaultExpParams = {
@@ -32,7 +28,7 @@ DefaultExpParams = {
 	'spatialConversionFactor' : 0.64, #microns per pixel
 	'frameInterval'	  		  : 10,   #time between frames (in minutes)
 	'speedconversionfactor'   : None,  #computed
-	'axesLimits'			  : axesLimits #key: TrackMeasurement name, value: min max tuple
+	'DefaultAxisLimits'	      : DefaultAxesLimits #key: TrackMeasurement name, value: min max tuple
 
 }
 

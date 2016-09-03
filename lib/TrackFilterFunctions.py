@@ -13,9 +13,7 @@ def selectFrames(self, filters):
 		return
 
 	newTracks = []
-
 	for track in self.tracks:
-
 		newX = []
 		newY = []
 		newZ = []

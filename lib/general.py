@@ -138,6 +138,23 @@ def scanAxesClampHelper(self, propertyName, minVal, maxVal):
 
 	return minVal, maxVal
 
+#returns the parameters necessary for constructing a colormap scatterplot
+#checks for colorMap key in settings, returns default values if not exist
+def getColorMapPlotSettings(trackFile, colorPropertyName, settings):
+	if 'colorSettings' in settings:
+		colorSettings = settings['colorSettings']
+		vmin = colorSettings['vmin']
+		vmax = colorSettings['vmax']
+		separation = colorSettings['separation']
+		colormap = P.get_cmap(colorSettings['colorMap'])
+	else:
+		vmin = (trackFile.axisLimits[colorPropertyName])[0]
+		vmax = (trackFile.axisLimits[colorPropertyName])[1]
+		separation = 35
+		colormap = P.get_cmap('jet')
+
+	return vmin, vmax, separation, colormap
+
 def get_spaced_colors(n):
     max_value = 16581375 #255**3
     interval = int(max_value / n)
