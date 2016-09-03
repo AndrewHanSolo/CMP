@@ -25,19 +25,23 @@ ALL_EXP_FOLDER_PATH = '/home/ahan/Desktop/track files/Nov experiments data/'
 DATA_SAVE_NAME      = '/home/ahan/Desktop/CMP/data/test'
 
 #TEST MODULES
-SAVE                = True
-TrackFile_Test      = True
-TrackFolder_Test    = False
+SAVE                      = False
+TrackFile_Test            = True
+TrackFolder_Test          = True
 
 #TEST BOOLS
-TEST_writeData            = True
-TEST_plotScatter          = True
-TEST_plotBinData          = True
-TEST_plotHistogram        = True
-TEST_plotPercentHistogram = True
-TEST_scan                 = True
-TEST_cellVisualization    = True
-TEST_heatmapVisualization = True
+TEST_writeData            = False
+TEST_plotScatter          = False
+TEST_plotBinData          = False
+TEST_plotHistogram        = False
+TEST_plotPercentHistogram = False
+TEST_scan                 = False
+TEST_cellVisualization    = False
+TEST_heatmapVisualization = False
+TEST_individual           = False
+TEST_comparePlots         = False
+TEST_iterate              = True
+
 
 ###############################################
 #BEGIN TEST SCRIPT#############################
@@ -53,11 +57,11 @@ with open(DATA_SAVE_NAME, 'rb') as input:
 
 	#SELECT FILTERS
 	filters = {}
-	filters['frames'] = [[40, 50], [60, 70]]
+	#filters['frames'] = [[40, 50], [60, 70]]
 	#filters['frames'] = [[30, float('inf')]]
 	#filters['age'] = [[40, float('inf')]]
-	filters['xPos'] = [[0, 3000],[6000, 10000]]
-	filters['yPos'] = [[200, 500]]
+	#filters['xPos'] = [[0, 3000],[6000, 10000]]
+	#filters['yPos'] = [[200, 500]]
 
 	#SELECT SETTINGS
 	ps = TCG.PlotDefaults.copy()
@@ -66,16 +70,17 @@ with open(DATA_SAVE_NAME, 'rb') as input:
 	#FILTER DATA
 	data.selectData(filters)
 
-
+#################################
 #FOR INDIVIDUAL TRACKFILE TESTING
 if TrackFile_Test:
 
-	for experiment, v in data.experiments.items():
+	for experiment, v in sorted(data.experiments.items()):
 		print(experiment)
 		print(len(v.tracks))
 
 		if TEST_writeData:
-			v.writeData()
+			v.writeData(TCG.workbook, "test")
+			v.writeData(TCG.workbook2, "test2")
 
 		if TEST_plotScatter:
 			v.plotScatter("firstFrame", "age")
@@ -83,7 +88,7 @@ if TrackFile_Test:
 			v.plotScatter("xEndPos", "directionality")
 
 		if TEST_plotBinData:
-			v.plotBinData("xStartPos", "avgMov", ps)
+			v.plotBinData("xStartPos", "avgMov", ps, workbook = [TCG.workbook2, "plotBinData", False])
 			v.plotBinData("age", "directionality", ps)
 			v.plotBinData("avgMov", "velocity", ps)
 
@@ -114,27 +119,40 @@ if TrackFile_Test:
 		if TEST_heatmapVisualization:
 			v.heatmapVisualization("xStartPos", "yStartPos", "avgMov", ps)
 
-		
-		P.show()
-		#P.close()
-		break 		#to test only one function
+		if TEST_individual:
+			v.plotBinData("avgMov", "velocity", ps)
+			v.plotHistogram("avgMov", ps)
+			v.plotScatter("avgMov", "velocity", ps)
 
-
-
+########################
 #FOR TRACKFOLDER TESTING
-#if TrackFolder_Test:
+if TrackFolder_Test:
 
-	#data.histogramTemporalAnalysis(ps)
-	#data.spatialTemporalAnalysis(ps)
-	#data.histogramSummary(ps)
-	#data.cellVisualization('avgMov', ps)
-	#data.plotScatter('xStartPos', 'avgMov', ps)
-	#data.scatterVisualization('xStartPos', 'avgMov', ps)
-	#data.plotBinData('xStartPos', 'avgMov', ps)
-	#data.plotBinDataSummary(ps)
-	#data.plotHistograms('avgMov', ps)
-	#data.comparisonAnalysis(ps)
+	workbook = xlsxwriter.Workbook(TCG.SAVE_DIRECTORY + "trackFolderTest.xlsx", {'nan_inf_to_errors': True, 'in_memory': True})
 
+	if TEST_writeData:
+		data.writeData()
+		
+	if TEST_comparePlots:
+		data.comparePlots(TrackFile.plotHistogram, "avgMov", None, ps)
+		data.comparePlots(TrackFile.plotBinData, "avgMov", "velocity", ps)
+		data.comparePlots(TrackFile.plotScatter, "avgMov", "velocity", ps)
+
+	if TEST_iterate:
+		data.iterate(TrackFile.plotScatter, "firstFrame", "age", ps)
+		data.iterate(TrackFile.plotHistogram, "xStartPos", None, ps)
+		data.iterate(TrackFile.plotPercentHistogram, "directionality", "avgMov", ps)
+		data.iterate(TrackFile.scan, "xStartPos", 0, 10000, 5, TrackFile.plotScatter, "avgMov", "directionality", ps)
+		data.iterate(TrackFile.cellVisualization, "avgMov", 10, ps)
+		data.iterate(TrackFile.heatmapVisualization, "xStartPos", "yStartPos", "avgMov", ps)
+
+	if TEST_individual:
+		print("")
+
+
+	workbook.close()
+	TCG.workbook.close()
+	TCG.workbook2.close()
 
 
 
