@@ -4,13 +4,9 @@ from TrackClassGlobals import *
 from TrackClass import *
 import TrackClass as TC
 from math import *
-import matplotlib.pyplot as plt
-import re
+import re, sys, traceback
 import pylab as P
 import _pickle as pickle
-import traceback
-import sys
-#from itertools import *
 
 
 

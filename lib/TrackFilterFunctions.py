@@ -1,6 +1,6 @@
 import TrackClass as TC
 import TrackClassGlobals as TCG
-import general as gen
+from general import withinRange
 import TrackMeasurementFunctions as TMF
 import numpy as np
 from itertools import cycle
@@ -88,7 +88,7 @@ def selectPercentile(self, propertyName, percentRange = [0, 100]):
 	goodTracks = []
 	fieldValues = self.d[propertyName]
 	for index in range(0, len(self.tracks)):
-		if gen.withinRange(fieldValues[index], percentileVals[0], percentileVals[1]):
+		if withinRange(fieldValues[index], percentileVals[0], percentileVals[1]):
 			goodTracks.append(self.tracks[index])
 
 	self.tracks = goodTracks
@@ -111,7 +111,7 @@ def selectDictBinsHelper(self, propertyName, rangeArray):
 	for array in rangeArray:
 		#if track is within range, add it to goodTracks
 		for index in range(0, len(self.tracks)):
-			if gen.withinRange(fieldValues[index], array[0], array[1]):
+			if withinRange(fieldValues[index], array[0], array[1]):
 				goodTracks.append(self.tracks[index])
 
 	self.tracks = goodTracks

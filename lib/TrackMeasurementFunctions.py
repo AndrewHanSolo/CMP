@@ -7,6 +7,9 @@ import numpy as np
 
 #the mean of absolute travel distance between frames. right now only does x and y dims
 def getAvgMov(track, **kwargs):
+
+	SPEED_CONVERSION_FACTOR = kwargs["speedConversionFactor"]
+
 	avgMov = []
 	diff = []
 	frameDistanceBetweenFrames = []
@@ -18,15 +21,17 @@ def getAvgMov(track, **kwargs):
 		positionalDistanceBetweenFrames = gen.getDistance(track.x[index], track.x[index + 1], track.y[index], track.y[index + 1])
 		#the distance traveled per frame between adjacent tracked frames
 		diff.append(positionalDistanceBetweenFrames / frameDistanceBetweenFrames)
-	return gen.nanMean(diff) * TCG.SPEED_CONVERSION_FACTOR
+	return gen.nanMean(diff) * SPEED_CONVERSION_FACTOR
 
 
 #finalX-initialX position / age
 def getVelocity(track, **kwargs):
+	SPEED_CONVERSION_FACTOR = kwargs["speedConversionFactor"]
+
 	age = getAge(track)
 	xTravel = track.x[-1] - track.x[0]
 	yTravel = track.y[-1] - track.y[0]
-	return (gen.pythagorean(xTravel, yTravel) / age) * TCG.SPEED_CONVERSION_FACTOR
+	return (gen.pythagorean(xTravel, yTravel) / age) * SPEED_CONVERSION_FACTOR
 
 #finalY-initialY position / age
 def getxMigrationSpeed(track, **kwargs):
@@ -52,8 +57,8 @@ def getNumFrames(track, **kwargs):
 
 #directionality calculated based on field vector
 def getDirectionality(track, **kwargs):
-	fieldVector = TCG.FIELD_VECTOR_INSTANCE
-	#TODO: change way field vec is assigned
+	FIELD_VECTOR = kwargs['gradientVector']
+
 	xDiffs = gen.getDifferenceArray(track.x)
 	yDiffs = gen.getDifferenceArray(track.y)
 
@@ -63,9 +68,8 @@ def getDirectionality(track, **kwargs):
 		vector = [dx, dy]
 		normVector = gen.normalizeVector(vector)
 		if normVector != 0:
-			normFieldVector = gen.normalizeVector(fieldVector)
-			#print(normFieldVector)
-			directionality = gen.dotProduct(vector, fieldVector) / normVector * normFieldVector
+			normFieldVector = gen.normalizeVector(FIELD_VECTOR)
+			directionality = gen.dotProduct(vector, FIELD_VECTOR) / normVector * normFieldVector
 			directedness.append(directionality)
 		else:
 			directedness.append(0)
@@ -108,9 +112,6 @@ def getMP(track, **kwargs):
 	return gen.pythagorean(xDistance, yDistance) / totalTravel
 
 def getConcentration(track, **kwargs):
-	if ("maxX" not in kwargs) or ("gradientStrength" not in kwargs):
-		vprint("Warning: no maxX or gradientStrength in expParams to calculate concentration.")
-		return 0
-	gradientStrength = kwargs.pop("gradientStrength")
-	maxX = kwargs.pop("maxX")
-	return (gradientStrength / maxX) * (maxX - getxStartPos(track))
+	GRADIENT_STRENGTH = kwargs["gradientStrength"]
+	MAXX = kwargs["maxX"]
+	return (GRADIENT_STRENGTH / MAXX) * (MAXX - getxStartPos(track))

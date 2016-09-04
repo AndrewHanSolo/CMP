@@ -65,23 +65,52 @@ class TrackFolder():
 
 	def getExperimentParameters(self):
 		if self.folderName in EP.ExpParams:
+			vprint("Applying experiment parameters from python definition\n")
 			self.expParams = EP.ExpParams[self.folderName]
-		else:
-			#apply settings to all tracks (now merged to single list)
-			if os.path.isfile(self.path + '/settings.txt/'):
-				with open(settingsFilePath) as f:
-					reader = csv.reader(f, delimiter='\t')
-					d = list(reader)
-					for line in d:
-					#Reverse track positions if Reverse exists in settings.txt
-						if line[0] == 'Reverse':
-							self.expParams['reverse'] = True
-						if line[0] == 'Gradient':
-							self.expParams['gradient'] = float(line[1])
-						if line[0] == 'SpatialConversion':
+		elif os.path.isfile(self.path + '/settings.txt'):
+			settingsFilePath = self.path + '/settings.txt'
+			vprint("Applying experiment parameters from settings file\n")
+			with open(settingsFilePath) as f:
+				reader = csv.reader(f, delimiter='\t')
+				d = list(reader)
+
+				for line in d:
+
+					try:
+
+						if line[0] == 'id':
+							self.expParams['id'] = line[1]
+
+						if line[0] == 'gradientStrength':
+							self.expParams['gradientStrength'] = float(line[1])
+							print('asdfsafasdffasf', float(line[1]))
+
+						if line[0] == 'gradientVector':
+							self.expParams['gradientVector'] = [float(line[1]), float(line[2])]
+
+						if line[0] == 'reverse':
+							self.expParams['reverse'] = bool(float(line[1]))
+
+						if line[0] == 'spatialConversionFactor':
 							self.expParams['spatialConversionFactor'] = float(line[1])
+
+						if line[0] == 'frameInterval':
+							self.expParams['frameInterval'] = float(line[1])
+
+						#override calculated value if present in settings
+						if line[0] == 'speedConversionFactor':
+							self.expParams['speedConversionFactor'] = float(line[1])
+					except:
+						pass
 		
-		vprint("Setting %s experiment settings as %s" %(self.folderName, self.expParams))
+		#calculate and set speedConversionFactor (pixels/frame -> microns/hour) if it is
+		#not already in settings file.
+		if not self.expParams['speedConversionFactor']:
+			spatialFactor = self.expParams['spatialConversionFactor']
+			frameInterval = self.expParams['frameInterval']
+			self.expParams['speedConversionFactor'] = spatialFactor / frameInterval * 60
+
+		vprint("Setting %s experiment params as %s\n\n" %(self.folderName, sorted(self.expParams.items())))
 		return
 			
 
@@ -104,8 +133,7 @@ class TrackFolder():
 		#transfers attributes from TrackFolder to newly merged TrackFile (transfer of metadata)
 		print("merging....")
 		mergedTrackFile =  TC.TrackFile(mergedTracks, self.folderName, path = self.path, master = True)
-		for key, val in self.expParams.items():
-			setattr(mergedTrackFile, key, val)
+		mergedTrackFile.expParams = self.expParams
 		return mergedTrackFile
 
 
@@ -132,23 +160,21 @@ class TrackFolder():
 
 	#convert positions from pixels to microns
 	def convertSpatialCoords(self):
-		if self.expParams['spatialConversionFactor']:
-			self.expParams['maxX'] = self.expParams['maxX'] * self.expParams['spatialConversionFactor']
-			for trackFile in self.trackFiles:
-				for track in trackFile.tracks:
-					for index in range(0, len(track.x)):
-						track.x[index] = track.x[index] * self.expParams['spatialConversionFactor']
-						track.y[index] = track.y[index] * self.expParams['spatialConversionFactor']
-			vprint(self.folderName + " track positions changing by spatial conversion factor " + str(self.expParams['spatialConversionFactor']))
+		for trackFile in self.trackFiles:
+			for track in trackFile.tracks:
+				for index in range(0, len(track.x)):
+					track.x[index] = track.x[index] * self.expParams['spatialConversionFactor']
+					track.y[index] = track.y[index] * self.expParams['spatialConversionFactor']
+		vprint(self.folderName + " track positions changing by spatial conversion factor " + str(self.expParams['spatialConversionFactor']))
 
 
 	def reverseCoords(self):
-			#set new positions based on min and max x positions over all tracks
-			for trackFile in self.trackFiles:
-				for track in trackFile.tracks:
-					for index in range(0, len(track.x)):
-						track.x[index] = self.expParams['maxX'] - track.x[index]
-			vprint(self.folderName + " track positions reversed")
+		#set new positions based on min and max x positions over all tracks
+		for trackFile in self.trackFiles:
+			for track in trackFile.tracks:
+				for index in range(0, len(track.x)):
+					track.x[index] = self.expParams['maxX'] - track.x[index]
+		vprint(self.folderName + " track positions reversed")
 
 
 	#find the max x position across all tracks in all TrackFiles
@@ -172,7 +198,4 @@ class TrackFolder():
 				for index in range(0, len(track.x)):
 					track.x[index] = track.x[index] - minX
 					track.y[index] = track.y[index] - minY
-		#self.expParams['maxX'] = maxX - minX
-		#self.expParams['maxY'] = maxY - minY
-
 

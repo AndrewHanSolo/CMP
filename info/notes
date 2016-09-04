@@ -9,16 +9,10 @@ HIGH PRIORITY
 -----------------------------------------
 LOW PRIORITY
 
-IMPROVE plot title
-	-date/time, propagate title down, 
-IMPROVE clean up imports
 IMPROVE scan function and kwargs passing
 IMPROVE refactor parameters into kwargs
-IMPROVE combine plotScanner and heatMapVisualization functions
 IMPROVE matplotlib should make directories in which to save plots if they dont exist
-IMPROVE axesLimits should be updated upon import unless already set 
-IMPROVE refactor helperfunctions into trackfile class
-IMPROVE positions offset, see scatterplot
+IMPROVE set environment path
 
 
 ADD plotscripts
@@ -27,7 +21,6 @@ ADD unit tests
 ADD the field functions as seen in the Cell Particle Tracking doc - angular histogram, moving from origin
 
 
-search for REMOVE and TODO keywords
 
 
 

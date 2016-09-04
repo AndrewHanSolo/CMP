@@ -1,32 +1,17 @@
 from __future__ import division
 from importTrackMateData import *
+import TrackClassGlobals as TCG
+import TrackFilterFunctions as TFF
+from Serializers import *
 from general import *
-from math import *
-import math
-import os.path
-import csv
+import sys, traceback, datetime, os.path, math
 import numpy as np
 import pylab as P
 from copy import deepcopy
-import sys, traceback
-from mpl_toolkits.mplot3d import Axes3D
-from TrackClassGlobals import *
-import TrackClassGlobals as TCG
-import TrackFilterFunctions as TFF
-import matplotlib
 import matplotlib.cm as cm
 from scipy import stats
-from scipy.stats import gaussian_kde
-from matplotlib.ticker import FuncFormatter
-import xlsxwriter
 import _pickle as pickle
-import sys
-import datetime
 from colorsys import *
-import matplotlib.pyplot as plt
-from TrackMeasurements import *
-from Serializers import *
-
 
 
 
@@ -134,7 +119,6 @@ class TrackFile():
 	# @param      fields  The fields
 	#
 	def analysis(self):
-
 		#if no tracks analysis cannot be performed. clear data and return
 		if len(self.tracks) == 0:
 			clear(self)
@@ -182,6 +166,7 @@ class TrackFile():
 			 function,
 			 *args):
 
+		vprint("Scanning %s by %s..." % (self.fileName, propertyName))
 		#check that scanning range is valid and update if otherwise
 		minVal, maxVal = scanAxesClampHelper(self, propertyName, minVal, maxVal)
 
@@ -225,7 +210,7 @@ class TrackFile():
 				keepOpen = False
 			
 			#plot
-			P = function(trackFileCopy, *args, color = plt.cm.cool(colorIdx), workbook = [workbook, legendString, keepOpen])
+			P = function(trackFileCopy, *args, color = cm.cool(colorIdx), workbook = [workbook, legendString, keepOpen])
 			P.legend(legendStrings, title=(self.fields[propertyName]).axisLabel)
 
 		savePlot(fig, title)
@@ -292,7 +277,7 @@ class TrackFile():
 		if len(self.d[binnedPropertyName]) == 0:
 			return 0, 0, 0, 0, 0, 0
 
-		wAvgs = []
+		avgs = []
 		stdDevs = []
 		stdErrs = []
 		trackCounts = []
@@ -306,7 +291,7 @@ class TrackFile():
 			maxValueProperty = (self.axisLimits[binnedPropertyName])[1] #max value
 			binArray = np.linspace(minValueProperty, maxValueProperty, binArray+1)
 
-		#iterate across bins, select data, get dataPropertyName wavgs, stdDevs, stderrs and 
+		#iterate across bins, select data, get dataPropertyName avgs, stdDevs, stderrs and 
 		#add to array
 		for index in range(len(binArray) - 1):
 			minVal = binArray[index]
@@ -319,7 +304,7 @@ class TrackFile():
 			wAvg, stdDev, stdErr = copy.getAverage(dataPropertyName, weights = settings['weights'])
 
 			if not math.isnan(wAvg):
-				wAvgs.append(wAvg)
+				avgs.append(wAvg)
 				stdDevs.append(stdDev)
 				stdErrs.append(stdErr)
 				trackCounts.append(len(copy.d[binnedPropertyName]))
@@ -330,7 +315,7 @@ class TrackFile():
 					countPercents.append(0)
 				binCenters.append((minVal + maxVal)/2)
 
-		return wAvgs, stdDevs, stdErrs, trackCounts, countPercents, binCenters
+		return avgs, stdDevs, stdErrs, trackCounts, countPercents, binCenters
 
 
 
@@ -348,21 +333,23 @@ class TrackFile():
 		vprint("Plotting binData: %s scanned by %s" % (dataPropertyName, binnedPropertyName))
 
 		#plot info
-		plotTitle = "%s, wAvgs of %s binned by %s %s" % (self.fileName, dataPropertyName, binnedPropertyName, settings['title'])
+		plotTitle = "%s, avgs of %s binned by %s %s" % (self.fileName, dataPropertyName, binnedPropertyName, settings['title'])
 		if settings['newFig']: fig = constructFig(self, plotTitle)
 				
 		P.xlabel((self.fields[binnedPropertyName]).axisLabel)
 		P.ylabel((self.fields[dataPropertyName]).axisLabel)
 
-		wAvgs, stdDevs, stdErrs, trackCounts, countPercents, binCenters = self.getBinData(binnedPropertyName, dataPropertyName, settings = settings)
-		if len(wAvgs) == 0:
+		avgs, stdDevs, stdErrs, trackCounts, countPercents, binCenters = self.getBinData(binnedPropertyName, dataPropertyName, settings = settings)
+		
+		if not avgs:  #(type(avgs) is not int) and len(avgs) == 0:
 			vprint("Warning: No tracks to plot. Exiting plotBinData call instance.")
-			return
-		P.errorbar(binCenters, wAvgs, yerr = stdErrs, **kwargs)
+			return P
+
+		P.errorbar(binCenters, avgs, yerr = stdErrs, **kwargs)
 
 		if workbook:
 			worksheetName = workbook[1]
-			writeBinData(workbook[0], worksheetName, wAvgs, stdDevs, stdErrs, trackCounts, countPercents, binCenters)
+			writeBinData(workbook[0], worksheetName, avgs, stdDevs, stdErrs, trackCounts, countPercents, binCenters)
 			if not workbook[2]:
 				workbook[0].close()
 
@@ -536,6 +523,7 @@ class TrackFile():
 	# @return     { description_of_the_return_value }
 	#
 	def cellVisualization(self, propertyName, snapshots = None, settings = TCG.PlotDefaults):
+		print("Generating movie for %s with framerate %d" % (self.fileName, snapshots))
 		#check or set snapshot value
 		firstFrame = (self.axisLimits['firstFrame'])[0]
 		lastFrame = (self.axisLimits['lastFrame'])[1]
@@ -546,7 +534,6 @@ class TrackFile():
 			print("Invalid snapshot number for moving cell visualization.")
 
 		#print status
-		print("Generating movie for %s with %d frames..." % (self.fileName, snapshots))
 
 		Blues = P.get_cmap('jet')
 		xPositionsAllFrames = []
@@ -599,6 +586,7 @@ class TrackFile():
 
 
 	def heatmapVisualization(self, xPropertyName, yPropertyName, colorPropertyName, settings = TCG.PlotDefaults):
+		vprint("Plotting heatmapVisualization of %s, %s vs %s colored by %s" % (self.fileName, xPropertyName, yPropertyName, colorPropertyName))
 
 		plotTitle = "%s x=%s y=%s c=%s heatmap %s" % (self.fileName, xPropertyName, yPropertyName, colorPropertyName, settings['title'])
 		fig = constructFig(self, plotTitle)
@@ -664,6 +652,8 @@ class AllExperimentData():
 
 
 	def comparePlots(self, plotFunction, *args):
+		vprint("Comparing %s for all experiments" % (plotFunction.__name__))
+
 		settings = args[2]
 		title = "Comparison: %s" % plotFunction.__name__
 		fig = constructFig(self, title)
@@ -681,21 +671,9 @@ class AllExperimentData():
 		P.close()
 
 	def iterate(self, plotFunction, *args):
+		vprint("Iterating through %s for all experiments" % (plotFunction.__name__))
+
 		for experiment, v in sorted(self.experiments.items()):
 			if len(args)==4:
 				args[3][1] = experiment
 			plotFunction(v, *args)
-
-
-
-
-
-
-
-
-##generic Trackfile plot wrapper
-#def plotHelper(trackfile, function, propertyName1, propertyName2, settings):
-#	xaxis = trackfile.d[propertyname1]
-#	yaxis = trackfile.d[propertyName3]
-#	function(xaxis, yaxis, settings)
-#

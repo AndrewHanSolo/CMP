@@ -7,17 +7,9 @@ sys.path.insert(0, './../tests')
 sys.path.insert(0, './../jobs')
 
 from TrackClass import *
-from general import *
 import _pickle as pickle
-from copy import deepcopy
-import pylab as P
-import numpy as np
-from scipy import stats
-import csv
 import xlsxwriter
-from scipy import stats
 import TrackClassGlobals as TCG
-from mpl_toolkits.mplot3d import Axes3D
 from PlotScripts import *
 
 #DATA IMPORT AND SAVE PATHS
@@ -25,21 +17,21 @@ ALL_EXP_FOLDER_PATH = '/home/ahan/Desktop/track files/Nov experiments data/'
 DATA_SAVE_NAME      = '/home/ahan/Desktop/CMP/data/test'
 
 #TEST MODULES
-SAVE                      = True
+SAVE                      = False
 TrackFile_Test            = True
 TrackFolder_Test          = True
 
 #TEST BOOLS
-TEST_writeData            = True
-TEST_plotScatter          = True
-TEST_plotBinData          = True
-TEST_plotHistogram        = True
-TEST_plotPercentHistogram = True
-TEST_scan                 = True
-TEST_cellVisualization    = True
-TEST_heatmapVisualization = True
-TEST_comparePlots         = True
-TEST_iterate              = True
+TEST_writeData            = False
+TEST_plotScatter          = False
+TEST_plotBinData          = False
+TEST_plotHistogram        = False
+TEST_plotPercentHistogram = False
+TEST_scan                 = False
+TEST_cellVisualization    = False
+TEST_heatmapVisualization = False
+TEST_comparePlots         = False
+TEST_iterate              = False
 TEST_individual           = True
 
 
@@ -80,6 +72,7 @@ if TrackFile_Test:
 	for experiment, v in sorted(data.experiments.items()):
 		print("Experiment:", experiment)
 		print("Track Count: ", len(v.tracks))
+		print("max y:", max(v.d['yStartPos']))
 
 		if TEST_writeData:
 			writeData(v, workbook, "")
@@ -105,15 +98,15 @@ if TrackFile_Test:
 			v.plotPercentHistogram("mp", "yStartPos", ps)
 
 		if TEST_scan:
-			v.scan("xStartPos", 0, 10000, 5, TrackFile.plotScatter, "avgMov", "directionality", ps)
-			v.scan("frames", 0, 100, 5, TrackFile.plotScatter, "firstFrame", "age", ps)
-			v.scan("xPos", 0, 10000, 5, TrackFile.plotScatter, "xStartPos", "avgMov", ps)
-			v.scan("xPos", 0, 10000, 5, TrackFile.plotBinData, "age", "firstFrame", ps)
+			#v.scan("xStartPos", 0, 10000, 5, TrackFile.plotScatter, "avgMov", "directionality", ps)
+			#v.scan("frames", 0, 100, 5, TrackFile.plotScatter, "firstFrame", "age", ps)
+			#v.scan("xPos", 0, 10000, 5, TrackFile.plotScatter, "xStartPos", "avgMov", ps)
+			#v.scan("xPos", 0, 10000, 5, TrackFile.plotBinData, "age", "firstFrame", ps)
 			v.scan("frames", 0, 100, 10, TrackFile.plotBinData, "xStartPos", "avgMov", ps)
-			v.scan("xStartPos", 0, 10000, 4, TrackFile.plotBinData, "avgMov", "directionality", ps)
+			v.scan("xStartPos", 0, 10000, 4, TrackFile.plotBinData, "avgMov", "directionality", ps) #<-- error
 			v.scan("xStartPos", 0, 10000, 5, TrackFile.plotHistogram, "avgMov", None, ps)
 			v.scan("avgMov", 0, 10000, 5, TrackFile.plotHistogram, "directionality", None, ps)
-			v.scan("firstFrame", 0, 10000, 5, TrackFile.plotHistogram, "age", None, ps)
+			#v.scan("firstFrame", 0, 10000, 5, TrackFile.plotHistogram, "age", None, ps)
 
 		if TEST_cellVisualization:
 			v.cellVisualization("avgMov", 10, ps)
@@ -122,7 +115,12 @@ if TrackFile_Test:
 			v.heatmapVisualization("xStartPos", "yStartPos", "avgMov", ps)
 
 		if TEST_individual:
-			print("") #syntax requires statement within conditional
+			v.plotBinData('xStartPos', 'concentration', ps)
+			v.plotBinData('concentration', 'avgMov', ps)
+			v.plotBinData('xStartPos', 'avgMov')
+			v.plotScatter("xStartPos", 'yStartPos', ps)
+			v.plotScatter("xStartPos", "directionality", ps)
+			#pass
 
 	workbook.close()
 
@@ -149,9 +147,10 @@ if TrackFolder_Test:
 		data.iterate(TrackFile.heatmapVisualization, "xStartPos", "yStartPos", "avgMov", ps)
 
 	if TEST_individual:
+		pass
 		#data.iterate(TrackFile.heatmapVisualization, "xStartPos", "yStartPos", "avgMov", ps)
-		data.iterate(TrackFile.plotHistogram, "xStartPos", None, ps, [workbook, "hist", True])
-		data.comparePlots(TrackFile.plotHistogram, "avgMov", None, ps)
+		#data.iterate(TrackFile.plotHistogram, "xStartPos", None, ps, [workbook, "hist", True])
+		#data.comparePlots(TrackFile.plotHistogram, "avgMov", None, ps)
 
 
 	workbook.close()

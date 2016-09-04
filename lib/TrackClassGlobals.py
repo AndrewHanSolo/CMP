@@ -1,5 +1,4 @@
 from TrackMeasurements import *
-import xlsxwriter
 
 #Degree of output from CMP to console
 VERBOSE = True  #very talkative
@@ -7,27 +6,20 @@ DEBUG = False	#most talkative
 SAVE_DIRECTORY = '/home/ahan/Desktop/analysis/'
 
 
-#TODO: REMOVE THESE GUYS
-SPEED_CONVERSION_FACTOR = 6
-FIELD_VECTOR_SPECIAL = [1, 0]
-GLOBAL_FIELD_VECTOR = [-1, 0]
-FIELD_VECTOR_INSTANCE = [-1, 0]
-
 
 #Default experiment params used when loading 
 #experiment data folder to CMP
 DefaultExpParams = {
 	
 	'id'                      : None,
-	'path'                    : "",
 	'gradientStrength'        : 0,
 	'gradientVector'          : [-1, 0],
 	'reverse'                 : False,
-	'maxX'                    : 10000,
-	'maxY'                    : 10000,
+	'maxX'                    : 10000, #must be defined. defines the width (um, chemical gradient dimension) of the experiment
+	'maxY'                    : 665, #must be defined. defines the height (um) of the experiment
 	'spatialConversionFactor' : 0.64, #microns per pixel
 	'frameInterval'	  		  : 10,   #time between frames (in minutes)
-	'speedconversionfactor'   : None,  #computed
+	'speedConversionFactor'   : 3.84,  #computed. 
 	'DefaultAxisLimits'	      : DefaultAxesLimits #key: TrackMeasurement name, value: min max tuple
 
 }
