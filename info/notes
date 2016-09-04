@@ -13,12 +13,15 @@ IMPROVE scan function and kwargs passing
 IMPROVE refactor parameters into kwargs
 IMPROVE matplotlib should make directories in which to save plots if they dont exist
 IMPROVE set environment path
+IMPROVE	clean up driver, testDriver, 
 
 
+ADD unit tests
 ADD plotscripts
 ADD gui
-ADD unit tests
-ADD the field functions as seen in the Cell Particle Tracking doc - angular histogram, moving from origin
+ADD documentation
+ADD the field functions as seen in the Cell Particle Tracking doc - angular
+histogram, moving from origin
 
 
 

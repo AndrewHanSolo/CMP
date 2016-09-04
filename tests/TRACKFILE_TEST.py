@@ -70,9 +70,8 @@ if TrackFile_Test:
 	workbook = xlsxwriter.Workbook(TCG.SAVE_DIRECTORY + "fileTest.xlsx", {'nan_inf_to_errors': True, 'in_memory': True})
 
 	for experiment, v in sorted(data.experiments.items()):
-		print("Experiment:", experiment)
+		print("\n\nExperiment:", experiment)
 		print("Track Count: ", len(v.tracks))
-		print("max y:", max(v.d['yStartPos']))
 
 		if TEST_writeData:
 			writeData(v, workbook, "")
