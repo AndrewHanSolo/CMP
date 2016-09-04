@@ -83,7 +83,6 @@ class TrackFolder():
 
 						if line[0] == 'gradientStrength':
 							self.expParams['gradientStrength'] = float(line[1])
-							print('asdfsafasdffasf', float(line[1]))
 
 						if line[0] == 'gradientVector':
 							self.expParams['gradientVector'] = [float(line[1]), float(line[2])]

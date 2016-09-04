@@ -13,17 +13,17 @@ import TrackClassGlobals as TCG
 from PlotScripts import *
 
 #DATA IMPORT AND SAVE PATHS
-ALL_EXP_FOLDER_PATH = '/home/ahan/Desktop/track files/Nov experiments data/'
+ALL_EXP_FOLDER_PATH = '/home/ahan/Desktop/track files/test/'
 DATA_SAVE_NAME      = '/home/ahan/Desktop/CMP/data/test'
 
 #TEST MODULES
-SAVE                      = False
+SAVE                      = True
 TrackFile_Test            = True
-TrackFolder_Test          = True
+TrackFolder_Test          = False
 
 #TEST BOOLS
-TEST_writeData            = False
-TEST_plotScatter          = False
+TEST_writeData            = True
+TEST_plotScatter          = True
 TEST_plotBinData          = False
 TEST_plotHistogram        = False
 TEST_plotPercentHistogram = False
@@ -32,7 +32,7 @@ TEST_cellVisualization    = False
 TEST_heatmapVisualization = False
 TEST_comparePlots         = False
 TEST_iterate              = False
-TEST_individual           = True
+TEST_individual           = False
 
 
 ###############################################
@@ -49,9 +49,10 @@ with open(DATA_SAVE_NAME, 'rb') as input:
 
 	#SELECT FILTERS
 	filters = {}
+	filters['age'] = [[5, float('inf')]]
 	#filters['frames'] = [[40, 50], [60, 70]]
-	filters['frames'] = [[30, float('inf')]]
-	filters['age'] = [[40, float('inf')]]
+	#filters['frames'] = [[30, float('inf')]]
+	#filters['age'] = [[40, float('inf')]]
 	#filters['xPos'] = [[0, 3000],[6000, 10000]]
 	#filters['yPos'] = [[200, 500]]
 
@@ -77,9 +78,11 @@ if TrackFile_Test:
 			writeData(v, workbook, "")
 
 		if TEST_plotScatter:
-			v.plotScatter("firstFrame", "age")
-			v.plotScatter("xStartPos", "yStartPos")
-			v.plotScatter("xEndPos", "directionality")
+			v.plotScatter("xStartPos", "avgMov")
+			v.plotScatter('xStartPos', 'avgMov')
+			v.plotScatter("age", "velocity")
+			v.plotScatter('xStartPos', 'yStartPos')
+			#v.plotScatter("xEndPos", "directionality")
 
 		if TEST_plotBinData:
 			v.plotBinData("xStartPos", "avgMov", ps, workbook = [workbook, experiment, True])
