@@ -17,7 +17,7 @@ from TestJob import Test_Job
 if 1:
 
 	TCG.SAVE_DIRECTORY = '/home/ahan/Desktop/analysis/Example_Job/'
-	trackfilesPath = '/home/ahan/Desktop/track files/Test_Job/'
+	trackfilesPath = '/home/ahan/Desktop/track files/test/'
 	
 	#Filter settings
 	filters = {}
@@ -35,4 +35,4 @@ if 1:
 	Example_Job('test', importpath = trackfilesPath, filters = filters, ps = ps)
 
 	TCG.SAVE_DIRECTORY = '/home/ahan/Desktop/analysis/fullTest/'
-	Test_Job('fullTest', importpath = trackfilesPath, filters = filters, ps = ps)
+	Test_Job('test', filters = filters, ps = ps)
