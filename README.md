@@ -10,17 +10,22 @@ CMP is a lightweight and easily extendible python library for cell migration dat
 - A small but powerful set of functions for correlating...
    - Track measurement vs Track measurement 
    - Track measurement vs Experimental/Environmental parameter
-   - Experiment track metadata vs Experimental parameter
+   - Experiment track metadata vs Experimental/Environmental parameter
 - Iterative spatiotemporal and measurement scanning with adjustable scope and resolution
 - Excel serialization of analysis results
-- Scripts that facilitate TrackMate analysis
+- Scripts for batch-file TrackMate processing and test-data generation
+- Simple code and file structure, and well commented
 
 ##Operating Systems and Dependencies
-CMP runs on Windows 10, Ubuntu 14.04, and Fedora24. The core library uses Python3, but some additional helper scripts use Python2 and IJM.
+CMP runs on Windows 10, Ubuntu 14.04, and Fedora24. The core library uses Python3, but some additional scripts included use Python2 and IJM.
 - numpy 1.8.2
 - xlsxwriter 0.5.2
 - scipy 0.13.3
 - matplotlib 1.3.1
+- pygame (python2, optional. Used in the TrackMate test-data generation script)
+
+##Brief Summary of the Analysis Pipeline
+
 
 
 This program is designed to facilitate high-population single-cell
