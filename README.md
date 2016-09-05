@@ -24,7 +24,6 @@ CMP runs on Windows 10, Ubuntu 14.04, and Fedora24. The core library uses Python
 - scipy 0.13.3
 - matplotlib 1.3.1
 - pygame (python2, optional. Used in the TrackMate test-data generation script)
--
 
 ##Brief Summary of the Analysis Pipeline
 
