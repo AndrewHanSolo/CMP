@@ -1,7 +1,7 @@
 #Cell Migration Analysis Platform (CMP)
 
 ##INTRO
-CMP is a lightweight and easily extendible python library for cell migration data analysis. It was designed primarily to facilitate conclusive throughput for novel high-population single-cell combinatorial topographical and biochemical gradient guidance cue migration experiments developed by H. Mao et. al, and performed at the Johns Hopkins Translational Tissue Engineering Center and Johns Hopkins Institute for Computational Medicine. The experimental setup and the need for CMP's development is explained further below. CMP was designed for use in tangent with the TrackMate cell-tracking plugin available in the FIJI image processing program, but analyzing data from other tracking softwares is also possible. Furthermore, CMP was designed to offer comprehensive cell-tracking analysis to non-programmers.
+CMP is a lightweight and easily extendible python library for cell migration data analysis. It was designed primarily to facilitate conclusive throughput for novel high-population single-cell combinatorial topographical and biochemical gradient guidance cue migration experiments developed by H. Mao et. al, performed at the Johns Hopkins Translational Tissue Engineering Center and Johns Hopkins Institute for Computational Medicine. The experimental setup and the need for CMP's development is explained further below. CMP was designed for use in tangent with the TrackMate cell-tracking plugin available in the FIJI image processing program, but analyzing data from other tracking softwares can also be made possible. Furthermore, CMP was designed to offer comprehensive cell-tracking analysis to non-programmers.
 
 ##Features
 - Full experiment reconstruction from multiple data files.
@@ -30,6 +30,18 @@ CMP runs on Windows 10, Ubuntu 14.04, and Fedora24. The core library uses Python
 
 
 ##Getting Started
+###Pre-import Data File Structure
+
+###Importing Data to CMP
+
+###Filtering
+
+###Plotting and Saving
+
+###Serializing Analysis Data
+
+###Adding measurements
+
 
 
 useful for comparing the migration behavior of thousands of cells within various environments. 
