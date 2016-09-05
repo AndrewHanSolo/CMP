@@ -4,10 +4,13 @@
 CMP is a lightweight and easily extendible python library for cell migration data analysis. It was designed primarily to facilitate conclusive throughput for novel high-population single-cell combinatorial topographical and biochemical gradient guidance cue migration experiments developed by H. Mao et. al, and performed at the Johns Hopkins Translational Tissue Engineering Center and Johns Hopkins Institute for Computational Medicine. The experimental setup and the need for CMP's development is explained further below. CMP was designed for use in tangent with the TrackMate cell-tracking plugin available in the FIJI image processing program, but analyzing data from other tracking softwares is also possible. Furthermore, CMP was designed to offer comprehensive cell-tracking analysis to non-programmers.
 
 ##Features
+- Full experiment reconstruction from multiple separate data files.
+- Single-line extensibility to the Track property analyis library. For a list of possible property calculations, see [Methods For Cell and Particle Tracking, page 10] (http://smal.ws/pdf/mie2012.pdf)
 - Easy scripting for powerful single-execution multi-exe
 - Scripts that facilitate TrackMate analysis
 
-##Dependencies
+##Operating Systems and Dependencies
+CMP runs on Windows 10, Ubuntu 14.04, and Fedora24. The core library uses Python3, but some additional helper scripts use Python2 and IJM.
 - numpy 1.8.2
 - xlsxwriter 0.5.2
 - scipy 0.13.3
