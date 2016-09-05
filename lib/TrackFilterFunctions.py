@@ -1,6 +1,6 @@
 import TrackClass as TC
 import TrackClassGlobals as TCG
-from general import withinRange
+from General import withinRange
 import TrackMeasurementFunctions as TMF
 import numpy as np
 from itertools import cycle

@@ -1,9 +1,9 @@
 from __future__ import division
-from importTrackMateData import *
+from ImportTrackMateData import *
 import TrackClassGlobals as TCG
 import TrackFilterFunctions as TFF
 from Serializers import *
-from general import *
+from General import *
 import sys, traceback, datetime, os.path, math
 import numpy as np
 import pylab as P
@@ -96,10 +96,9 @@ class TrackFile():
 	# @exception  <exception_object> { Error occured while filtering }
 	#
 	def selectData(self, filters):
-		if not filters:
-			return
 		#for filterInstance in filters:
-		updateFilterSettings(self, filters, False)
+		updateFilterSettings(self, filters)
+		
 		try:
 			TFF.selectFrames(self, filters)
 			TFF.selectArea(self, filters)
@@ -211,7 +210,7 @@ class TrackFile():
 			
 			#plot
 			P = function(trackFileCopy, *args, color = cm.cool(colorIdx), workbook = [workbook, legendString, keepOpen])
-			P.legend(legendStrings, title=(self.fields[propertyName]).axisLabel)
+			P.legend(legendStrings, title=(self.fields[propertyName]).axisLabel, loc = settings['legendLoc'], prop = {'size': 9})
 
 		savePlot(fig, title)
 		P.close()
@@ -569,7 +568,7 @@ class TrackFile():
 		maxYPos = max(map(max, yPositionsAllFrames))
 
 		for xFrame, yFrame, cFrame, frameNum in zip(xPositionsAllFrames, yPositionsAllFrames, propertyAllFrames, frames):
-			plotTitle = "%s cellVisual, %s: Frame %d, %s" % (self.fileName, propertyName, int(frameNum), settings['title'])
+			plotTitle = "%s cellVisual, %s, Frame %d, %s" % (self.fileName, propertyName, int(frameNum), settings['title'])
 			fig = constructFig(self, plotTitle)
 			settingsCopy = settings.copy()
 
@@ -639,7 +638,10 @@ class AllExperimentData():
 			self.experiments[experimentName] = experimentFile
 
 
-	def selectData(self, filters = {}):
+	def selectData(self, filters):
+		#for filterInstance in filters:
+		updateFilterSettings(self, filters)
+
 		for experiment in self.experiments:
 			self.experiments[experiment].selectData(filters)
 
@@ -651,11 +653,11 @@ class AllExperimentData():
 		workbook.close()
 
 
-	def comparePlots(self, plotFunction, *args):
+	def compare(self, plotFunction, *args):
 		vprint("Comparing %s for all experiments" % (plotFunction.__name__))
 
 		settings = args[2]
-		title = "Comparison: %s" % plotFunction.__name__
+		title = "Comparison of %s" % plotFunction.__name__
 		fig = constructFig(self, title)
 		settings["show"] = False
 		settings["newFig"] = False
@@ -666,7 +668,7 @@ class AllExperimentData():
 			P = plotFunction(v, *args)
 			legendStrings.append(experiment)
 
-		P.legend(legendStrings, title="experiment", prop = {'size': 9})
+		P.legend(legendStrings, title="experiment", loc = settings['legendLoc'], prop = {'size': 9})
 		savePlot(fig, title)
 		P.close()
 

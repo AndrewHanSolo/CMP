@@ -1,9 +1,9 @@
+from General import *
 import xlsxwriter
-from general import *
 
 
 def writeTrackData(trackFile, workbook, worksheetName):
-	worksheet = workbook.add_worksheet(worksheetName + " Track Data")
+	worksheet = workbook.add_worksheet(worksheetName + " All")
 
 	colindex = 0
 	rowindex = 0
@@ -31,7 +31,7 @@ def writeTrackData(trackFile, workbook, worksheetName):
 def writeMetaData(trackFile, workbook, worksheetName):
 
 	#WRITE AVERAGES METADATA
-	worksheet = workbook.add_worksheet(worksheetName + " MetaData")
+	worksheet = workbook.add_worksheet(worksheetName + " Meta")
 	worksheet.write(0, 0, "propertyName")
 	worksheet.write(0, 3, "wAvg")
 	worksheet.write(0, 4, "stdDev")

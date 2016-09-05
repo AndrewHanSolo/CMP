@@ -3,7 +3,8 @@ from TrackMeasurements import *
 #Degree of output from CMP to console
 VERBOSE = True  #very talkative
 DEBUG = False	#most talkative
-SAVE_DIRECTORY = '/home/ahan/Desktop/analysis/'
+SAVE_DIRECTORY = None #'/home/ahan/Desktop/analysis/' #'C:\\Users\\Andrew Han\\Desktop/analysis/'
+
 
 
 
@@ -21,24 +22,6 @@ DefaultExpParams = {
 	'frameInterval'	  		  : 10,   #time between frames (in minutes)
 	'speedConversionFactor'   : 3.84,  #computed. 
 	'DefaultAxisLimits'	      : DefaultAxesLimits #key: TrackMeasurement name, value: min max tuple
-
-}
-
-#Default analysis plots run using
-#Driver scripts
-#TODO: update Driver scripts
-DefaultAnalysis = {
-
-	'writeData'                      : 0,
-	'histogramTemporalAnalysis'      : 0,
-	'spatioTemporalAnalysis'         : 0,
-	'plotBinDataSummary' 			 : 0,
-	'comparisonAnalysis'             : 0,
-	'heatMaps'                       : 0,
-	'plotScatter'                    : 0,
-	'weightedAverageCorr'            : 1,
-	'binDataSummary'                 : 1,
-	'histogramScan'                  : 0
 
 }
 
@@ -67,7 +50,6 @@ DefaultTrackMeasurements = {
 	"age"             : age
 
 }
-
 
 #plot defualts
 PlotDefaults = {

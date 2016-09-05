@@ -1,5 +1,5 @@
 import TrackClassGlobals as TCG
-import general as gen
+import General as gen
 import numpy as np
 
 
