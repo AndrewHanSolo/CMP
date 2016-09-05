@@ -1,1 +1,0 @@
-[('acceleration', 0), ('angle', 0), ('angleVariance', 180), ('fileNum', 5), ('fileVelocityIncrement', 5), ('folderName', 'constantVelAllAngles'), ('frameNum', 50), ('readmeMessage', ''), ('trackCount', 180), ('velocity', 5), ('velocityVariance', 0)]
