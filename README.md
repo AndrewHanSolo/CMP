@@ -1,10 +1,18 @@
 #Cell Migration Analysis Platform (CMP)
 
 ##INTRO
-CMP is a lightweight and easily extendible python library for cell migration data analysis. It was designed primarily to facilitate conclusive throughput for novel high-population single-cell combinatorial topographical and biochemical gradient guidance cue migration experiments performed at the Johns Hopkins Translational Tissue Engineering Center by H. Mao et. al. The experimental setup and the need for CMP's development is explained further below. CMP was designed for use in tangent with the TrackMate cell-tracking plugin available in the FIJI image processing program, but analyzing data from other tracking softwares is also possible. Furthermore, CMP was designed to offer functionality for comprehensive cell-tracking analysis to non-programmers.
+CMP is a lightweight and easily extendible python library for cell migration data analysis. It was designed primarily to facilitate conclusive throughput for novel high-population single-cell combinatorial topographical and biochemical gradient guidance cue migration experiments developed by H. Mao et. al, and performed at the Johns Hopkins Translational Tissue Engineering Center and Johns Hopkins Institute for Computational Medicine. The experimental setup and the need for CMP's development is explained further below. CMP was designed for use in tangent with the TrackMate cell-tracking plugin available in the FIJI image processing program, but analyzing data from other tracking softwares is also possible. Furthermore, CMP was designed to offer comprehensive cell-tracking analysis to non-programmers.
 
 ##Features
+-
+-Easy scripting for powerful single-execution multi-exe
+-Scripts that facilitate TrackMate analysis
 
+##Dependencies
+-numpy 1.8.2
+-xlsxwriter 0.5.2
+-scipy 0.13.3
+-matplotlib 1.3.1
 
 
 This program is designed to facilitate high-population single-cell
@@ -26,10 +34,7 @@ combined for full experimental reconstruction, and
 
 
 @DEPENDENCIES
-numpy 1.8.2
-xlsxwriter 0.5.2
-scipy 0.13.3
-matplotlib 1.3.1
+
 
 
 
