@@ -1,9 +1,9 @@
 #Cell Migration Analysis Platform (CMP)
 
-##INTRO
-CMP is a lightweight and easily extendible python library for cell migration data analysis. It was designed primarily to facilitate conclusive throughput for novel high-population single-cell combinatorial topographical and biochemical gradient guidance cue migration experiments developed by H. Mao et. al, performed at the Johns Hopkins Translational Tissue Engineering Center and Johns Hopkins Institute for Computational Medicine. The experimental setup and the need for CMP's development is explained further below. CMP was designed for use in tangent with the TrackMate cell-tracking plugin available in the FIJI image processing program, but analyzing data from other tracking softwares can also be made possible. Furthermore, CMP was designed to offer comprehensive cell-tracking analysis to non-programmers.
+##About
+CMP is a lightweight and easily extendible python library for chemotaxis data analysis. It was designed primarily to improve the conclusive throughput of novel chemotaxis experiments developed by H. Mao et. al., and performed at the Johns Hopkins Translational Tissue Engineering Center and the Johs Hopkins Institute for Computational Medicine. A brief presentation detailing the experiment setup can be found [here](www.google.com). In brief, the experiments are high-population single-cell environment-cue-variation nuclear-stain chemotaxis studies. CMP was designed for use in tangent with the [TrackMate](https://github.com/fiji/TrackMate/) particle-tracking plugin available in the FIJI image processing program. CMP was written to provide non-programmers access to a streamlined cell-tracking analysis pipeline with simple yet powerful analysis functions and features. 
 
-##Features
+##Functions and Features
 - Full experiment reconstruction from multiple data files.
 - Easy extension of the Track measurements list
 - Customizable Track data filtering
