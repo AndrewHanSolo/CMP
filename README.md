@@ -29,8 +29,8 @@ CMP runs on Windows 10, Ubuntu 14.04, and Fedora24. The core library uses Python
 1. Convert Image Sequences to TiffStacks using
 2. Run TrackMate on all TiffStacks
 3. Sort xml files into appropriate experiment subdirectories within one parent directory.
-3a. (Optional) Add settings.txt with experiment parameters into any experiment subdirectories.
-3b. (Optional) Add coordinates.txt with xml filenames corresponding to their origin position, in microns.
+   * (Optional) Add settings.txt with experiment parameters into any experiment subdirectories.
+   * (Optional) Add coordinates.txt with xml filenames corresponding to their origin position, in microns.
 4. Within ExampleDriver.py, set IMPORT_PATH to point to the experiment set directory path, set SAVE_PATH to point to the directory in which all plots and excel files are saved, and set SAVE_DATA to an appropriate name for the experiment set. The experiment set data will be saved to CMP/data/ and can be loaded without importing the xml files again.
 5. Add filters
 6. Insert any additional analyses to perform.
