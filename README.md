@@ -33,6 +33,7 @@ CMP runs on Windows 10, Ubuntu 14.04, and Fedora24. The core library uses Python
 3. Move the xml output files into appropriate experiment subdirectories within one parent directory
    * (Optional) Add settings.txt with experiment parameters into any experiment subdirectories.
    * (Optional) Add coordinates.txt with xml filenames corresponding to their relative physical position in microns
+
 ###Running ExampleDriver.py
 *ExampleDriver.py" contains two example analysis jobs, where each job is defined in its own file within *jobs/*. The Driver and jobs are working examples that can be copied and modified as needed.
 1. Within ExampleDriver.py... 
@@ -40,8 +41,10 @@ CMP runs on Windows 10, Ubuntu 14.04, and Fedora24. The core library uses Python
    * set SAVE_PATH to point to the directory in which all plots and excel files are saved
    * set SAVE_DATA to an appropriate name for the experiment set. The experiment set data will be saved to CMP/data/ and can be loaded without importing the xml files again.
 2. Run the script.
+
 ####Filters
 Any TrackMeasurement defined in *lib/TrackMeasurementFunctions" may be filtered by setting the measurement key within a dictionary to [[min, max], [min, max], ...]
+
 ####Analysis Functions
 6. Insert any additional analyses to perform.
 7. Run ExampleDriver.py
