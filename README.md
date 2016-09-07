@@ -1,16 +1,17 @@
 #Cell Migration Analysis Platform (CMP)
 
 ##About
-CMP is a lightweight python script library that offers a streamlined chemotaxis data analysis pipeline. It was designed primarily to improve the conclusive throughput of novel chemotaxis experiments developed by H. Mao et. al., which are performed at the Johns Hopkins Translational Tissue Engineering Center and the Johns Hopkins Institute for Computational Medicine. A presentation detailing the experiment setup can be found [here](www.google.com). In brief, these experiments were high-population nuclear-stain single-cell environment-cue-modulation chemotaxis studies. CMP was designed for use in tangent with the open source [TrackMate](https://github.com/fiji/TrackMate/) particle-tracking plugin available within the FIJI image processing program. CMP offers powerfully simple functions and features that make complex chemotaxis experiment analysis accessible even to non-programmers.
+CMP is a lightweight python script library that offers a streamlined chemotaxis data analysis pipeline. It was designed primarily to improve the conclusive throughput of novel chemotaxis experiments developed by H. Mao et. al., which are performed at the Johns Hopkins Translational Tissue Engineering Center and the Johns Hopkins Institute for Computational Medicine. A presentation detailing the experiment setup can be found [here](www.google.com). In brief, these experiments were high-population nuclear-stain single-cell environment-cue-modulation time-lapse chemotaxis studies. CMP was designed for use in tangent with the open source [TrackMate](https://github.com/fiji/TrackMate/) particle-tracking plugin available within the FIJI image processing program. CMP offers powerfully simple functions and features that make complex chemotaxis experiment analysis accessible even to non-programmers.
 
 ##Functions and Features
 - Multi-file experiment reconstruction
 - Streamlined batch-experiment analysis and cross-experiment comparisons
 - Multi-bin measurement filtering and iterative scanning analysis
 - Single and multi-experiment level analysis functions
-- Result serialization in excel
+- Analysis serialization
 - Scripts for batch-file TrackMate processing and generating mock chemotaxis image data
 - Simple code and file structure for easy extension and interfacing
+- Easy addition of new measurements
 - Ready out of of box
 
 ##Installation and Dependencies
@@ -29,20 +30,27 @@ Generating mock image data requires
 - pygame
 
 ##Getting Started
-###Importing image sequence data to CMP
+###Obtaining track data from time lapse images and importing to CMP
 1. Install FIJI
-2. Open FIJI and press '[' to open the scripting window. Run *TrackMate Helpers/FIJI/ImageSequenceToTiff.ijm* to convert any image sequences to TiffStacks as necessary.
+2. Open FIJI and press '[' to open the scripting window. Run *TrackMate Helpers/FIJI/ImageSequenceToTiff.ijm* to convert folders of image sequences to TiffStacks.
 2. Run *TrackMate Helpers/FIJI/TrackMateBatchScript.py* on each experiment's TiffStack folder
 3. Move the xml output files into appropriate experiment subdirectories within one parent directory
    * (Optional) Add settings.txt with experiment parameters into any experiment subdirectories.
    * (Optional) Add coordinates.txt with xml filenames corresponding to their relative physical position in microns
-
+4. Open *ExampleDriver.py* in a text editor and set the following paths
+```python
+#folder path to experiment-set track data
+IMPORT_PATH = 'C:\Users/Andrew/CMP/Trackdata XMLs/test
+#name of a saved copy of the imported trackfile data. Once the data is saved to data/, trackmate file import is not necessary and the data #can be reloaded with its name.
+SAVE_NAME = 'test-files'
+#folder path for analysis output
+SAVE_DIRECTORY = 'C:\Users/ahan/Desktop/analysis/
+```
+5. Run the script.
 ###Running ExampleDriver.py
 *ExampleDriver.py* is a boilerplate script that calls an analysis job within *jobs/*. The Driver and jobs are working examples that analyze test data (*data/test*), and can be copied and modified as needed.
 1. Within ExampleDriver.py... 
-   * set IMPORT_PATH to point to the experiment set directory path
-   * set SAVE_PATH to point to the directory in which all plots and excel files are saved
-   * set SAVE_DATA to an appropriate name for the experiment set. The experiment set data will be saved to CMP/data/ and can be loaded without importing the xml files again.
+2.
 
 2. Run the script. Plots and excel files should be saved to SAVE_PATH
 
