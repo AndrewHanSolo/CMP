@@ -71,7 +71,7 @@ Any track measurement defined in *lib/TrackMeasurementFunctions* may be filtered
 	
 	dataCopy.selectData(filters)
 ```
-Data is filtered in the order of frames, area, and measurements. The spatial and temporal filter functions recompute measurements after filtering. To create a fresh copy of the data for a different set of filters is simply 
+Data is filtered in the order of frames, area, and measurements. The spatial and temporal filter functions recompute measurements after filtering. To create a fresh copy of the data for a different set of filters is
 ```python
 datacopy = deepcopy(data)
 datacopy.selectData(newFilters)
