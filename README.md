@@ -49,9 +49,11 @@ Generating mock image data requires
 ###Customizing your analysis
 ####Setting Experiment Parameters
 ####Data Filtering
-Any track measurement defined in *lib/TrackMeasurementFunctions* may be filtered
+Any track measurement defined in *lib/TrackMeasurementFunctions* may be filtered.
 
 ```python
+	dataCopy = deepcopy(data)
+
 	filters = {}
 	filters['frames'] = [[5, 147]]
 	filters['xPos'] = [[100, 1390]]
@@ -59,7 +61,7 @@ Any track measurement defined in *lib/TrackMeasurementFunctions* may be filtered
 	filters['age'] = [[15, float('inf')]]
 	filters['directionality'] = [[-1, -0.8], [0.8, 1]]
 	
-	data.selectData(filters)
+	dataCopy.selectData(filters)
 ```
 Data is filtered in the order of frames, area, and measurements. The spatial and temporal filter functions recompute measurements after filtering. To create a fresh copy of the data for a different set of filters is simply 
 ```python
@@ -67,11 +69,25 @@ datacopy = deepcopy(data)
 datacopy.selectData(newFilters)
 ```
 ####Functions
-There are 4 core functions for inspecting correlations at the Experiment level.
+There are 4 core correlation functions.
 #####plotBinData
 ```python
-data.plotBinData("xPos", "velocity")
-```bins tracks based on the first measurement argument, and computes the age-weighted average of the second measurement argument within each bin. The weight can be changed to any measurement. 
+experiment = data.experiments['test']
+
+#Divide tracks by x-dimension spatial bins between 0 and 10000 , and compute age-weighted averages of velocity in each bin.t. 
+experiment.plotBinData("xpos", "velocity")
+
+#Bin tracks by frames and perform the same analysis as above.
+experiment.scan("frames", 0, 10000, 10, TrackFile.plotBinData, "xPos", "velocity")
+
+#Perform the two analyses above on all experiments in the set. 
+data.iterate(TrackFile.plotBinData, "xPos", "velocity")
+data.iterate(TrackFile.scan, "frames", 0, 10000, 10, TrackFile.plotBinData, "xPos", "velocity")
+
+#Compare experiments in an analysis.
+data.compare(TrackFile.plotBinData, "xPos", "velocity")
+```
+bins tracks based on the first measurement argument, and computes the age-weighted average of the second measurement argument within each bin. The weight can be changed to any measurement. 
 ####plotHistogram
 ```python
 data.plotHistogram("avgMov", None)
