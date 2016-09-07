@@ -22,10 +22,10 @@ The required libraries for analysis are
 - matplotlib 1.3.1
 
 ...and generating mock chemotaxis image data requires
-- Python 2 and pygame library (for Python 2)
+- Python 2 and pygame (for Python 2)
 
 ##Getting Started
-###Preparing Data for Import to CMP
+###Importing image sequence data to CMP
 1. Install FIJI
 2. Open FIJI and press '[' to open the scripting window. Run *TrackMate Helpers/FIJI/ImageSequenceToTiff.ijm* to convert any image sequences to TiffStacks as necessary.
 2. Run *TrackMate Helpers/FIJI/TrackMateBatchScript.py* on each experiment's TiffStack folder
@@ -34,34 +34,24 @@ The required libraries for analysis are
    * (Optional) Add coordinates.txt with xml filenames corresponding to their relative physical position in microns
 
 ###Running ExampleDriver.py
-*ExampleDriver.py* contains two example analysis jobs, where each job is defined in its own file within *jobs/*. The Driver and jobs are working examples that can be copied and modified as needed.
+*ExampleDriver.py* is a boilerplate script that calls two analysis jobs found in *jobs/*. The Driver and jobs are working examples that analyze test data (*data/test*), and can be copied and modified as needed.
 1. Within ExampleDriver.py... 
    * set IMPORT_PATH to point to the experiment set directory path
    * set SAVE_PATH to point to the directory in which all plots and excel files are saved
    * set SAVE_DATA to an appropriate name for the experiment set. The experiment set data will be saved to CMP/data/ and can be loaded without importing the xml files again.
 2. Run the script. Plots and excel files should be saved to SAVE_PATH
-
+###Settings
 
 ####Filters
 Any TrackMeasurement defined in *lib/TrackMeasurementFunctions" may be filtered by setting the measurement key within a dictionary to [[min, max], [min, max], ...]
 
-####Analysis Functions
+####Functions
 6. Insert any additional analyses to perform.
 7. Run ExampleDriver.py
 
+####Plotting, Serializing and Saving
 
-##Getting Started
-###Pre-import Data File Structure
-
-###Importing Data to CMP
-
-###Filtering
-
-###Plotting and Saving
-
-###Serializing Analysis Data
-
-###Adding measurements
+####Adding measurements
 
 
 
