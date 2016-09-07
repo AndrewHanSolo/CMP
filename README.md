@@ -49,11 +49,14 @@ Generating mock image data requires
 ###Customizing your analysis
 ####Setting Experiment Parameters
 ####Data Filtering
-Any TrackMeasurement defined in *lib/TrackMeasurementFunctions* may be filtered by setting the measurement key within a dictionary to [[min, max], [min, max], ...].
-`<
+Any TrackMeasurement defined in *lib/TrackMeasurementFunctions* may be filtered by setting the measurement key within a dictionary and passing it to selectData() to any number of inclusive bins. 
+
+```python
 	filters = {}
 	filters['age'] = [[15, float('inf')]]
-	filters['frames'] = [[0, float('inf')]]>`
+	filters['frames'] = [[5, 55]]
+	filters['directionality'] = [[-1, -0.8], [0.8, 1]]
+```	
 I think you should use an
 `<addr>` element here instead.
 ####Functions
