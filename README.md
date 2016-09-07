@@ -68,14 +68,13 @@ Data is filtered in the order of frames, area, and measurements. The spatial and
 datacopy = deepcopy(data)
 datacopy.selectData(newFilters)
 ```
-####Functions
-There are 4 core correlation functions.
-#####plotBinData
+####Analysis Functions
 ```python
 experiment = data.experiments['test']
 
 #basic functions
 experiment.plotScatter("xStartPos", "yStartPos")
+experiment.plotScatter("xStartPos", "yStartPos", "avgMov")
 experiment.plotHistogram("velocity", None)
 
 #Split tracks into bins of xpos and compute average velocity in each bin.
@@ -90,7 +89,27 @@ data.iterate(TrackFile.scan, "frames", 0, 10000, 10, TrackFile.plotBinData, "xPo
 
 #Compare experiments for an analysis.
 data.compare(TrackFile.plotBinData, "xPos", "velocity")
+
+#Write summary data to a workbook
+data.writeData()
+
+#Write data for an analysis function
+xpos_velocity_book = createWorkbook()
+experiment.plotBinData("xpos", "velocity", workbook = [xpos_velocity_book, "plotBinData"])
+experiment.plotHistogram("veocity", None, workbook = [xpos_velocity_book, "histogram"])
+experiment.scan(TrackFile.plotBinData, "xpos", "velocity", workbook = createWorkbook())
+
+#Render the data spatial movement
+experiment.render()
 ```
+####Add new track measurement
+Adding new measurements to CMP is very simple.
+1. Declare a new measurement in *lib/TrackMeasurements.py*
+2. Implement the measurement calculation function in *lib/TrackMeasurementFunctions.py*
+3. Add your new measurement to the list of DefaultTrackMeasurements in *lib/TrackClassGlobals.py*
+4. 
+You're Done!
+
 bins tracks based on the first measurement argument, and computes the age-weighted average of the second measurement argument within each bin. The weight can be changed to any measurement. 
 ####plotHistogram
 ```python
