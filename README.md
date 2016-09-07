@@ -50,6 +50,8 @@ Generating mock image data requires
 ####Setting Experiment Parameters
 ####Data Filtering
 Any TrackMeasurement defined in *lib/TrackMeasurementFunctions* may be filtered by setting the measurement key within a dictionary to [[min, max], [min, max], ...]
+I think you should use an
+`<addr>` element here instead.
 ####Functions
 ####Plotting, Serializing and Saving
 ####Adding measurements
