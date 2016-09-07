@@ -74,17 +74,21 @@ There are 4 core correlation functions.
 ```python
 experiment = data.experiments['test']
 
-#Divide tracks by x-dimension spatial bins between 0 and 10000 , and compute age-weighted averages of velocity in each bin.t. 
+#basic functions
+experiment.plotScatter("xStartPos", "yStartPos")
+experiment.plotHistogram("velocity", None)
+
+#Split tracks into bins of xpos and compute average velocity in each bin.
 experiment.plotBinData("xpos", "velocity")
 
-#Bin tracks by frames and perform the same analysis as above.
+#Scan through frames 0 to 150 with 10 steps, and perform the same analysis as above.
 experiment.scan("frames", 0, 10000, 10, TrackFile.plotBinData, "xPos", "velocity")
 
 #Perform the two analyses above on all experiments in the set. 
 data.iterate(TrackFile.plotBinData, "xPos", "velocity")
 data.iterate(TrackFile.scan, "frames", 0, 10000, 10, TrackFile.plotBinData, "xPos", "velocity")
 
-#Compare experiments in an analysis.
+#Compare experiments for an analysis.
 data.compare(TrackFile.plotBinData, "xPos", "velocity")
 ```
 bins tracks based on the first measurement argument, and computes the age-weighted average of the second measurement argument within each bin. The weight can be changed to any measurement. 
