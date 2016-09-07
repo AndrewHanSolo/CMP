@@ -40,25 +40,25 @@ Generating mock image data requires
 4. Open *ExampleDriver.py* in a text editor and set the following paths
 ```python
 #folder path to experiment-set track data
-IMPORT_PATH = 'C:\Users/Andrew/CMP/Trackdata XMLs/test
+FILE_IMPORT_PATH = 'C:\Users/Andrew/CMP/Trackdata XMLs/test
 
 #name of a saved copy of the imported trackfile data. 
 #Once the data is saved to data/, trackmate file import 
 #is not necessary and the data #can be reloaded with its name.
-SAVE_NAME = 'test-files'
+DATA_SAVE_NAME = 'test-files'
 
 #folder path for analysis output
-SAVE_DIRECTORY = 'C:\Users/ahan/Desktop/analysis/
+ANALYSIS_SAVE_PATH = 'C:\Users/ahan/Desktop/analysis/
 ```
-5. Run the script.
-###Running ExampleDriver.py
-*ExampleDriver.py* is a boilerplate script that calls an analysis job within *jobs/*. The Driver and jobs are working examples that analyze test data (*data/test*), and can be copied and modified as needed.
-1. Within ExampleDriver.py... 
-2.
+5. Run the script. Plots and excel files should be saved to SAVE_PATH
 
-2. Run the script. Plots and excel files should be saved to SAVE_PATH
+###Running your first analysis
+*ExampleDriver.py* is a boilerplate script that calls an analysis job within *jobs/*. The Driver and jobs are working examples that analyze test data (*data/test*), and can be copied and modified as needed.
+1. Within ExampleDriver.py...
+
 
 ###Customizing your analysis
+
 ####Setting Experiment Parameters
 ####Data Filtering
 Any track measurement defined in *lib/TrackMeasurementFunctions* may be filtered.
