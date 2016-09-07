@@ -1,20 +1,20 @@
 #Cell Migration Analysis Platform (CMP)
 
 ##About
-CMP is a lightweight and easily extendible python library for chemotaxis data analysis. It was designed primarily to improve the conclusive throughput of novel chemotaxis experiments developed by H. Mao et. al., and performed at the Johns Hopkins Translational Tissue Engineering Center and the Johns Hopkins Institute for Computational Medicine. A presentation detailing the experiment setup can be found [here](www.google.com). In brief, the experiments are high-population nuclear-stain single-cell environment-cue-modulation chemotaxis studies. CMP was designed for use in tangent with the [TrackMate](https://github.com/fiji/TrackMate/) particle-tracking plugin available in the FIJI image processing program. CMP was written to provide non-programmers access to a streamlined cell-tracking analysis pipeline with simple yet powerful analysis functions and features. 
+CMP is a lightweight python script library that offers a streamlined chemotaxis data analysis pipeline. It was designed primarily to improve the conclusive throughput of novel chemotaxis experiments developed by H. Mao et. al., which are performed at the Johns Hopkins Translational Tissue Engineering Center and the Johns Hopkins Institute for Computational Medicine. A presentation detailing the experiment setup can be found [here](www.google.com). In brief, these experiments were high-population nuclear-stain single-cell environment-cue-modulation chemotaxis studies. CMP was designed for use in tangent with the open source [TrackMate](https://github.com/fiji/TrackMate/) particle-tracking plugin available within the FIJI image processing program. CMP offers powerfully simple functions and features that make complex chemotaxis experiment analysis accessible even to non-programmers.
 
 ##Functions and Features
 - Multi-file experiment reconstruction
-- Cross-experiment measurement comparison functions
-- Polynotic-multi-binned measurement filtering and scanning/iterative analysis
-- Single and multi-experiment level measurement correlation functions
+- Streamlined batch-experiment analysis and cross-experiment comparisons
+- Multi-bin measurement filtering and iterative scanning analysis
+- Single and multi-experiment level analysis functions
 - Result serialization in excel
 - Scripts for batch-file TrackMate processing and generating mock chemotaxis image data
 - Simple code and file structure for easy extension and interfacing
-- Turn-key ready for analysis
+- Ready out of of box
 
 ##Installation and Dependencies
-CMP seems to be stable on Windows 10, Ubuntu 14.04, and Fedora 24. The program is written with Python 3.5.2, but the TrackMate and mock-data scripts are in Python 2 and IJM, respectively.
+CMP is stable on Windows 10, Ubuntu 14.04, and Fedora 24. The program is written with Python 3.5.2, but the TrackMate and mock-data scripts are in Python 2 and IJM, respectively.
 The required libraries for analysis are
 - numpy 1.8.2
 - xlsxwriter 0.5.2
