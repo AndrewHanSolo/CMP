@@ -104,33 +104,12 @@ experiment.render()
 ```
 ####Add new track measurement
 Adding new measurements to CMP is very simple.
+
 1. Declare a new measurement in *lib/TrackMeasurements.py*
 2. Implement the measurement calculation function in *lib/TrackMeasurementFunctions.py*
 3. Add your new measurement to the list of DefaultTrackMeasurements in *lib/TrackClassGlobals.py*
-4. 
-You're Done!
 
-bins tracks based on the first measurement argument, and computes the age-weighted average of the second measurement argument within each bin. The weight can be changed to any measurement. 
-####plotHistogram
-```python
-data.plotHistogram("avgMov", None)
-```
-####plotPercentHistogram
-```python
-data.plotPercentHistogram("avgMov", "directionality", percents = [0, 25, 50, 75, 100])
-```
-Sorts tracks into bins (defined by optional argument percents) by their percentile of the first measurement argument, and computes number or weighted averages of the second measurement argument.
-#####plotHistogram
-#####plotPercentHistogram
-#####scan
-There are an additional 2 visualization functions that do no support scanning.
-#####cellVisualization
-#####heatmapVisualization
-There are 2 core functions for correlating and comparing experiments in the set.
-#####compare
-#####iterate
+You're Done! You can now filter and analyze your measurement.
 
-####Plotting, Serializing and Saving
-####Adding measurements
 
 
