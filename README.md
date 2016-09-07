@@ -53,13 +53,38 @@ Any TrackMeasurement defined in *lib/TrackMeasurementFunctions* may be filtered 
 
 ```python
 	filters = {}
+	filters['frames'] = [[5, 147]]
+	filters['xPos'] = [[100, 1390]]
+	filters['yPos'] = [[50, 700], [[800, 1050]]
 	filters['age'] = [[15, float('inf')]]
-	filters['frames'] = [[5, 55]]
 	filters['directionality'] = [[-1, -0.8], [0.8, 1]]
-```	
-I think you should use an
-`<addr>` element here instead.
+	
+	data.selectData(filters)
+```
+Data is filtered in the order of frames, area, and measurements (recomputed). The sptial and temporal filter fucntions recompute measurements after filtering. Data holds state, and stages of filtering can be performed. To create a fresh copy of the data for a different set of filters is simply 
+```python
+newDataInstance = deepcopy(data)
+data.selectData(otherFilter)
+```
 ####Functions
+There are 4 core functions for inspecting correlations at the Experiment level.
+#####plotBinData
+```python
+
+plotBinData(experiment, xPropertyName, yPropertyName, settings = optionals) 
+
+, workbook = [workbook, experiment, True])
+```
+#####plotHistogram
+#####plotPercentHistogram
+#####scan
+There are an additional 2 visualization functions that do no support scanning.
+#####cellVisualization
+#####heatmapVisualization
+There are 2 core functions for correlating and comparing experiments in the set.
+#####compare
+#####iterate
+
 ####Plotting, Serializing and Saving
 ####Adding measurements
 
