@@ -20,7 +20,8 @@ The required libraries for analysis are
 - xlsxwriter 0.5.2
 - scipy 0.13.3
 - matplotlib 1.3.1
-and generating mock chemotaxis image data requires
+
+...and generating mock chemotaxis image data requires
 - Python 2 and pygame library (for Python 2)
 
 ##Getting Started
