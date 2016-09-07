@@ -50,14 +50,10 @@ DATA_SAVE_NAME = 'test-files'
 #folder path for analysis output
 ANALYSIS_SAVE_PATH = 'C:\Users/ahan/Desktop/analysis/
 ```
-5. Run the script. Plots and excel files should be saved to SAVE_PATH
-
-###Running your first analysis
-*ExampleDriver.py* is a boilerplate script that calls an analysis job within *jobs/*. The Driver and jobs are working examples that analyze test data (*data/test*), and can be copied and modified as needed.
-1. Within ExampleDriver.py...
-
+5. Run the script. Plots and excel files should be saved to ANALYSIS_SAVE_PATH
 
 ###Customizing your analysis
+*ExampleDriver.py* is a boilerplate script that calls an analysis job within *jobs/*. The Driver and jobs are working examples that analyze *data/test*, and they can be copied and modified as needed.
 
 ####Setting Experiment Parameters
 ####Data Filtering
