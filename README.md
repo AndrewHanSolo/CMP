@@ -41,8 +41,12 @@ Generating mock image data requires
 ```python
 #folder path to experiment-set track data
 IMPORT_PATH = 'C:\Users/Andrew/CMP/Trackdata XMLs/test
-#name of a saved copy of the imported trackfile data. Once the data is saved to data/, trackmate file import is not necessary and the data #can be reloaded with its name.
+
+#name of a saved copy of the imported trackfile data. 
+#Once the data is saved to data/, trackmate file import 
+#is not necessary and the data #can be reloaded with its name.
 SAVE_NAME = 'test-files'
+
 #folder path for analysis output
 SAVE_DIRECTORY = 'C:\Users/ahan/Desktop/analysis/
 ```
