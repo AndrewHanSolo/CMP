@@ -49,7 +49,7 @@ Generating mock image data requires
 ###Customizing your analysis
 ####Setting Experiment Parameters
 ####Data Filtering
-Any TrackMeasurement defined in *lib/TrackMeasurementFunctions* may be filtered by setting the measurement key within a dictionary and passing it to selectData() to any number of inclusive bins. 
+Any track measurement defined in *lib/TrackMeasurementFunctions* may be filtered
 
 ```python
 	filters = {}
@@ -61,20 +61,26 @@ Any TrackMeasurement defined in *lib/TrackMeasurementFunctions* may be filtered 
 	
 	data.selectData(filters)
 ```
-Data is filtered in the order of frames, area, and measurements (recomputed). The sptial and temporal filter fucntions recompute measurements after filtering. Data holds state, and stages of filtering can be performed. To create a fresh copy of the data for a different set of filters is simply 
+Data is filtered in the order of frames, area, and measurements. The spatial and temporal filter functions recompute measurements after filtering. To create a fresh copy of the data for a different set of filters is simply 
 ```python
-newDataInstance = deepcopy(data)
-data.selectData(otherFilter)
+datacopy = deepcopy(data)
+datacopy.selectData(newFilters)
 ```
 ####Functions
 There are 4 core functions for inspecting correlations at the Experiment level.
 #####plotBinData
 ```python
-
-plotBinData(experiment, xPropertyName, yPropertyName, settings = optionals) 
-
-, workbook = [workbook, experiment, True])
+data.plotBinData("xPos", "velocity")
+```bins tracks based on the first measurement argument, and computes the age-weighted average of the second measurement argument within each bin. The weight can be changed to any measurement. 
+####plotHistogram
+```python
+data.plotHistogram("avgMov", None)
 ```
+####plotPercentHistogram
+```python
+data.plotPercentHistogram("avgMov", "directionality", percents = [0, 25, 50, 75, 100])
+```
+Sorts tracks into bins (defined by optional argument percents) by their percentile of the first measurement argument, and computes number or weighted averages of the second measurement argument.
 #####plotHistogram
 #####plotPercentHistogram
 #####scan
