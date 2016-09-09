@@ -56,10 +56,9 @@ ANALYSIS_SAVE_PATH = 'C:\Users/ahan/Desktop/analysis/
 *ExampleDriver.py* is a boilerplate script that calls an analysis job within *jobs/*. The Driver and jobs are working examples that analyze *data/test*, and they can be copied and modified as needed.
 
 ###Importing and saving your 
-####Setting Experiment Parameters
-####Data Filtering
-Any track measurement defined in *lib/TrackMeasurementFunctions* may be filtered.
 
+####Setting Experiment Parameters
+####Importing, Loading, Filtering, Saving
 ```python
 	#import the experiment set from the xml files 
 	data = import("C:\ahan\Desktop\test-experiment-dataset/, "testset") #path and savename.
@@ -95,20 +94,23 @@ Any track measurement defined in *lib/TrackMeasurementFunctions* may be filtered
 	
 ```
 Data is filtered in the order of frames, area, and measurements. The spatial and temporal filter functions recompute measurements after filtering. To create a fresh copy of the data for a different set of filters is
-```python
-datacopy = deepcopy(data)
-datacopy.selectData(newFilters)
-```
+
 ####Analysis Functions
 ```python
-experiment = data.experiments['test']
+#select only one experiment to analyze
+experimentA = data.experiments['experimentA']
 
-#basic functions
-experiment.plotScatter("xStartPos", "yStartPos")
-experiment.plotScatter("xStartPos", "yStartPos", "avgMov")
-experiment.plotHistogram("velocity", None)
+#render the experiment
+render(experimentA)
 
-#Split tracks into bins of xpos and compute average velocity in each bin.
+#plotScatter can be given 2 or 3 measurements to visualize
+experimentA.plotScatter("xStartPos", "yStartPos", "avgMov")
+
+#make a histogram of any measurement
+experimentA.histogram("velocity")
+
+#bin tracks by one measurement, and calculate number and age-weighted
+#averages of another measurement
 experiment.plotBinData("xpos", "velocity")
 
 #Scan through frames 0 to 150 with 10 steps, and perform the same analysis as above.
