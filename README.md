@@ -89,6 +89,7 @@ ANALYSIS_SAVE_PATH = 'C:\Users/ahan/Desktop/analysis/
 	
 	
 ```
+
 Data is filtered in the order of frames, area, and measurements. The spatial and temporal filter functions recompute measurements after filtering. To create a fresh copy of the data for a different set of filters is
 
 ####Analysis Functions
@@ -135,6 +136,7 @@ experiment.plotPercentHistogram("avgMov", "directionality", workbook = [xpos_vel
 
 ####Add new track measurement
 There are a ton of measurements already available for track data and experiment parameter data, and adding new measurements to CMP is very simple.
+
 1. Declare a new measurement in [*CMP/lib/TrackMeasurements.py*](https://github.com/AndrewHanSolo/CMP/blob/master/lib/TrackMeasurements.py)
 2. Implement the measurement calculation function in [*CMP/lib/TrackMeasurementFunctions.py*] ( https://github.com/AndrewHanSolo/CMP/blob/master/lib/TrackMeasurementFunctions.py)
 3. Add your new measurement to DefaultTrackMeasurements in [*CMP/lib/TrackClassGlobals.py*] (https://github.com/AndrewHanSolo/CMP/blob/master/lib/TrackClassGlobals.py)
