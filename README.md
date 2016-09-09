@@ -141,9 +141,8 @@ There are a ton of measurements already available for track data and experiment 
 2. Implement the measurement calculation function in [*CMP/lib/TrackMeasurementFunctions.py*] ( https://github.com/AndrewHanSolo/CMP/blob/master/lib/TrackMeasurementFunctions.py)
 3. Add your new measurement to DefaultTrackMeasurements in [*CMP/lib/TrackClassGlobals.py*] (https://github.com/AndrewHanSolo/CMP/blob/master/lib/TrackClassGlobals.py)
 
-'''python
-DefaultTrackMeasurements = \{
-
+```python
+DefaultTrackMeasurements = {
 	"xPos"            : xPos,
 	"yPos"            : yPos,
 	"frames"          : frames,
@@ -163,10 +162,8 @@ DefaultTrackMeasurements = \{
 	"yMigrationSpeed" : yMigrationSpeed,
 	"numFrames"       : numFrames      ,
 	"age"             : age
-
-\}
+}
 ```
-
 You're Done! You can now filter and analyze your measurement.
 
 
