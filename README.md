@@ -22,7 +22,7 @@ Install the following dependencies (for python3)
 - scipy 0.13.3
 - matplotlib 1.3.1
 
-Set your data import, save, and analysis output paths in ExampleDriver.py. Run the script, which analyzes a pre-imported mock experiment set that was generated using FIJI/MockExperimentDataGenerator.py and run through the pipeline.
+Set your data import, save, and analysis output paths in ExampleDriver.py. Run the script, which analyzes a pre-imported mock experiment set that was generated using FIJI/MockExperimentDataGenerator.py and run through the pipeline. You can now run the script to perform your first analysis.
 
 ##Getting Started
 ###Obtaining track data from time lapse images and importing to CMP
