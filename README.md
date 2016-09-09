@@ -14,13 +14,15 @@ CMP is a lightweight python script library that offers a streamlined and versati
 - Seamless addition of new measurements
 
 ##Installation and Dependencies
-CMP is stable on Windows 10, Ubuntu 14.04, and Fedora 24. The core library runs with Python 3.5.2, but the TrackMate and mock-data scripts are in Python 2 and IJM, respectively.
+CMP is stable on Windows 10, Ubuntu 14.04, and Fedora 24. The core library runs with Python 3.5.2, but the TrackMate and mock-data scripts are in Python 2 and IJM, respectively. CMP is stable on Windows 10, Ubuntu 14.04, and Fedora 24. The core library runs with Python 3.5.2, but the TrackMate and mock-data scripts are in Python 2 and IJM, respectively.
 
-Dependencies
+Install the following dependencies (for python3)
 - numpy 1.8.2
 - xlsxwriter 0.5.2
 - scipy 0.13.3
 - matplotlib 1.3.1
+
+Set your data import, save, and analysis output paths in ExampleDriver.py. Run the script, which analyzes a pre-imported mock experiment set that was generated from the pipeline.
 
 ##Getting Started
 ###Obtaining track data from time lapse images and importing to CMP
