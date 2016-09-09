@@ -136,8 +136,34 @@ experiment.plotPercentHistogram("avgMov", "directionality", workbook = [xpos_vel
 ####Add new track measurement
 There are a ton of measurements already available for track data and experiment parameter data, and adding new measurements to CMP is very simple.
 1. Declare a new measurement in [*CMP/lib/TrackMeasurements.py*](https://github.com/AndrewHanSolo/CMP/blob/master/lib/TrackMeasurements.py)
-2. Implement the measurement calculation function in *lib/TrackMeasurementFunctions.py*
-3. Add your new measurement to the list of DefaultTrackMeasurements in *lib/TrackClassGlobals.py*
+2. Implement the measurement calculation function in [*CMP/lib/TrackMeasurementFunctions.py*] ( https://github.com/AndrewHanSolo/CMP/blob/master/lib/TrackMeasurementFunctions.py)
+3. Add your new measurement to the list of DefaultTrackMeasurements in [*CMP/lib/TrackClassGlobals.py*] (https://github.com/AndrewHanSolo/CMP/blob/master/lib/TrackClassGlobals.py)
+
+'''python
+DefaultTrackMeasurements = {
+
+	"xPos"            : xPos,
+	"yPos"            : yPos,
+	"frames"          : frames,
+
+	"avgMov"          : avgMov         ,
+	"velocity"        : velocity       ,
+	"concentration"   : concentration  ,
+	"directionality"  : directionality ,
+	"mp"              : getMP          ,
+	"xStartPos"       : getXStartPos   ,
+	"xEndPos"         : getXEndPos     ,
+	"yStartPos"       : getYStartPos   ,
+	"yEndPos"         : getYEndPos     ,
+	"firstFrame"      : firstFrame     ,
+	"lastFrame"       : lastFrame      ,
+	"xMigrationSpeed" : xMigrationSpeed,
+	"yMigrationSpeed" : yMigrationSpeed,
+	"numFrames"       : numFrames      ,
+	"age"             : age
+
+}
+```
 
 You're Done! You can now filter and analyze your measurement.
 
