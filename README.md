@@ -31,8 +31,8 @@ Generating mock image data requires
 ##Getting Started
 ###Obtaining track data from time lapse images and importing to CMP
 1. Install FIJI
-2. Open FIJI and press '[' to open the scripting window. Run *TrackMate Helpers/FIJI/ImageSequenceToTiff.ijm* to convert folders of image sequences to TiffStacks.
-3. Run *TrackMate Helpers/FIJI/TrackMateBatchScript.py* on each experiment's TiffStack folder
+2. Open FIJI and press '[' to open the scripting window. Run [*FIJI/ImageSequenceToTiff.ijm*](https://github.com/AndrewHanSolo/CMP/blob/master/lib/TrackMateBatchScript.py) to convert folders of image sequences to TiffStacks.
+3. Run [*CMP/FIJI/TrackMateBatchScript.py*] (https://github.com/AndrewHanSolo/CMP/blob/master/lib/TrackMateBatchScript.py) on each experiment's TiffStack folder
 4. Move the xml output files into appropriate experiment subdirectories within one parent directory
    * (Optional) Add settings.txt with experiment parameters into any experiment subdirectories.
    * (Optional) Add coordinates.txt with xml filenames corresponding to their relative physical position in microns
@@ -165,7 +165,7 @@ DefaultTrackMeasurements = {
 }
 
 ```
-You're Done! You can now filter and analyze your measurement.
+You're Done! You can use your new measurement like any other.
 
 
 
