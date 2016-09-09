@@ -143,6 +143,7 @@ There are a ton of measurements already available for track data and experiment 
 
 ```python
 DefaultTrackMeasurements = {
+
 	"xPos"            : xPos,
 	"yPos"            : yPos,
 	"frames"          : frames,
@@ -163,6 +164,7 @@ DefaultTrackMeasurements = {
 	"numFrames"       : numFrames      ,
 	"age"             : age
 }
+
 ```
 You're Done! You can now filter and analyze your measurement.
 
