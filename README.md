@@ -55,21 +55,44 @@ ANALYSIS_SAVE_PATH = 'C:\Users/ahan/Desktop/analysis/
 ###Customizing your analysis
 *ExampleDriver.py* is a boilerplate script that calls an analysis job within *jobs/*. The Driver and jobs are working examples that analyze *data/test*, and they can be copied and modified as needed.
 
+###Importing and saving your 
 ####Setting Experiment Parameters
 ####Data Filtering
 Any track measurement defined in *lib/TrackMeasurementFunctions* may be filtered.
 
 ```python
+	#import the experiment set from the xml files 
+	data = import("C:\ahan\Desktop\test-experiment-dataset/, "testset") #path and savename.
+	
+	#imported data is saved to CMP/data/ and can be loaded
+	data = load("testset")
+	
+	#create a copy 
 	dataCopy = deepcopy(data)
 
+	#filter any measurement defined in TrackMeasurements.py
 	filters = {}
+	
+	#slices of experiment dimensions
 	filters['frames'] = [[5, 147]]
-	filters['xPos'] = [[100, 1390]]
-	filters['yPos'] = [[50, 700], [[800, 1050]]
+	filters['xpos'] = [[100, 1390]]
+	filters['ypos'] = [[100, 1390]]
+	
+	#track measurements calculated within those slices
 	filters['age'] = [[15, float('inf')]]
 	filters['directionality'] = [[-1, -0.8], [0.8, 1]]
 	
+	#keep only tracks that pass the filters and dimensions
+	#select frames 5 to 147, and delete any track paths 
+	#outside of xpos and ypox coordinates witih the experimentin microns.
+	#then calculate age and directionality of tracks, and keep only tracks
+	#the pass measurement filters
 	dataCopy.selectData(filters)
+	
+	#save data whenever
+	save(dataCopy, 'filteredData')
+	
+	
 ```
 Data is filtered in the order of frames, area, and measurements. The spatial and temporal filter functions recompute measurements after filtering. To create a fresh copy of the data for a different set of filters is
 ```python
