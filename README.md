@@ -91,7 +91,7 @@ ANALYSIS_SAVE_PATH = 'C:\Users/ahan/Desktop/analysis/
 
 Data is filtered in the order of frames, area, and measurements. The spatial and temporal filter functions recompute measurements after filtering. To create a fresh copy of the data for a different set of filters is
 
-####Analysis Functions
+####Analyzing
 ```python
 #select only one experiment to analyze
 experimentA = data.experiments['experimentA']
@@ -133,7 +133,7 @@ experiment.plotBinData("xpos", "velocity", workbook = [xpos_velocity_book, "plot
 experiment.plotPercentHistogram("avgMov", "directionality", workbook = [xpos_velocity_book, "percHist"])
 ```
 
-####Add new track measurement
+####Adding new measurements
 There are a ton of measurements already available for track data and experiment parameter data, and adding new measurements to CMP is very simple.
 
 1. Define a new measurement in [*CMP/lib/TrackMeasurements.py*](https://github.com/AndrewHanSolo/CMP/blob/master/lib/TrackMeasurements.py)
