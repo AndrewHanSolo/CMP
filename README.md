@@ -33,11 +33,11 @@ Generating mock image data requires
 ###Obtaining track data from time lapse images and importing to CMP
 1. Install FIJI
 2. Open FIJI and press '[' to open the scripting window. Run *TrackMate Helpers/FIJI/ImageSequenceToTiff.ijm* to convert folders of image sequences to TiffStacks.
-2. Run *TrackMate Helpers/FIJI/TrackMateBatchScript.py* on each experiment's TiffStack folder
-3. Move the xml output files into appropriate experiment subdirectories within one parent directory
+3. Run *TrackMate Helpers/FIJI/TrackMateBatchScript.py* on each experiment's TiffStack folder
+4. Move the xml output files into appropriate experiment subdirectories within one parent directory
    * (Optional) Add settings.txt with experiment parameters into any experiment subdirectories.
    * (Optional) Add coordinates.txt with xml filenames corresponding to their relative physical position in microns
-4. Open *ExampleDriver.py* in a text editor and set the following paths
+5. Open *ExampleDriver.py* in a text editor and set the following paths
 ```python
 #folder path to experiment-set track data
 FILE_IMPORT_PATH = 'C:\Users/Andrew/CMP/Trackdata XMLs/test
@@ -51,14 +51,9 @@ DATA_SAVE_NAME = 'test-files'
 ANALYSIS_SAVE_PATH = 'C:\Users/ahan/Desktop/analysis/
 ```
 
-6. Run the script. Plots and excel files should be saved to ANALYSIS_SAVE_PATH
-
 ###Customizing your analysis
 *ExampleDriver.py* is a boilerplate script that calls an analysis job within *jobs/*. The Driver and jobs are working examples that analyze *data/test*, and they can be copied and modified as needed.
 
-###Importing and saving your 
-
-####Setting Experiment Parameters
 ####Importing, Loading, Filtering, Saving
 ```python
 	#import the experiment set from the xml files 
