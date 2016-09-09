@@ -109,28 +109,30 @@ experimentA.histogram("velocity")
 #averages of another measurement
 experiment.plotBinData("xpos", "velocity")
 
+#bin tracks by measurement percentiles
+experiment.plotPercentHistogram("avgMov", "directionality", percents = [0, 25, 75, 90, 100])
+
 #Scan through frames 0 to 150 with 10 steps, and perform the same analysis as above.
 experiment.scan("frames", 0, 10000, 10, TrackFile.plotBinData, "xPos", "velocity")
 
-#Perform the two analyses above on all experiments in the set. 
+#Run your analysis functions on an entire set of experiments
 data.iterate(TrackFile.plotBinData, "xPos", "velocity")
 data.iterate(TrackFile.scan, "frames", 0, 10000, 10, TrackFile.plotBinData, "xPos", "velocity")
+data.iterate(TrackFile.render)
 
-#Compare experiments for an analysis.
+#Compare results of your analyses
 data.compare(TrackFile.plotBinData, "xPos", "velocity")
+data.compare(TrackFile.plotScatter, "avgMov", "directionality")
 
-#Write summary data to a workbook
+#Write your project data to an excel file
 data.writeData()
 
-#Write data for an analysis function
+#Write analysis data to a specific excel file
 xpos_velocity_book = createWorkbook()
 experiment.plotBinData("xpos", "velocity", workbook = [xpos_velocity_book, "plotBinData"])
-experiment.plotHistogram("veocity", None, workbook = [xpos_velocity_book, "histogram"])
-experiment.scan(TrackFile.plotBinData, "xpos", "velocity", workbook = createWorkbook())
-
-#Render the data spatial movement
-experiment.render()
+experiment.plotPercentHistogram("avgMov", "directionality", workbook = [xpos_velocity_book, "percHist"])
 ```
+
 ####Add new track measurement
 Adding new measurements to CMP is very simple.
 
