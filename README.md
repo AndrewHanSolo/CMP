@@ -142,25 +142,30 @@ There are a ton of measurements already available for track data and experiment 
 ```python
 DefaultTrackMeasurements = {
 
-	"xPos"            : xPos,
-	"yPos"            : yPos,
-	"frames"          : frames,
+#track-dimensions measurements. defined for slicing tracks and scanning
 
-	"avgMov"          : avgMov         ,
-	"velocity"        : velocity       ,
-	"concentration"   : concentration  ,
-	"directionality"  : directionality ,
-	"mp"              : getMP          ,
-	"xStartPos"       : getXStartPos   ,
+	"xPos"            : xPos,            # x-coordinate of the track
+	"yPos"            : yPos,            # y-coordinate of the track
+	"frames"          : frames,          # frame-coordinate of the track
+
+
+#track measurements calculated with track-dimensions and experiment parameters
+
+	"age"             : age,             # range of frames over which track exists
+	"avgMov"          : avgMov         , # average movement of the track per frame
+	"velocity"        : velocity       , # average migration distance of the track per frame
+	"concentration"   : concentration  , # local chemical concentration of xStartPos
+	"directionality"  : directionality , # uphill gradient track movement / total track movement
+	"mp"              : getMP          , # degree that track moves in one direction
+	"xMigrationSpeed" : xMigrationSpeed, # total x-direction migration distance
+	"yMigrationSpeed" : yMigrationSpeed, # total y-direciton migration distance
+	"numFrames"       : numFrames      , # number of frames in the track
+	"xStartPos"       : getXStartPos   , 
 	"xEndPos"         : getXEndPos     ,
 	"yStartPos"       : getYStartPos   ,
 	"yEndPos"         : getYEndPos     ,
 	"firstFrame"      : firstFrame     ,
-	"lastFrame"       : lastFrame      ,
-	"xMigrationSpeed" : xMigrationSpeed,
-	"yMigrationSpeed" : yMigrationSpeed,
-	"numFrames"       : numFrames      ,
-	"age"             : age
+	"lastFrame"       : lastFrame  
 }
 
 ```
