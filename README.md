@@ -23,6 +23,7 @@ Install the following dependencies (Python3) for the core analysis library.
 - matplotlib 1.3.1
 
 Install Python2 and the pygame library for generating mock image data
+
 Install TrackMate (and Python2 if necessary) for automated cell-tracking with immediate data import into CMP
 
 Open [*ExampleDriver.py*](www.google.com) and set your data import, save, and analysis output paths. You should now be able to run the template script. It analyzes a mock experiment data set generated with FIJI/MockExperimentDataGenerator.py and passed through the automated-tracking pipeline.
