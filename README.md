@@ -11,7 +11,7 @@ CMP is a lightweight python scripting library that offers a streamlined and vers
 - Analysis serialization
 - Scripts for generating mock image-data for testing the pipeline
 - Simple code and file structure for easy extension and interfacing
-- Allows seamless addition of new track dimensions, experiment parameters, and measurements
+- Seamless addition of new track dimensions, experiment parameters, and measurements
 
 ##Installation and Dependencies
 CMP is stable on Windows 10, Ubuntu 14.04, and Fedora 24. The core analysis library runs with Python 3.5.2, but TrackMate and mock-data scripts are in Python 2 and IJM.
