@@ -25,7 +25,7 @@ Install the following dependencies (Python3) for the core analysis library.
 Install Python2 and the pygame library for generating mock image data.
 Install TrackMate (and Python2 if necessary) for automated cell-tracking with immediate data import into CMP.
 
-Open [*ExampleDriver.py*](www.google.com) and set your data import, save, and analysis output paths. You should now be able to run the template script (detailed further below). It analyzes a mock experiment data set generated with FIJI/MockExperimentDataGenerator.py and passed through the automated-tracking process.
+Open [*ExampleDriver.py*](www.google.com) and set your data import, save, and analysis output paths. You should now be able to run the example script. It analyzes a mock experiment data set generated using [*FIJI/MockExperimentDataGenerator.py*](www.google.com) that was passed through the automated-tracking process.
 
 ##Getting Started
 ###Obtaining track data from time lapse images and importing to CMP
