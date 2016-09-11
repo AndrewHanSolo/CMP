@@ -50,7 +50,7 @@ ANALYSIS_SAVE_PATH = 'C:\Users/ahan/Desktop/analysis/
 ```
 
 ###Customizing your analysis
-*ExampleDriver.py* is a boilerplate script that calls an analysis job within *jobs/*. The Driver and jobs are working examples that analyze *data/test*, and they can be copied and modified as needed.
+[*ExampleDriver.py*](www.google.com) is a boilerplate script that runs analysis jobs. The Driver and jobs are working examples that analyze [*data/test*](www.google.com), and they can be copied and modified as needed.
 
 ####Importing, Loading, Filtering, Saving
 ```python
