@@ -6,10 +6,15 @@ from TrackClass import *
 import TrackClassGlobals as TCG
 import xlsxwriter
 import _pickle as pickle
+DATA_SAVE_PATH
 
-
+#TRACK_FILES_IMPORT_PATH
+#ANALYSIS_SAVE_PATH
+#ANALYSIS_SAVE_NAME
 
 def Test_Job(DATA_SAVE_NAME, importpath = 0, filters = {}, ps = TCG.PlotDefaults):
+
+	JOB_ANALYSIS_SAVE_PATH = ANALYSIS_SAVE_PATH + '/' + ANALYSIS_SAVE_NAME + '/'
 
 	#TEST MODULES
 	SAVE                      = True
@@ -29,8 +34,8 @@ def Test_Job(DATA_SAVE_NAME, importpath = 0, filters = {}, ps = TCG.PlotDefaults
 	TEST_iterate              = False
 	TEST_individual           = False
 
-	if not os.path.exists(TCG.SAVE_DIRECTORY):
-		os.makedirs(TCG.SAVE_DIRECTORY)
+	if not os.path.exists(JOB_ANALYSIS_SAVE_PATH):
+		os.makedirs(JOB_ANALYSIS_SAVE_PATH)
 
 	#save data from folder path if given
 	if importpath:
@@ -65,7 +70,7 @@ def Test_Job(DATA_SAVE_NAME, importpath = 0, filters = {}, ps = TCG.PlotDefaults
 	#FOR INDIVIDUAL TRACKFILE TESTING
 	if TrackFile_Test:
 
-		workbook = xlsxwriter.Workbook(TCG.SAVE_DIRECTORY + "fileTest.xlsx", {'nan_inf_to_errors': True, 'in_memory': True})
+		workbook = xlsxwriter.Workbook(JOB_ANALYSIS_SAVE_PATH + "fileTest.xlsx", {'nan_inf_to_errors': True, 'in_memory': True})
 
 		for experiment, v in sorted(data.experiments.items()):
 			print("\n\nExperiment:", experiment)
@@ -127,7 +132,7 @@ def Test_Job(DATA_SAVE_NAME, importpath = 0, filters = {}, ps = TCG.PlotDefaults
 	#FOR TRACKFOLDER TESTING
 	if TrackFolder_Test:
 
-		workbook = xlsxwriter.Workbook(TCG.SAVE_DIRECTORY + "foldTest.xlsx", {'nan_inf_to_errors': True, 'in_memory': True})
+		workbook = xlsxwriter.Workbook(JOB_ANALYSIS_SAVE_PATH + "foldTest.xlsx", {'nan_inf_to_errors': True, 'in_memory': True})
 
 		if TEST_writeData:
 			data.writeData()

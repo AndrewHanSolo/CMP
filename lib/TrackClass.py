@@ -620,17 +620,18 @@ class TrackFile():
 ########################
 class AllExperimentData():
 
-	def __init__(self, directoryPath):
+	def __init__(self, foldername):
+		self.folderPath = TCG.TRACK_FILES_IMPORT_PATH + foldername
 		self.importTime = datetime.datetime.now()
 		self.experiments = {}
 		self.filters = {}
 		#get all files from folderpath and sort in numerical order
-		files = (os.listdir(directoryPath)) 
+		files = (os.listdir(self.folderPath + '/')) 
 		sort_nicely(files)
 		#iterate over all experiment folders, and add merged TrackFile experiments
 		#to AllExperimentData object
 		for experimentName in files: 
-			fullExperimentPath = directoryPath + '/' + experimentName
+			fullExperimentPath = self.folderPath + '/' + experimentName
 			experimentTrackFolder = importTracksFromFolder(fullExperimentPath)
 			experimentFile = experimentTrackFolder.toTrackFile()
 			experimentFile.importTime = self.importTime
@@ -647,7 +648,7 @@ class AllExperimentData():
 
 	#print out all track property values
 	def writeData(self, settings = TCG.PlotDefaults):
-		workbook = xlsxwriter.Workbook(TCG.SAVE_DIRECTORY + "summary data.xlsx")
+		workbook = createWorkbook("summary data")
 		for experiment, v in sorted(self.experiments.items()):
 			writeData(v, workbook, "")
 		workbook.close()

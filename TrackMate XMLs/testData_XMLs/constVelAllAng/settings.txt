@@ -1,0 +1,7 @@
+id	accel2R
+gradientStrength	1
+gradientVector	0	1
+reverse	0
+spatialConversionFactor	1
+frameInterval	1
+speedConversionFactor	1

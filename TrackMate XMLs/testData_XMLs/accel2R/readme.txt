@@ -1,0 +1,1 @@
+[('acceleration', 1), ('angle', 0), ('angleVariance', 0), ('fileNum', 5), ('fileVelocityIncrement', 0), ('folderName', 'accelToRight'), ('frameNum', 50), ('readmeMessage', ''), ('trackCount', 180), ('velocity', 5), ('velocityVariance', 0)]

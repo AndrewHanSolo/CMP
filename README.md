@@ -1,63 +1,175 @@
-Cell Migration Analysis Platform (CMP)
+#Cell Migration Analysis Pipeline (CMP)
 
-@INTRO This program is designed to facilitate high-population single-cell
-migration analysis. It is used to analyze cell-track data outputted by the
-FIJI TrackMate plugin. Multiple data files belonging to one experiment can be 
-combined for full experimental reconstruction, and 
+##About
+CMP is a lightweight python scripting library that offers a streamlined and versatile chemotaxis experiment data analysis pipeline. It was developed primarily for improving conclusive throughput of novel chemotaxis experimemts conducted at the Johns Hopkins Translational Tissue Engineering Center and the Johns Hopkins Institute of Computational Medicine. In brief, these experiments are high-population single-cell time-lapse microscopy chemotaxis studies. A presentation detailing the experiment setup can be found [here](www.google.com).  CMP was developed for use in tangent with the open source [TrackMate](https://github.com/fiji/TrackMate/) particle-tracking tool available as a plugin in the FIJI image processing program. CMP offers powerfully simple functions and features that make complex chemotaxis experiment analysis accessible even to non-programmers.
 
-@ANALYSIS STAGES
+##Functions and Features
+- Multi-file experiment spatial reconstruction
+- Batch-experiment tracking and analysis scripts
+- Iterative measurement bin selection and scanning with adjustable scope and resolution
+- Combinatorial single and multi-experiment level analysis functions
+- Analysis serialization
+- Pipeline testing tools
+- Simplistic and minimal for easy extension and interfacing
+- Seamless addition of new track dimensions, experiment parameters, and measurements
+
+##Installation and Dependencies
+CMP is stable on Windows 10, Ubuntu 14.04, and Fedora 24. The core analysis library runs with Python 3.5.2, but TrackMate and testing scripts are in Python 2 and IJM.
+
+Install the following dependencies (Python3) for the core analysis library.
+- numpy 1.8.2
+- xlsxwriter 0.5.2
+- scipy 0.13.3
+- matplotlib 1.3.1
+
+Install Python2 and the pygame library for generating mock image data.
+Install TrackMate (and Python2 if necessary) for automated cell-tracking with immediate data import into CMP.
+
+Open [*ExampleDriver.py*](www.google.com) and set your data import, save, and analysis output paths. You should now be able to run the example script. It analyzes a mock experiment data set generated using [*FIJI/MockExperimentDataGenerator.py*](www.google.com) that was passed through the automated-tracking process.
+
+##Getting Started
+###Obtaining track data from time lapse images and importing to CMP
+1. Install FIJI
+2. Open FIJI and press '[' to open the scripting window. Run [*FIJI/ImageSequenceToTiff.ijm*](https://github.com/AndrewHanSolo/CMP/blob/master/lib/TrackMateBatchScript.py) to convert folders of image sequences to TiffStacks.
+3. Run [*FIJI/TrackMateBatchScript.py*] (https://github.com/AndrewHanSolo/CMP/blob/master/lib/TrackMateBatchScript.py) on each experiment's TiffStack folder
+4. Move the xml output files into appropriate experiment subdirectories within one parent directory. A example experiment set folder is given [here](www.google.com).
+   * (Optional) Add settings.txt with experiment parameters into any experiment subdirectories.
+   * (Optional) Add coordinates.txt with xml filenames corresponding to their relative physical position in microns
+5. Open *ExampleDriver.py* in a text editor and set the following paths.
+```python
+#folder path to experiment-set track data
+FILE_IMPORT_PATH = 'C:\Users/Andrew/CMP/Trackdata XMLs/test
+
+#name of a saved copy of the imported trackfile data. 
+#Once the data is saved to data/, trackmate file import 
+#is not necessary and the data #can be reloaded with its name.
+DATA_SAVE_NAME = 'test-files'
+
+#folder path for analysis output
+ANALYSIS_SAVE_PATH = 'C:\Users/ahan/Desktop/analysis/
+```
+
+###Customizing your analysis
+[*ExampleDriver.py*](www.google.com) is a boilerplate script that runs analysis jobs. The Driver and jobs are working examples that analyze [*data/test*](www.google.com), and they can be copied and modified as needed.
+
+####Importing, Loading, Filtering, Saving
+```python
+	#import the experiment set from the xml files 
+	data = import("C:\ahan\Desktop\test-experiment-dataset/, "testset") #path and savename.
+	
+	#imported data is saved to CMP/data/ and can be loaded
+	data = load("testset")
+	
+	#create a copy 
+	dataCopy = deepcopy(data)
+
+	#filter any measurement defined in TrackMeasurements.py
+	filters = {}
+	
+	#slices of experiment dimensions
+	filters['frames'] = [[5, 147]]
+	filters['xpos'] = [[100, 1390]]
+	filters['ypos'] = [[100, 1390]]
+	
+	#track measurements calculated within those slices
+	filters['age'] = [[15, float('inf')]]
+	filters['directionality'] = [[-1, -0.8], [0.8, 1]]
+	
+	#keep only tracks that pass the filters and dimensions
+	#select frames 5 to 147, and delete any track paths 
+	#outside of xpos and ypox coordinates witih the experimentin microns.
+	#then calculate age and directionality of tracks, and keep only tracks
+	#the pass measurement filters
+	dataCopy.selectData(filters)
+	
+	#save data whenever
+	save(dataCopy, 'filteredData')
+	
+	
+```
+
+Data is filtered in the order of frames, area, and measurements. The spatial and temporal filter functions recompute measurements after filtering. To create a fresh copy of the data for a different set of filters is
+
+####Analyzing
+```python
+#select only one experiment to analyze
+experimentA = data.experiments['experimentA']
+
+#render the experiment
+render(experimentA)
+
+#plotScatter can be given 2 or 3 measurements to visualize
+experimentA.plotScatter("xStartPos", "yStartPos", "avgMov")
+
+#make a histogram of any measurement
+experimentA.histogram("velocity")
+
+#bin tracks by one measurement, and calculate number and age-weighted
+#averages of another measurement
+experiment.plotBinData("xpos", "velocity")
+
+#bin tracks by measurement percentiles
+experiment.plotPercentHistogram("avgMov", "directionality", percents = [0, 25, 75, 90, 100])
+
+#Scan through frames 0 to 150 with 10 steps, and perform the same analysis as above.
+experiment.scan("frames", 0, 10000, 10, TrackFile.plotBinData, "xPos", "velocity")
+
+#Run your analysis functions on an entire set of experiments
+data.iterate(TrackFile.plotBinData, "xPos", "velocity")
+data.iterate(TrackFile.scan, "frames", 0, 10000, 10, TrackFile.plotBinData, "xPos", "velocity")
+data.iterate(TrackFile.render)
+
+#Compare results of your analyses
+data.compare(TrackFile.plotBinData, "xPos", "velocity")
+data.compare(TrackFile.plotScatter, "avgMov", "directionality")
+
+#Write your project data to an excel file
+data.writeData()
+
+#Write analysis data to a specific excel file
+xpos_velocity_book = createWorkbook()
+experiment.plotBinData("xpos", "velocity", workbook = [xpos_velocity_book, "plotBinData"])
+experiment.plotPercentHistogram("avgMov", "directionality", workbook = [xpos_velocity_book, "percHist"])
+```
+
+####Adding new measurements
+There are a ton of measurements already available for track data and experiment parameter data, and adding new measurements to CMP is very simple.
+
+1. Define a new measurement in [*CMP/lib/TrackMeasurements.py*](https://github.com/AndrewHanSolo/CMP/blob/master/lib/TrackMeasurements.py)
+2. Implement the measurement calculation function in [*CMP/lib/TrackMeasurementFunctions.py*] ( https://github.com/AndrewHanSolo/CMP/blob/master/lib/TrackMeasurementFunctions.py)
+3. Add your new measurement to DefaultTrackMeasurements in [*CMP/lib/TrackClassGlobals.py*] (https://github.com/AndrewHanSolo/CMP/blob/master/lib/TrackClassGlobals.py)
+
+```python
+DefaultTrackMeasurements = {
+
+#track-dimensions measurements. defined for slicing tracks and scanning
+
+	"xPos"            : xPos,            # x-coordinate of the track
+	"yPos"            : yPos,            # y-coordinate of the track
+	"frames"          : frames,          # frame-coordinate of the track
+
+
+#track measurements calculated with track-dimensions and experiment parameters
+
+	"age"             : age,             # range of frames over which track exists
+	"avgMov"          : avgMov         , # average movement of the track per frame
+	"velocity"        : velocity       , # average migration distance of the track per frame
+	"concentration"   : concentration  , # local chemical concentration of xStartPos
+	"directionality"  : directionality , # uphill gradient track movement / total track movement
+	"mp"              : getMP          , # degree that track moves in one direction
+	"xMigrationSpeed" : xMigrationSpeed, # total x-direction migration distance
+	"yMigrationSpeed" : yMigrationSpeed, # total y-direciton migration distance
+	"numFrames"       : numFrames      , # number of frames in the track
+	"xStartPos"       : getXStartPos   , 
+	"xEndPos"         : getXEndPos     ,
+	"yStartPos"       : getYStartPos   ,
+	"yEndPos"         : getYEndPos     ,
+	"firstFrame"      : firstFrame     ,
+	"lastFrame"       : lastFrame  
+}
+
+```
+You're Done! You can use your new measurement like any other.
 
 
 
-
-@CAPABILITIES
--
-
-
-
-@CODE STRUCTURE
-
-
-@DEPENDENCIES
-numpy 1.8.2
-xlsxwriter 0.5.2
-scipy 0.13.3
-matplotlib 1.3.1
-
-
-
-
-useful for comparing the migration behavior of thousands of cells within various environments. 
-
-The analysis pipeline involves 5 stages: 
-a. Cell-Tracking and Migration Data Generation
-b. Data Preprocessing (experiment reconstruction and grouping)
-1. Data Filtering
-2. Analysis
-
-Stage a: A script runs automated tracking on batches of time-lapse microscopy video files using the TRACKMATE plugin within FIJI. TRACKMATE outputs cell centroid spatial and frame data in xml format.
-
-Stage b: TRACKMATE output files are grouped to appropriate experiment directories. One experiment should contain all data files corresponding to all the video files for that experiment. Additionally, within each experiment directory there may be a coordinates.txt file and a settings.txt file. The coordinates file is used to combine migration data from multiple data files in order to reconstruct the full experiment. The settings file is used to specify various parameters specific to the experiment. All experiment directories should be contained in one parent directory. The parent directory is then loaded and saved into CMP for analysis.
-
-Stage 1: Data filtering may be performed to select cells with specific qualities or within a specific spatiotemporal ranges for analysis.
-
-Stage 2: CMP serves as a powerful library for performing custom analysis, and offers easy extensibility of track filters, measurement functions, and analysis scripting. Users not comfortable with programming have various “comprehensive” analysis scripts that can be performed with a single execution that will produce vast quantities of graphs and excel sheets reporting…
-
-1. Spatiotemporal correlations to cell track measurements, including average movement speed, average velocity, migration persistence, and directionality.
-
-2. Cell-track measurement binning and other-measurement correlations
-
-3. Experiment summaries and cross-experiment comparisons
-Stage 1 and 2 may be an iterative process, where preliminary analysis is performed before filtering and more analysis.
-
-
-
-
-Cell Track Attributes:
-Cell Track Filter Functions:
-Current Measurement Functions:
-
-Directionality:  ( ) where “Cell vector” is the positional vector a cell has moved in one frame and “Field vector” is the vector defined as the direction of the gradient. The percent (decimal) of movement in the direction of increasing concentration within a chemical gradient.
-Migration persistence (): The percent (decimal) of movement in one direction, as opposed to any direction
-Mean velocity (): The average movement over the entire temporal range
-Mean migration speed (): The average distance travelled per frame

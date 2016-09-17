@@ -1,10 +1,17 @@
 from TrackMeasurements import *
+import os
 
 #Degree of output from CMP to console
 VERBOSE = True  #very talkative
-DEBUG = False	#most talkative
+DEBUG = True	#most talkative
 SAVE_DIRECTORY = None #'/home/ahan/Desktop/analysis/' #'C:\\Users\\Andrew Han\\Desktop/analysis/'
 
+#setting paths for reading and writing files
+CMP_PATH = os.getcwd()
+DATA_SAVE_PATH = CMP_PATH + '/data/'
+TRACK_FILES_IMPORT_PATH = CMP_PATH + r"/TrackMate XMLs/"
+ANALYSIS_SAVE_PATH = CMP_PATH + '/analysis/'
+ANALYSIS_SAVE_NAME = ''
 
 
 

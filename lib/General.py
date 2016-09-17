@@ -1,6 +1,7 @@
 #General Functions File
 
 from TrackClassGlobals import *
+import TrackClassGlobals as TCG
 from TrackClass import *
 import TrackClass as TC
 from math import *
@@ -13,17 +14,17 @@ import os
 
 
 #imports, preprocesses, and saves all data from Full Experiment Folder for analysis
-def importAndSave(folderPath, saveName):
+def importAndSave(foldername, saveName):
 	print('Importing, processing, and saving data for analysis...')
-	data = TC.AllExperimentData(folderPath)
+	data = TC.AllExperimentData(foldername)
 	print(saveName)
-	with open("data/" + saveName, 'wb') as output:
+	with open(TCG.DATA_SAVE_PATH + saveName, 'wb') as output:
 		pickle.dump(data, output, -1)
 	print('Done.')
 	return data
 
 def createWorkbook(name):
-	return xlsxwriter.Workbook(TCG.SAVE_DIRECTORY + " " + name + ".xlsx", {'nan_inf_to_errors': True, 'in_memory': True})
+	return xlsxwriter.Workbook(TCG.ANALYSIS_SAVE_PATH + "/" + name + ".xlsx", {'nan_inf_to_errors': True, 'in_memory': True})
 
 #clear any remaining data out of TrackFile object
 def clear(self):
@@ -66,7 +67,7 @@ def dprint(string):
 
 #saves the figure to SAVE_DIRECTORY/title.extension
 def savePlot(fig, title, extension = '.png'):
-	savePath = TCG.SAVE_DIRECTORY + title + extension
+	savePath = TCG.ANALYSIS_SAVE_PATH + '/' + TCG.ANALYSIS_SAVE_NAME + '/' + title + extension
 	try:
 		fig.savefig(savePath)
 		P.close() #CAREFUL

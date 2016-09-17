@@ -3,6 +3,7 @@ Example driver of streamlined analysis. Structured for easy customization.
 '''
 #add CMP directory paths
 import sys
+import os
 sys.path.insert(0, './lib')
 sys.path.insert(0, './data')
 sys.path.insert(0, './jobs')
@@ -13,11 +14,12 @@ from ExampleJob import Example_Job
 from TestJob import Test_Job
 
 
+
 '''Custom Test Analysis'''
 if 1:
 
-	TCG.SAVE_DIRECTORY = '/home/ahan/Desktop/analysis/Example_Job/'
-	trackfilesPath = '/home/ahan/Desktop/track files/test/'
+	#TCG.SAVE_DIRECTORY = "C:/Users/Andrew Han/Desktop/analysis/test/" #'/home/ahan/Desktop/analysis/Example_Job/'
+	#trackfilesPath = 'C:\\Users\\Andrew Han\\Desktop\\CMP\\TrackMate XMLs\\test\\' #'/home/ahan/Desktop/track files/test/'
 	
 	#Filter settings
 	filters = {}
@@ -32,7 +34,9 @@ if 1:
 	ps['title'] = 'old'
 
 	#Analysis
-	Example_Job('test', importpath = trackfilesPath, filters = filters, ps = ps)
 
-	TCG.SAVE_DIRECTORY = '/home/ahan/Desktop/analysis/fullTest/'
-	Test_Job('test', filters = filters, ps = ps)
+	TCG.AVALYSIS_SAVE_NAME = 'shorttest-analysis'
+	Example_Job('testData', TRACKMATE_FOLDERNAME = 'testData_XMLs', filters = filters, ps = ps)
+
+	TCG.AVALYSIS_SAVE_NAME = 'fulltest-analysis'
+	Test_Job('testData', filters = filters, ps = ps)

@@ -12,20 +12,22 @@ import os
 
 
 
-def Example_Job(DATA_SAVE_NAME, importpath = 0, filters = {}, ps = TCG.PlotDefaults):
+def Example_Job(DATA_SAVE_NAME, TRACKMATE_FOLDERNAME = None, filters = {}, ps = TCG.PlotDefaults):
 
-	if not os.path.exists(TCG.SAVE_DIRECTORY):
-		os.makedirs(TCG.SAVE_DIRECTORY)
+	JOB_ANALYSIS_SAVE_PATH = TCG.ANALYSIS_SAVE_PATH + '/' + TCG.ANALYSIS_SAVE_NAME
+
+	if not os.path.exists(JOB_ANALYSIS_SAVE_PATH):
+		os.makedirs(JOB_ANALYSIS_SAVE_PATH)
 
 	#save data from folder path if given
-	if importpath:
-		data = importAndSave(importpath, DATA_SAVE_NAME)
+	if TRACKMATE_FOLDERNAME:
+		data = importAndSave(TRACKMATE_FOLDERNAME, DATA_SAVE_NAME)
 
 	vprint('Running Analysis of %s...' %(DATA_SAVE_NAME))
 
 	####################################
 	#LOAD DATA
-	with open('./data/' + DATA_SAVE_NAME, 'rb') as input:
+	with open(TCG.DATA_SAVE_PATH + DATA_SAVE_NAME, 'rb') as input:
 		data = pickle.load(input)
 
 		data.selectData(filters)
