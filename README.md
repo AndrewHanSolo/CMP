@@ -14,7 +14,7 @@ CMP is a lightweight python scripting library that offers a streamlined and vers
 - Seamless addition of new track dimensions, experiment parameters, and measurements
 
 ##Installation and Dependencies
-CMP is stable on Windows 10, Ubuntu 14.04, and Fedora 24. The core analysis library runs with Python 3.5.2, but TrackMate and testing scripts are in Python 2 and IJM.
+CMP is stable on Windows 10, Ubuntu 14.04, and Fedora 24. The core analysis library runs with Python 3.4 (not 3.5.2, fixthis. check what ver of 3.4) but TrackMate and testing scripts are in Python 2 and IJM.
 
 Install the following dependencies (Python3) for the core analysis library.
 - numpy 1.8.2
