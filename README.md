@@ -8,22 +8,22 @@ CMP is a lightweight python scripting library that offers a streamlined and vers
 - Batch-experiment tracking and analysis scripts
 - Iterative measurement bin selection and scanning with adjustable scope and resolution
 - Combinatorial single and multi-experiment level analysis functions
-- Analysis serialization
-- Pipeline testing tools
+- Analysis Output to Excel and CSV
+- Full-loop pipeline testing tools
 - Simplistic and minimal for easy extension and interfacing
 - Seamless addition of new track dimensions, experiment parameters, and measurements
 
 ##Installation and Dependencies
-CMP is stable on Windows 10, Ubuntu 14.04, and Fedora 24. The core analysis library runs with Python 3.4 (not 3.5.2, fixthis. check what ver of 3.4) but TrackMate and testing scripts are in Python 2 and IJM.
+CMP is stable on Windows 10, Ubuntu 14.04, and Fedora 24. The core analysis library runs with Python 3.4.0, but TrackMate and testing scripts are in Python 2.7.12 and IJM.
 
-Install the following dependencies (Python3) for the core analysis library.
+Install the following dependencies (Python 3.4.0) for the core analysis library.
 - numpy 1.8.2
 - xlsxwriter 0.5.2
 - scipy 0.13.3
 - matplotlib 1.3.1
 
-Install Python2 and the pygame library for generating mock image data.
-Install TrackMate (and Python2 if necessary) for automated cell-tracking with immediate data import into CMP.
+Install Python 2.7.0 and the pygame library for generating mock image data.
+Install TrackMate (FIJI plugin) for an automated cell-tracking tool that is used in our experiments. CMP provides scripts for batch-file processing images through TrackMate.
 
 Open [*ExampleDriver.py*](www.google.com) and set your data import, save, and analysis output paths. You should now be able to run the example script. It analyzes a mock experiment data set generated using [*FIJI/MockExperimentDataGenerator.py*](www.google.com) that was passed through the automated-tracking process.
 
