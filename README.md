@@ -20,7 +20,7 @@ Install the following dependencies (Python 3.4.0) for the core analysis library.
 - numpy 1.8.2
 - xlsxwriter 0.5.2
 - scipy 0.13.3
-- matplotlib 1.3.1
+- matplotlib 1.5.1
 
 Install Python 2.7.0 and the pygame library for generating mock image data.
 Install TrackMate (FIJI plugin) for an automated cell-tracking tool that is used in our experiments. CMP provides scripts for batch-file processing images through TrackMate.
